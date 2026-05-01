@@ -25,6 +25,10 @@ A beautiful, modern, and fully responsive Orthodox Church Calendar for 2026, fea
 - **Old & New Style** - Both Julian and Gregorian dates
 - **Special Notes** - Church holidays and observances
 
+## ☁️ Live Demo
+
+[Click here to try it live](https://vojislav77.github.io/orthodox-calendar/)
+
 ## 🚀 Usage
 
 1. **Online**: Simply open `index.html` in any modern web browser
