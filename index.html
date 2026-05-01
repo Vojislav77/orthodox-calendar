@@ -15,6 +15,11 @@
             box-sizing: border-box;
         }
 
+        html, body {
+            overflow-x: hidden;
+            max-width: 100%;
+        }
+
         :root {
             --bg-primary: #fafafa;
             --bg-secondary: #ffffff;
@@ -235,6 +240,8 @@
             background: var(--bg-primary);
             transition: all 0.3s ease;
             cursor: default;
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
 
         .day:hover {
@@ -272,6 +279,8 @@
             font-size: 0.75rem;
             line-height: 1.4;
             color: var(--text-secondary);
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
 
         .feast {
@@ -390,13 +399,11 @@
         }
 
         @media print {
-            /* 1. Proper page margins */
             @page {
                 margin: 10mm 15mm;
                 size: portrait;
             }
 
-            /* 2. Fix max-width and container issues */
             .container {
                 max-width: 100% !important;
                 width: 100% !important;
@@ -404,12 +411,10 @@
                 margin: 0 !important;
             }
 
-            /* 3. Hide non-printable elements */
             .controls, .legend, .scroll-top, header {
                 display: none !important;
             }
 
-            /* 4. Fix month blocks for proper pagination */
             .month {
                 break-inside: avoid;
                 page-break-inside: avoid;
@@ -419,7 +424,6 @@
                 transform: none !important;
             }
 
-            /* 5. Fix grid layout for print */
             .calendar-grid {
                 break-inside: auto;
                 page-break-inside: auto;
@@ -494,18 +498,15 @@
                 color: #7c3aed !important;
             }
 
-            /* 6. Remove hover transforms and shadows */
             .month:hover, .day:hover {
                 transform: none !important;
                 box-shadow: none !important;
             }
 
-            /* 7. Proper print colors */
             h1, .logo svg {
                 display: none !important;
             }
 
-            /* 8. Add print header instead */
             .month-header {
                 background: #7c3aed !important;
                 color: white !important;
@@ -522,7 +523,6 @@
                 color: white !important;
             }
 
-            /* 9. Footer for print */
             footer {
                 position: fixed !important;
                 bottom: 5mm !important;
@@ -550,6 +550,12 @@
             .logo {
                 width: 50px;
                 height: 65px;
+            }
+            .container {
+                padding: 2rem 0.5rem 4rem;
+            }
+            .month-content {
+                padding: 0.8rem;
             }
             .calendar-grid {
                 gap: 0.3rem;
