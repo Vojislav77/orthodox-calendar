@@ -77,6 +77,8 @@
             justify-content: center;
             align-items: center;
             box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
+            border-radius: 12px;
+            margin-bottom: 2rem;
         }
 
         .header-content {
@@ -115,7 +117,7 @@
             font-weight: 700;
             letter-spacing: 3px;
             color: white;
-            text-shadow: 0 3px 12px rgba(0, 0, 0, 0.4);
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
             margin: 0;
         }
 
@@ -202,6 +204,7 @@
             font-weight: 400;
             letter-spacing: 3px;
             text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
         }
 
         .month-content {
@@ -315,6 +318,19 @@
             font-style: italic;
         }
 
+        .current-day {
+            border: 2px solid var(--accent-color) !important;
+            background: var(--purple-100) !important;
+            box-shadow: 0 0 15px var(--shadow);
+            transform: scale(1.05);
+            z-index: 5;
+            position: relative;
+        }
+
+        [data-theme="dark"] .current-day {
+            background: var(--purple-900) !important;
+        }
+
         .controls {
             display: flex;
             justify-content: center;
@@ -336,6 +352,7 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px var(--shadow);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
         }
 
         .btn:hover {
@@ -353,11 +370,13 @@
         footer {
             text-align: center;
             padding: 2rem;
-            color: var(--purple-600);
+            color: white;
             font-size: 0.9rem;
-            border-top: 2px solid var(--purple-200);
-            background: var(--bg-secondary);
+            background: var(--header-bg);
+            border-radius: 12px;
             margin-top: 2rem;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
         }
 
         .scroll-top {
@@ -605,22 +624,22 @@
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-content">
-            <div class="logo-container">
-                <div class="logo">
-                    <!-- Replace with your actual logo image -->
-                    <img src="logo.png" alt="Logo" style="width:100%;height:100%;object-fit:contain;">
-                    <!-- <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg"> -->
-                        <path d="M42 8 Q43 5 45 5 L48 5 Q52 5 53 8 L54 32 L80 32 Q85 32 87 35 L88 38 Q89 42 87 44 Q85 46 80 46 L54 46 L54 112 Q54 117 51 118 L48 119 Q44 119 43 115 L43 46 L18 46 Q13 46 11 44 Q8 42 9 38 Q10 34 13 33 Q16 32 20 32 L43 32 Z" fill="white"/>
-                    </svg>
-                </div>
-                <h1>Православни календар 2026</h1>
-            </div>
-        </div>
-    </header>
-
     <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo-container">
+                    <div class="logo">
+                        <!-- Replace with your actual logo image -->
+                        <img src="logo.png" alt="Logo" style="width:100%;height:100%;object-fit:contain;">
+                        <!-- <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg"> -->
+                            <path d="M42 8 Q43 5 45 5 L48 5 Q52 5 53 8 L54 32 L80 32 Q85 32 87 35 L88 38 Q89 42 87 44 Q85 46 80 46 L54 46 L54 112 Q54 117 51 118 L48 119 Q44 119 43 115 L43 46 L18 46 Q13 46 11 44 Q8 42 9 38 Q10 34 13 33 Q16 32 20 32 L43 32 Z" fill="white"/>
+                        </svg>
+                    </div>
+                    <h1>Православни календар 2026</h1>
+                </div>
+            </div>
+        </header>
+
         <div class="legend">
             <h3>Легенда поста:</h3>
             <div class="legend-items">
@@ -657,12 +676,12 @@
         </div>
 
         <button class="scroll-top" id="scrollTopBtn" onclick="scrollToTop()" title="На врх странице">↑</button>
-    </div>
 
-    <footer>
-        <p>Православни календар 2026. године</p>
-        <p>Према календару Српске православне цркве</p>
-    </footer>
+        <footer>
+            <p>Православни календар 2026. године</p>
+            <p>Према календару Српске православне цркве</p>
+        </footer>
+    </div>
 
     <script>
         const months = [
@@ -1111,6 +1130,7 @@
         function renderCalendar() {
             const calendar = document.getElementById('calendar');
             let html = '';
+            const currentDate = new Date();
 
             months.forEach((month, monthIndex) => {
                 html += `
@@ -1132,7 +1152,8 @@
                 month.days.forEach((day, index) => {
                     const dayOfWeek = (month.firstDay + index) % 7;
                     const isWeekend = dayOfWeek === 5 || dayOfWeek === 6;
-                    const dayClass = `day ${day.feast ? 'feast' : ''} ${day.f > 0 ? 'fast' : ''} ${isWeekend ? 'weekend' : ''}`;
+                    const isCurrentDay = currentDate.getFullYear() === 2026 && currentDate.getMonth() === monthIndex && currentDate.getDate() === day.n;
+                    const dayClass = `day ${day.feast ? 'feast' : ''} ${day.f > 0 ? 'fast' : ''} ${isWeekend ? 'weekend' : ''} ${isCurrentDay ? 'current-day' : ''}`;
                     const fastSymbol = day.f > 0 ? `<span class="fast-symbol">${fastSymbols[day.f]}</span>` : '';
                     const note = day.note ? `<div class="special-note">${day.note}</div>` : '';
                     
@@ -1198,6 +1219,21 @@
         }
 
         renderCalendar();
+
+        const now = new Date();
+        if (now.getFullYear() === 2026) {
+            setTimeout(() => {
+                const currentDayEl = document.querySelector('.current-day');
+                if (currentDayEl) {
+                    currentDayEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    const monthElements = document.querySelectorAll('.month');
+                    if (monthElements[now.getMonth()]) {
+                        monthElements[now.getMonth()].scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            }, 500);
+        }
 
         if ('serviceWorker' in navigator) {
             const swCode = `
