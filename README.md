@@ -1,4 +1,4 @@
-# Православни календар 2026 (Orthodox Calendar 2026)
+# ☦️ Православни календар 2026 (Orthodox Calendar 2026)
 
 A beautiful, modern, and fully responsive Orthodox Church Calendar for 2026, featuring the Serbian Orthodox liturgical calendar with fasting guidelines, feast days, and daily saints' commemorations.
 
