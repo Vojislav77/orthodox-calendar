@@ -5,6 +5,9 @@ A beautiful, modern, and fully responsive Orthodox Church Calendar for 2026, fea
 ![License](https://img.shields.io/badge/license-MIT-purple)
 ![PWA](https://img.shields.io/badge/PWA-enabled-blue)
 
+<img width="1184" height="159" alt="pc" src="https://github.com/user-attachments/assets/1f2549ad-77b2-4474-b4a8-dc05ec71c315" />
+
+
 ## Features
 
 - **Complete 2026 Calendar** - All 12 months with Orthodox feast days and fasting information
