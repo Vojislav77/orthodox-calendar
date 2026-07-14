@@ -18,6 +18,7 @@
         html, body {
             overflow-x: hidden;
             max-width: 100%;
+            scroll-behavior: smooth;
         }
 
         :root {
@@ -44,6 +45,9 @@
             --fast-bg: #faf5ff;
             --shadow: rgba(124, 58, 237, 0.1);
             --header-bg: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+            --today-glow: rgba(124, 58, 237, 0.25);
+            --highlight-bg: #fef08a;
+            --search-highlight-border: #7c3aed;
         }
 
         [data-theme="dark"] {
@@ -60,6 +64,9 @@
             --fast-bg: #3b0764;
             --shadow: rgba(139, 92, 246, 0.2);
             --header-bg: linear-gradient(135deg, #5b21b6 0%, #2e1065 100%);
+            --today-glow: rgba(139, 92, 246, 0.3);
+            --highlight-bg: #b45309;
+            --search-highlight-border: #a78bfa;
         }
 
         body {
@@ -77,8 +84,7 @@
             justify-content: center;
             align-items: center;
             box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
-            border-radius: 12px;
-            margin-bottom: 2rem;
+            position: relative;
         }
 
         .header-content {
@@ -86,6 +92,8 @@
             flex-direction: column;
             align-items: center;
             gap: 1rem;
+            width: 100%;
+            max-width: 1200px;
         }
 
         .logo-container {
@@ -106,10 +114,10 @@
             filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.3));
         }
 
-        .logo svg {
+        .logo img {
             width: 100%;
             height: 100%;
-            fill: white;
+            object-fit: contain;
         }
 
         h1 {
@@ -117,7 +125,7 @@
             font-weight: 700;
             letter-spacing: 3px;
             color: white;
-            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+            text-shadow: 0 3px 12px rgba(0, 0, 0, 0.4);
             margin: 0;
         }
 
@@ -128,14 +136,219 @@
             position: relative;
         }
 
+        /* SEARCH */
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto 2rem;
+        }
+
+        .search-input-wrapper {
+            display: flex;
+            align-items: center;
+            background: var(--bg-secondary);
+            border-radius: 50px;
+            padding: 0.3rem 0.3rem 0.3rem 1.5rem;
+            border: 2px solid var(--purple-200);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+
+        .search-input-wrapper:focus-within {
+            border-color: var(--purple-400);
+            box-shadow: 0 0 20px rgba(124, 58, 237, 0.15);
+        }
+
+        .search-input-wrapper input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            padding: 0.6rem 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .search-input-wrapper input::placeholder {
+            color: transparent;
+        }
+
+        .search-input-wrapper button {
+            background: var(--purple-100);
+            border: none;
+            border-radius: 50px;
+            padding: 0.5rem 1.5rem;
+            color: var(--purple-700);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 500;
+        }
+
+        .search-input-wrapper button:hover {
+            background: var(--purple-200);
+            transform: scale(1.02);
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            margin-top: 0.5rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+            border: 2px solid var(--purple-200);
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .search-result-item {
+            padding: 0.7rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-result-item:hover {
+            background: var(--purple-50);
+        }
+
+        .search-result-item .result-saint {
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .search-result-item .result-date {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .search-highlight {
+            background: var(--highlight-bg);
+            padding: 0 0.1rem;
+            border-radius: 2px;
+            font-weight: 600;
+        }
+
+        /* Calendar day search highlight */
+        .search-highlight-day {
+            border: 3px solid var(--search-highlight-border) !important;
+            box-shadow: 0 0 20px rgba(124, 58, 237, 0.3) !important;
+            transform: scale(1.02);
+            transition: all 0.2s ease;
+            position: relative;
+            z-index: 5;
+        }
+
+        .search-highlight-day .day-saint {
+            font-weight: 600;
+            color: var(--purple-700);
+        }
+
+        [data-theme="dark"] .search-highlight-day {
+            box-shadow: 0 0 25px rgba(167, 139, 250, 0.4) !important;
+        }
+
+        /* MONTH NAVIGATION */
+        .month-navigation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            background: var(--bg-secondary);
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            border: 2px solid var(--purple-200);
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+
+        .month-nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--purple-600);
+            font-size: 1.6rem;
+            cursor: pointer;
+            padding: 0.2rem 0.6rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1;
+        }
+
+        .month-nav-btn:hover {
+            background: var(--purple-50);
+            transform: scale(1.05);
+        }
+
+        .month-nav-btn:active {
+            transform: scale(0.95);
+        }
+
+        .month-nav-names {
+            display: flex;
+            gap: 0.3rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .month-name-btn {
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            border: 2px solid transparent;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            letter-spacing: 0.5px;
+        }
+
+        .month-name-btn:hover {
+            color: var(--purple-600);
+            background: var(--purple-50);
+            border-color: var(--purple-200);
+        }
+
+        .month-name-btn.active {
+            color: var(--purple-700);
+            background: var(--purple-100);
+            border-color: var(--purple-400);
+            font-weight: 600;
+        }
+
+        /* LEGEND – ONE LINE */
         .legend {
             background: var(--bg-secondary);
             border-radius: 12px;
             padding: 1.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             box-shadow: 0 4px 15px var(--shadow);
             border: 2px solid var(--purple-200);
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .legend:hover {
@@ -143,40 +356,120 @@
             transform: translateY(-2px);
         }
 
-        .legend h3 {
-            margin-bottom: 1rem;
+        .legend-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .legend-header h3 {
             font-weight: 400;
             color: var(--purple-800);
+            margin: 0;
+            font-size: 1.1rem;
         }
 
-        .legend-items {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 0.8rem;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            font-size: 0.9rem;
-        }
-
-        .legend-symbol {
-            width: 30px;
-            height: 30px;
+        .legend-toggle {
+            color: var(--purple-600);
+            font-size: 1.6rem;
+            transition: transform 0.4s ease, background 0.3s ease;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0 0.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 4px;
-            font-weight: bold;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1;
+            transform: rotate(-90deg);
         }
 
-        .legend-strict { background: var(--fast-bg); border-left: 3px solid var(--purple-800); }
-        .legend-moderate { background: var(--fast-bg); border-left: 3px solid var(--purple-600); }
-        .legend-wine { background: var(--fast-bg); border-left: 3px solid var(--purple-500); }
-        .legend-fish { background: var(--fast-bg); border-left: 3px solid var(--purple-400); }
+        .legend-toggle:hover {
+            background: var(--purple-50);
+        }
 
+        .legend-toggle.rotated {
+            transform: rotate(90deg);
+        }
+
+        .legend-body {
+            overflow: hidden;
+            max-height: 300px;
+            transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.3s ease;
+            opacity: 1;
+            margin-top: 1rem;
+        }
+
+        .legend-body.collapsed {
+            max-height: 0;
+            opacity: 0;
+            margin-top: 0;
+        }
+
+        .legend-items {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 1.2rem;
+            overflow-x: auto;
+            padding-bottom: 0.3rem;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .legend-item {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .legend-dot {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.4);
+            flex-shrink: 0;
+        }
+
+        .legend-dot.suho { background: #b91c1c; }
+        .legend-dot.bez { background: #ea580c; }
+        .legend-dot.ulje { background: #eab308; }
+        .legend-dot.riba { background: #2563eb; }
+        .legend-dot.mrsno { background: #9ca3af; }
+
+        [data-theme="dark"] .legend-dot.suho { background: #dc2626; }
+        [data-theme="dark"] .legend-dot.bez { background: #f97316; }
+        [data-theme="dark"] .legend-dot.ulje { background: #facc15; }
+        [data-theme="dark"] .legend-dot.riba { background: #3b82f6; }
+        [data-theme="dark"] .legend-dot.mrsno { background: #d1d5db; }
+
+        .legend-text {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .legend-text strong {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .legend-text small {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* CALENDAR */
         .month {
             background: var(--bg-secondary);
             border-radius: 12px;
@@ -185,6 +478,7 @@
             box-shadow: 0 4px 15px var(--shadow);
             border: 2px solid var(--purple-200);
             transition: all 0.3s ease;
+            scroll-margin-top: 20px;
         }
 
         .month:hover {
@@ -197,6 +491,7 @@
             color: white;
             padding: 1.5rem;
             text-align: center;
+            position: relative;
         }
 
         .month-header h2 {
@@ -204,7 +499,6 @@
             font-weight: 400;
             letter-spacing: 3px;
             text-transform: uppercase;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
         }
 
         .month-content {
@@ -218,6 +512,18 @@
             margin-bottom: 1rem;
             padding-bottom: 0.5rem;
             border-bottom: 2px solid var(--purple-300);
+            position: relative;
+        }
+
+        .week-header .week-number {
+            position: absolute;
+            left: -2.5rem;
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            opacity: 0.5;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: 600;
         }
 
         .week-day {
@@ -245,6 +551,7 @@
             cursor: default;
             word-break: break-word;
             overflow-wrap: break-word;
+            position: relative;
         }
 
         .day:hover {
@@ -272,7 +579,30 @@
             margin-bottom: 0.3rem;
         }
 
-        .day.old-style {
+        .day.today .day-number {
+            color: var(--purple-800);
+            position: relative;
+            display: inline-block;
+        }
+
+        .day.today .day-number::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background: var(--accent-color);
+            border-radius: 2px;
+        }
+
+        .day.today {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 20px var(--today-glow);
+        }
+
+        .day-old-style {
             font-size: 0.75rem;
             color: var(--text-muted);
             margin-bottom: 0.3rem;
@@ -285,6 +615,30 @@
             word-break: break-word;
             overflow-wrap: break-word;
         }
+
+        .fast-indicator {
+            display: inline-block !important;
+            width: 7px !important;
+            height: 7px !important;
+            border-radius: 50% !important;
+            margin-left: 0.3rem !important;
+            vertical-align: middle !important;
+            border: 1px solid rgba(255,255,255,0.3) !important;
+            flex-shrink: 0 !important;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2) !important;
+        }
+
+        .fast-indicator.suho { background: #b91c1c !important; box-shadow: 0 0 6px rgba(185, 28, 28, 0.4) !important; }
+        .fast-indicator.bez { background: #ea580c !important; box-shadow: 0 0 6px rgba(234, 88, 12, 0.4) !important; }
+        .fast-indicator.ulje { background: #eab308 !important; box-shadow: 0 0 6px rgba(234, 179, 8, 0.4) !important; }
+        .fast-indicator.riba { background: #2563eb !important; box-shadow: 0 0 6px rgba(37, 99, 235, 0.4) !important; }
+        .fast-indicator.mrsno { background: #9ca3af !important; box-shadow: 0 0 6px rgba(156, 163, 175, 0.4) !important; }
+
+        [data-theme="dark"] .fast-indicator.suho { background: #dc2626 !important; box-shadow: 0 0 8px rgba(220, 38, 38, 0.5) !important; }
+        [data-theme="dark"] .fast-indicator.bez { background: #f97316 !important; box-shadow: 0 0 8px rgba(249, 115, 22, 0.5) !important; }
+        [data-theme="dark"] .fast-indicator.ulje { background: #facc15 !important; box-shadow: 0 0 8px rgba(250, 204, 21, 0.5) !important; }
+        [data-theme="dark"] .fast-indicator.riba { background: #3b82f6 !important; box-shadow: 0 0 8px rgba(59, 130, 246, 0.5) !important; }
+        [data-theme="dark"] .fast-indicator.mrsno { background: #d1d5db !important; box-shadow: 0 0 8px rgba(209, 213, 219, 0.5) !important; }
 
         .feast {
             background: var(--feast-bg);
@@ -300,13 +654,6 @@
             background: var(--fast-bg);
         }
 
-        .fast-symbol {
-            display: inline-block;
-            margin-left: 0.3rem;
-            font-size: 0.7rem;
-            color: var(--purple-600);
-        }
-
         .weekend .day-number {
             color: var(--purple-800);
         }
@@ -318,24 +665,12 @@
             font-style: italic;
         }
 
-        .current-day {
-            border: 2px solid var(--accent-color) !important;
-            background: var(--purple-100) !important;
-            box-shadow: 0 0 15px var(--shadow);
-            transform: scale(1.05);
-            z-index: 5;
-            position: relative;
-        }
-
-        [data-theme="dark"] .current-day {
-            background: var(--purple-900) !important;
-        }
-
         .controls {
             display: flex;
             justify-content: center;
             gap: 1rem;
             margin: 3rem 0 2rem;
+            flex-wrap: wrap;
         }
 
         .btn {
@@ -352,7 +687,6 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px var(--shadow);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
         }
 
         .btn:hover {
@@ -367,16 +701,54 @@
             box-shadow: 0 4px 15px rgba(124, 58, 237, 0.2);
         }
 
+        .btn .shortcut-hint {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            background: var(--bg-primary);
+            padding: 0.1rem 0.5rem;
+            border-radius: 4px;
+        }
+
         footer {
             text-align: center;
             padding: 2rem;
-            color: white;
+            color: var(--purple-600);
             font-size: 0.9rem;
-            background: var(--header-bg);
-            border-radius: 12px;
+            border-top: 2px solid var(--purple-200);
+            background: var(--bg-secondary);
             margin-top: 2rem;
-            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        .copyright-link {
+            display: inline-block;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--purple-700);
+            text-decoration: none;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            background: var(--purple-50);
+            border: 1px solid var(--purple-200);
+        }
+
+        .copyright-link:hover {
+            background: var(--purple-100);
+            border-color: var(--purple-400);
+            transform: scale(1.02);
+            color: var(--purple-800);
+        }
+
+        [data-theme="dark"] .copyright-link {
+            color: var(--purple-300);
+            background: var(--purple-900);
+            border-color: var(--purple-700);
+        }
+
+        [data-theme="dark"] .copyright-link:hover {
+            background: var(--purple-800);
+            border-color: var(--purple-500);
+            color: var(--purple-200);
         }
 
         .scroll-top {
@@ -417,6 +789,41 @@
             transform: translateY(-1px) scale(1.02);
         }
 
+        .keyboard-hint {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-secondary);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            border: 2px solid var(--purple-200);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            box-shadow: 0 4px 15px var(--shadow);
+            opacity: 0.7;
+            transition: all 0.3s ease;
+            z-index: 99;
+            display: none;
+        }
+
+        .keyboard-hint.visible {
+            display: block;
+        }
+
+        .keyboard-hint:hover {
+            opacity: 1;
+        }
+
+        .keyboard-hint kbd {
+            background: var(--bg-primary);
+            padding: 0.1rem 0.5rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            font-size: 0.7rem;
+            font-family: inherit;
+        }
+
         @media print {
             @page {
                 margin: 10mm 15mm;
@@ -430,7 +837,7 @@
                 margin: 0 !important;
             }
 
-            .controls, .legend, .scroll-top, header {
+            .controls, .legend, .scroll-top, header, .month-navigation, .search-container, .keyboard-hint {
                 display: none !important;
             }
 
@@ -441,6 +848,12 @@
                 border: 1px solid #ddd !important;
                 margin-bottom: 8mm !important;
                 transform: none !important;
+            }
+
+            .month::after {
+                content: '';
+                display: block;
+                page-break-after: avoid;
             }
 
             .calendar-grid {
@@ -482,7 +895,7 @@
                 color: #333 !important;
             }
 
-            .day.old-style {
+            .day-old-style {
                 font-size: 0.6rem !important;
                 color: #666 !important;
             }
@@ -512,9 +925,11 @@
                 margin-top: 1px !important;
             }
 
-            .fast-symbol {
-                font-size: 0.5rem !important;
-                color: #7c3aed !important;
+            .fast-indicator {
+                width: 5px !important;
+                height: 5px !important;
+                margin-left: 2px !important;
+                border-width: 1px !important;
             }
 
             .month:hover, .day:hover {
@@ -522,7 +937,7 @@
                 box-shadow: none !important;
             }
 
-            h1, .logo svg {
+            h1, .logo img {
                 display: none !important;
             }
 
@@ -558,6 +973,20 @@
             footer p {
                 margin: 0 !important;
                 padding: 0 !important;
+            }
+
+            .copyright-link {
+                font-size: 0.8rem !important;
+                background: transparent !important;
+                border: none !important;
+                color: #333 !important;
+                padding: 0 !important;
+            }
+
+            .search-highlight-day {
+                border: 2px solid #7c3aed !important;
+                box-shadow: none !important;
+                transform: none !important;
             }
         }
 
@@ -604,6 +1033,36 @@
                 height: 45px;
                 font-size: 1.2rem;
             }
+            .month-navigation {
+                padding: 0.5rem 0.8rem;
+                gap: 0.4rem;
+            }
+            .month-name-btn {
+                font-size: 0.6rem;
+                padding: 0.2rem 0.5rem;
+            }
+            .month-nav-btn {
+                font-size: 1.2rem;
+                width: 32px;
+                height: 32px;
+            }
+            .search-container {
+                max-width: 100%;
+                padding: 0 0.5rem;
+            }
+            .keyboard-hint {
+                display: none !important;
+            }
+
+            .legend-items {
+                gap: 0.8rem;
+            }
+            .legend-text small {
+                display: none;
+            }
+            .copyright-link {
+                font-size: 0.95rem !important;
+            }
         }
 
         @media (max-width: 480px) {
@@ -620,521 +1079,736 @@
             h1 {
                 font-size: 1.5rem;
             }
+            .month-header h2 {
+                font-size: 1.2rem;
+            }
+            .month-name-btn {
+                font-size: 0.55rem;
+                padding: 0.15rem 0.4rem;
+            }
+            .copyright-link {
+                font-size: 0.85rem !important;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="header-content">
-                <div class="logo-container">
-                    <div class="logo">
-                        <!-- Replace with your actual logo image -->
-                        <img src="logo.png" alt="Logo" style="width:100%;height:100%;object-fit:contain;">
-                        <!-- <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg"> -->
-                            <path d="M42 8 Q43 5 45 5 L48 5 Q52 5 53 8 L54 32 L80 32 Q85 32 87 35 L88 38 Q89 42 87 44 Q85 46 80 46 L54 46 L54 112 Q54 117 51 118 L48 119 Q44 119 43 115 L43 46 L18 46 Q13 46 11 44 Q8 42 9 38 Q10 34 13 33 Q16 32 20 32 L43 32 Z" fill="white"/>
-                        </svg>
-                    </div>
-                    <h1>Православни календар 2026</h1>
+    <header>
+        <div class="header-content">
+            <div class="logo-container">
+                <div class="logo">
+                    <img src="logo.png" alt="Logo">
                 </div>
+                <h1>Православни календар 2026</h1>
             </div>
-        </header>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <div class="month-navigation">
+            <button class="month-nav-btn" onclick="navigateMonth(-1)" title="Претходни месец">‹</button>
+            <div class="month-nav-names" id="monthNames"></div>
+            <button class="month-nav-btn" onclick="navigateMonth(1)" title="Следећи месец">›</button>
+        </div>
 
         <div class="legend">
-            <h3>Легенда поста:</h3>
-            <div class="legend-items">
-                <div class="legend-item">
-                    <div class="legend-symbol legend-strict">⬤</div>
-                    <span>Строги пост</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-symbol legend-moderate">◐</div>
-                    <span>Уље и вино</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-symbol legend-wine">◑</div>
-                    <span>Вино и уље</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-symbol legend-fish">ⵔ</div>
-                    <span>Риба дозвољена</span>
+            <div class="legend-header" onclick="toggleLegend()">
+                <h3>Легенда поста</h3>
+                <button class="legend-toggle" id="legendToggle">›</button>
+            </div>
+            <div class="legend-body" id="legendBody">
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <span class="legend-dot suho"></span>
+                        <div class="legend-text">
+                            <strong>Сухоједење</strong>
+                            <small>сирово воће, поврће, ораси, мед</small>
+                        </div>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot bez"></span>
+                        <div class="legend-text">
+                            <strong>Без уља</strong>
+                            <small>кувана храна без уља</small>
+                        </div>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot ulje"></span>
+                        <div class="legend-text">
+                            <strong>Уље</strong>
+                            <small>биљно уље и вино</small>
+                        </div>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot riba"></span>
+                        <div class="legend-text">
+                            <strong>Риба</strong>
+                            <small>риба, уље и вино</small>
+                        </div>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot mrsno"></span>
+                        <div class="legend-text">
+                            <strong>Мрсно</strong>
+                            <small>без поста – све дозвољено</small>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
+
+        <div class="search-container">
+            <div class="search-input-wrapper">
+                <input type="text" id="searchInput" placeholder="" oninput="searchSaints(this.value)">
+                <button onclick="searchSaints(document.getElementById('searchInput').value)">Тражи</button>
+            </div>
+            <div class="search-results" id="searchResults"></div>
         </div>
 
         <div id="calendar"></div>
 
         <div class="controls">
             <button class="btn" onclick="toggleTheme()" title="Промени тему">
-                <span id="theme-icon">🌙</span>
                 <span>Промени тему</span>
+                <span class="shortcut-hint">T</span>
             </button>
             <button class="btn" onclick="printCalendar()" title="Штампај календар">
-                <span>🖨️</span>
                 <span>Штампај</span>
+                <span class="shortcut-hint">P</span>
+            </button>
+            <button class="btn" onclick="goToToday()" title="Иди на данашњи датум">
+                <span>Данас</span>
+                <span class="shortcut-hint">D</span>
             </button>
         </div>
 
-        <button class="scroll-top" id="scrollTopBtn" onclick="scrollToTop()" title="На врх странице">↑</button>
+        <div class="keyboard-hint" id="keyboardHint">
+            <kbd>T</kbd> тема &nbsp;·&nbsp; <kbd>P</kbd> штампа &nbsp;·&nbsp; <kbd>D</kbd> данас &nbsp;·&nbsp; <kbd>Esc</kbd> затвори
+        </div>
 
-        <footer>
-            <p>Православни календар 2026. године</p>
-            <p>Према календару Српске православне цркве</p>
-        </footer>
+        <button class="scroll-top" id="scrollTopBtn" onclick="scrollToTop()" title="На врх странице">↑</button>
     </div>
 
+    <footer>
+        <p>Православни календар 2026. године</p>
+        <p>Према календару Српске православне цркве</p>
+        <p>
+            <a href="https://vojislavkorac.xyz/" target="_blank" class="copyright-link">© 2026. Сва права задржана.</a>
+        </p>
+    </footer>
+
     <script>
-        const months = [
-            {
-                name: "ЈАНУАР",
-                firstDay: 4,
-                days: [
-                    { n: 1, o: 19, s: "Свети мученик Бонифатије", f: 0 },
-                    { n: 2, o: 20, s: "Свети Игњатије Богоносац", f: 1, note: "Претпр. Рождества" },
-                    { n: 3, o: 21, s: "Света мученица Јулијана; Свети Петар Кијевски", f: 2 },
-                    { n: 4, o: 22, s: "Света великомученица Анастасија", f: 0, note: "Оци" },
-                    { n: 5, o: 23, s: "Светих 10 мученика Критских", f: 0, note: "Туциндан" },
-                    { n: 6, o: 24, s: "Света преподобномученица Евгенија", f: 0, note: "Бадњи дан" },
-                    { n: 7, o: 25, s: "Рождество Христово – Божић", f: 0, feast: true },
-                    { n: 8, o: 26, s: "Сабор Пресвете Богородице", f: 0 },
-                    { n: 9, o: 27, s: "Свети првомученик и архиђакон Стефан", f: 1 },
-                    { n: 10, o: 28, s: "Светих 20.000 мученика Никомидијских", f: 3 },
-                    { n: 11, o: 29, s: "Светих 14.000 младенаца Витлејемских", f: 0 },
-                    { n: 12, o: 30, s: "Света мученица Анисија", f: 0 },
-                    { n: 13, o: 31, s: "Преп. Меланија", f: 0, note: "Оданије Рождества" },
-                    { n: 14, o: 1, s: "Обрезање Господње; Свети Василије Велики", f: 0, feast: true, note: "Нова година" },
-                    { n: 15, o: 2, s: "Св. Силвестар Римски; Преп. Серафим Саровски", f: 0, note: "Претпразништво Богојављења" },
-                    { n: 16, o: 3, s: "Свети пророк Малахија", f: 0 },
-                    { n: 17, o: 4, s: "Сабор 70 светих апостола", f: 0 },
-                    { n: 18, o: 5, s: "Свети Теопемпт и Теона", f: 0, note: "Крстовдан", fast: 4 },
-                    { n: 19, o: 6, s: "Богојављење", f: 0, feast: true },
-                    { n: 20, o: 7, s: "Сабор светог Јована Крститеља", f: 0, note: "Јовањдан" },
-                    { n: 21, o: 8, s: "Преп. Георгије Хозевит", f: 0 },
-                    { n: 22, o: 9, s: "Свети мученик Полиевкт", f: 0 },
-                    { n: 23, o: 10, s: "Св. Григорије Ниски", f: 1 },
-                    { n: 24, o: 11, s: "Преподобни Теодосије Велики", f: 0 },
-                    { n: 25, o: 12, s: "Света мученица Татијана", f: 0 },
-                    { n: 26, o: 13, s: "Свети мученици Ермил и Стратоник", f: 3, note: "Оданије Богојављења" },
-                    { n: 27, o: 14, s: "Свети Сава, први Архиепископ српски", f: 0, note: "Савиндан" },
-                    { n: 28, o: 15, s: "Преп. Павле Тивејски и Јован Колибар", f: 0 },
-                    { n: 29, o: 16, s: "Часне вериге Светог апостола Петра", f: 1 },
-                    { n: 30, o: 17, s: "Преподобни Антоније Велики", f: 0 },
-                    { n: 31, o: 18, s: "Свети Атанасије Велики", f: 1 }
-                ]
-            },
-            {
-                name: "ФЕБРУАР",
-                firstDay: 0,
-                days: [
-                    { n: 1, o: 19, s: "Преподобни Макарије Египатски", f: 2 },
-                    { n: 2, o: 20, s: "Преподобни Јевтимије Велики", f: 0 },
-                    { n: 3, o: 21, s: "Преподобни Максим Исповедник", f: 0 },
-                    { n: 4, o: 22, s: "Свети апостол Тимотеј", f: 0 },
-                    { n: 5, o: 23, s: "Свети свештеномученик Климент", f: 0 },
-                    { n: 6, o: 24, s: "Преп. Ксенија Римљанка", f: 0 },
-                    { n: 7, o: 25, s: "Св. Григорије Богослов", f: 0 },
-                    { n: 8, o: 26, s: "Преподобни Ксенофонт и Марија", f: 0 },
-                    { n: 9, o: 27, s: "Пренос моштију светог Јована Златоуста", f: 3 },
-                    { n: 10, o: 28, s: "Преподобни Јефрем Сирин", f: 0 },
-                    { n: 11, o: 29, s: "Пренос моштију Светог Игњатија", f: 0 },
-                    { n: 12, o: 30, s: "Света Три Јерарха", f: 1 },
-                    { n: 13, o: 31, s: "Свети бесребреници Кир и Јован", f: 0, note: "Претпразништво Сретења" },
-                    { n: 14, o: 1, s: "Свети мученик Трифун", f: 0, note: "Задушнице" },
-                    { n: 15, o: 2, s: "Сретење Господње", f: 0, feast: true },
-                    { n: 16, o: 3, s: "Свети Симеон и Ана", f: 0 },
-                    { n: 17, o: 4, s: "Преподобни Исидор Пелусиот", f: 0, fast: 4 },
-                    { n: 18, o: 5, s: "Света мученица Агатија", f: 0 },
-                    { n: 19, o: 6, s: "Свети Вукол, Епископ Смирнски", f: 0, note: "Оданије Сретења" },
-                    { n: 20, o: 7, s: "Свети Партеније", f: 0 },
-                    { n: 21, o: 8, s: "Св. Теодор Стратилат", f: 0 },
-                    { n: 22, o: 9, s: "Свети мученик Никифор", f: 0, note: "Беле покладе" },
-                    { n: 23, o: 10, s: "Свети свештеномученик Харалампије", f: 4, note: "Почетак поста" },
-                    { n: 24, o: 11, s: "Свети свештеномученик Власије", f: 3 },
-                    { n: 25, o: 12, s: "Свети Мелетије Антиохијски", f: 0 },
-                    { n: 26, o: 13, s: "Преподобни Мартинијан", f: 0 },
-                    { n: 27, o: 14, s: "Преподобни Авксентије", f: 0 },
-                    { n: 28, o: 15, s: "Свети апостол Онисим", f: 0, note: "Теодорова субота" }
-                ]
-            },
-            {
-                name: "МАРТ",
-                firstDay: 0,
-                days: [
-                    { n: 1, o: 16, s: "Свети мученици Памфил, Порфирије", f: 0 },
-                    { n: 2, o: 17, s: "Свети великомученик Теодор Тирон", f: 1 },
-                    { n: 3, o: 18, s: "Свети Лав, Папа Римски", f: 2 },
-                    { n: 4, o: 19, s: "Свети апостоли Архип, Филимон", f: 0 },
-                    { n: 5, o: 20, s: "Свети Лав, Епископ Катански", f: 0 },
-                    { n: 6, o: 21, s: "Преподобни Тимотеј Пустињак", f: 0 },
-                    { n: 7, o: 22, s: "Обретење моштију Светих мученика", f: 0 },
-                    { n: 8, o: 23, s: "Свети свештеномученик Поликарп", f: 0 },
-                    { n: 9, o: 24, s: "Прво и друго обретење главе Светог Јована", f: 0 },
-                    { n: 10, o: 25, s: "Свети Тарасије, Патријарх", f: 0 },
-                    { n: 11, o: 26, s: "Свети Порфирије, Епископ Гаски", f: 3 },
-                    { n: 12, o: 27, s: "Преподобни Прокопије Декаполит", f: 0 },
-                    { n: 13, o: 28, s: "Преподобни Василије Исповедник", f: 0 },
-                    { n: 14, o: 1, s: "Света преподобномученица Евдокија", f: 0 },
-                    { n: 15, o: 2, s: "Свети свештеномученик Теодот", f: 0 },
-                    { n: 16, o: 3, s: "Свети мученици Евтропије, Клеоник", f: 0 },
-                    { n: 17, o: 4, s: "Преподобни Герасим Јордански", f: 0 },
-                    { n: 18, o: 5, s: "Свети мученик Конон Исавријски", f: 0 },
-                    { n: 19, o: 6, s: "Света 42 мученика Аморејска", f: 4 },
-                    { n: 20, o: 7, s: "Светих седам свештеномученика", f: 0 },
-                    { n: 21, o: 8, s: "Свети Теофилакт Исповедник", f: 0 },
-                    { n: 22, o: 9, s: "Светих 40 мученика Севастијских", f: 2, note: "Младенци" },
-                    { n: 23, o: 10, s: "Свети мученик Кодрат Коринтски", f: 0 },
-                    { n: 24, o: 11, s: "Свети Софроније, Патријарх", f: 0 },
-                    { n: 25, o: 12, s: "Преп. Теофан Исповедник", f: 3, note: "Прво бденије" },
-                    { n: 26, o: 13, s: "Пренос моштију Светог Никифора", f: 0 },
-                    { n: 27, o: 14, s: "Преподобни Бенедикт Нурсијски", f: 0, note: "Друго бденије" },
-                    { n: 28, o: 15, s: "Свети мученик Агапије", f: 0 },
-                    { n: 29, o: 16, s: "Свети мученик Савин Египћанин", f: 0 },
-                    { n: 30, o: 17, s: "Преподобни Алексије, Човек Божији", f: 0 },
-                    { n: 31, o: 18, s: "Свети Кирило, Епископ јерусалимски", f: 0 }
-                ]
-            },
-            {
-                name: "АПРИЛ",
-                firstDay: 3,
-                days: [
-                    { n: 1, o: 19, s: "Свети мученици Хризант, Дарија", f: 0 },
-                    { n: 2, o: 20, s: "Преподобни Оци поубијани у манастиру", f: 2 },
-                    { n: 3, o: 21, s: "Преподобни Јаков Исповедник", f: 0 },
-                    { n: 4, o: 22, s: "Свети свештеномученик Василије Анкирски", f: 0, note: "Лазарева субота (Врбица)" },
-                    { n: 5, o: 23, s: "Улазак Господа Исуса Христа у Јерусалим", f: 2, feast: true, note: "Цвети" },
-                    { n: 6, o: 24, s: "Преподобни Захарије", f: 0 },
-                    { n: 7, o: 25, s: "Благовести", f: 2 },
-                    { n: 8, o: 26, s: "Сабор Светог Архангела Гаврила", f: 2 },
-                    { n: 9, o: 27, s: "Велики четвртак", f: 4, feast: true },
-                    { n: 10, o: 28, s: "Велики петак", f: 4, feast: true },
-                    { n: 11, o: 29, s: "Велика субота", f: 4 },
-                    { n: 12, o: 30, s: "Васкрсење Господа Исуса Христа", f: 0, feast: true, note: "ВАСКРС" },
-                    { n: 13, o: 31, s: "Васкрсни понедељак", f: 0 },
-                    { n: 14, o: 1, s: "Васкрсни уторак", f: 0 },
-                    { n: 15, o: 2, s: "Преподобни Тит Чудотворац", f: 0 },
-                    { n: 16, o: 3, s: "Преподобни Никита Исповедник", f: 0 },
-                    { n: 17, o: 4, s: "Преп. Јосиф Химнограф", f: 0, fast: 4 },
-                    { n: 18, o: 5, s: "Свети мученици Агатопод и Теодул", f: 0 },
-                    { n: 19, o: 6, s: "Свети Евтихије, Патријарх", f: 0 },
-                    { n: 20, o: 7, s: "Преподобни Георгије, Митр. Митиленски", f: 0, note: "Побусани понедељак" },
-                    { n: 21, o: 8, s: "Свети апостол Иродион", f: 0 },
-                    { n: 22, o: 9, s: "Свети мученик Евпсихије", f: 0 },
-                    { n: 23, o: 10, s: "Свети мученик Терентије", f: 0 },
-                    { n: 24, o: 11, s: "Свети свештеномученик Антипа", f: 3 },
-                    { n: 25, o: 12, s: "Преподобни Василије Исповедник", f: 0 },
-                    { n: 26, o: 13, s: "Свети свештеномученик Артемон", f: 0 },
-                    { n: 27, o: 14, s: "Свети Мартин Исповедник", f: 0 },
-                    { n: 28, o: 15, s: "Свети апостоли Аристарх, Пуд и Трофим", f: 0 },
-                    { n: 29, o: 16, s: "Свете мученице Агапија, Хионија", f: 0 },
-                    { n: 30, o: 17, s: "Преподобни Симеон, Епископ Персијски", f: 0 }
-                ]
-            },
-            {
-                name: "МАЈ",
-                firstDay: 5,
-                days: [
-                    { n: 1, o: 18, s: "Преподобни Јован, ученик Св. Григорија", f: 2 },
-                    { n: 2, o: 19, s: "Преподобни Јован Ветхопештерник", f: 0 },
-                    { n: 3, o: 20, s: "Преподобни Теодор Трихин", f: 0 },
-                    { n: 4, o: 21, s: "Свети свештеномученик Јануарије", f: 0 },
-                    { n: 5, o: 22, s: "Преподобни Теодор Сикеот", f: 0 },
-                    { n: 6, o: 23, s: "Свети великомученик Георгије", f: 0, feast: true, note: "Ђурђевдан" },
-                    { n: 7, o: 24, s: "Свети муч. Сава Стратилат", f: 0 },
-                    { n: 8, o: 25, s: "Свети апостол и јеванђелист Марко", f: 0, note: "Марковдан" },
-                    { n: 9, o: 26, s: "Свети свештеномученик Василије", f: 3 },
-                    { n: 10, o: 27, s: "Св. ап. Симеон, Еп. јерусалимски", f: 0 },
-                    { n: 11, o: 28, s: "Свети апостоли Јасон и Сосипатр", f: 0 },
-                    { n: 12, o: 29, s: "Свети Василије Острошки Чудотворац", f: 1 },
-                    { n: 13, o: 30, s: "Свети апостол Јаков Зеведејев", f: 0, note: "Оданије Преполовљења" },
-                    { n: 14, o: 1, s: "Свети пророк Јеремија", f: 1 },
-                    { n: 15, o: 2, s: "Свети Атанасије Велики", f: 0 },
-                    { n: 16, o: 3, s: "Свети мученици Тимотеј и Мавра", f: 4 },
-                    { n: 17, o: 4, s: "Света преподобномученица Пелагија", f: 0 },
-                    { n: 18, o: 5, s: "Света великомученица Ирина", f: 0 },
-                    { n: 19, o: 6, s: "Праведни Јов", f: 0 },
-                    { n: 20, o: 7, s: "Спомен појаве Часног Крста", f: 0, note: "Оданије Пасхе" },
-                    { n: 21, o: 8, s: "Вазнесење Господње", f: 0, feast: true, note: "Спасовдан" },
-                    { n: 22, o: 9, s: "Пренос моштију Светог оца Николаја", f: 0 },
-                    { n: 23, o: 10, s: "Свети апостол Симон Зилот", f: 3 },
-                    { n: 24, o: 11, s: "Свети равноспостолни Кирило и Методије", f: 0 },
-                    { n: 25, o: 12, s: "Св. Епифаније Кипарски", f: 0 },
-                    { n: 26, o: 13, s: "Света мученица Гликерија", f: 0 },
-                    { n: 27, o: 14, s: "Свети мученик Исидор Хиоски", f: 0 },
-                    { n: 28, o: 15, s: "Преподобни Пахомије Велики", f: 0 },
-                    { n: 29, o: 16, s: "Преп. Теодор", f: 0, note: "Оданије Вазнесења" },
-                    { n: 30, o: 17, s: "Свети апостол Андроник", f: 0, note: "Задушнице" },
-                    { n: 31, o: 18, s: "Силазак Светог Духа на апостоле", f: 2, feast: true, note: "ДУХОВИ" }
-                ]
-            },
-            {
-                name: "ЈУН",
-                firstDay: 1,
-                days: [
-                    { n: 1, o: 19, s: "Духовски понедељак", f: 0 },
-                    { n: 2, o: 20, s: "Духовски уторак", f: 0 },
-                    { n: 3, o: 21, s: "Свети цар Константин и царица Јелена", f: 1 },
-                    { n: 4, o: 22, s: "Свети мученик Василиск", f: 0 },
-                    { n: 5, o: 23, s: "Преподобни Михаило Исповедник", f: 0 },
-                    { n: 6, o: 24, s: "Преподобни Симеон Дивногорац", f: 0, note: "Оданије Педесетнице" },
-                    { n: 7, o: 25, s: "Треће обретење главе Светог Јована", f: 0, note: "Петровске покладе" },
-                    { n: 8, o: 26, s: "Свети апостоли Карп и Алфеј", f: 4, note: "Почетак поста" },
-                    { n: 9, o: 27, s: "Свети свештеномученик Терапонт", f: 0 },
-                    { n: 10, o: 28, s: "Преподобни Никита Исповедник", f: 0 },
-                    { n: 11, o: 29, s: "Преподобномученица Теодосија", f: 0 },
-                    { n: 12, o: 30, s: "Преподобни Исакије Далматски", f: 0 },
-                    { n: 13, o: 31, s: "Свети ап. Јерма", f: 0 },
-                    { n: 14, o: 1, s: "Св. муч. Јустин, Мученик и Философ", f: 0 },
-                    { n: 15, o: 2, s: "Свети Никифор Цариградски", f: 4 },
-                    { n: 16, o: 3, s: "Свети мученик Лукилијан", f: 0 },
-                    { n: 17, o: 4, s: "Свети Митрофан", f: 0 },
-                    { n: 18, o: 5, s: "Свети свештеномученик Доротеј", f: 0 },
-                    { n: 19, o: 6, s: "Преподобни Висарион", f: 0 },
-                    { n: 20, o: 7, s: "Свети свештеномученик Теодот", f: 0 },
-                    { n: 21, o: 8, s: "Свети великомученик Теодор Стратилат", f: 3 },
-                    { n: 22, o: 9, s: "Св. Кирило Архиепископ александријски", f: 0 },
-                    { n: 23, o: 10, s: "Свети свештеномученик Тимотеј", f: 0 },
-                    { n: 24, o: 11, s: "Св. апостоли Вартоломеј и Варнава", f: 0 },
-                    { n: 25, o: 12, s: "Преподобни Онуфрије Велики", f: 0 },
-                    { n: 26, o: 13, s: "Св. муч. Акилина", f: 0 },
-                    { n: 27, o: 14, s: "Свети пророк Јелисеј", f: 1 },
-                    { n: 28, o: 15, s: "Св. мученик Кнез Лазар", f: 0, feast: true, note: "Видовдан" },
-                    { n: 29, o: 16, s: "Св. Тихон Чудотворац", f: 0 },
-                    { n: 30, o: 17, s: "Свети мученици Мануил, Савел и Исмаил", f: 2 }
-                ]
-            },
-            {
-                name: "ЈУЛ",
-                firstDay: 3,
-                days: [
-                    { n: 1, o: 18, s: "Свети мученици Леонтије, Ипатије", f: 0 },
-                    { n: 2, o: 19, s: "Свети апостол Јуда", f: 0 },
-                    { n: 3, o: 20, s: "Св. свштеномуч. Методије", f: 0 },
-                    { n: 4, o: 21, s: "Свети мученик Јулијан Тарсијски", f: 0 },
-                    { n: 5, o: 22, s: "Свети свштеномученик Јевсевије", f: 0 },
-                    { n: 6, o: 23, s: "Света мученица Агрипина", f: 0 },
-                    { n: 7, o: 24, s: "Рођење Светог Јована Претече", f: 3, feast: true, note: "Ивањдан" },
-                    { n: 8, o: 25, s: "Света преподобномученица Февронија", f: 0 },
-                    { n: 9, o: 26, s: "Преподобни Давид Солунски", f: 0 },
-                    { n: 10, o: 27, s: "Преподобни Сампсон Странопримац", f: 0 },
-                    { n: 11, o: 28, s: "Пренос моштију Св. бесребреника Кира", f: 0 },
-                    { n: 12, o: 29, s: "Свети апостоли Петар и Павле", f: 0, feast: true, note: "Петровдан" },
-                    { n: 13, o: 30, s: "Сабор Светих дванаест апостола", f: 0, note: "Павловдан" },
-                    { n: 14, o: 1, s: "Свети мученици и бесребреници Козма", f: 4 },
-                    { n: 15, o: 2, s: "Полагање ризе Пресвете Богородице", f: 0 },
-                    { n: 16, o: 3, s: "Св. муч. Јакинт", f: 0 },
-                    { n: 17, o: 4, s: "Свети Андреј Критски", f: 0 },
-                    { n: 18, o: 5, s: "Преподобни Атанасије Атонски", f: 0 },
-                    { n: 19, o: 6, s: "Преподобни Сисоје Велики", f: 0 },
-                    { n: 20, o: 7, s: "Преподобни Тома Малеин", f: 0 },
-                    { n: 21, o: 8, s: "Свети великомученик Прокопије", f: 3 },
-                    { n: 22, o: 9, s: "Свештеномученик Панкратије", f: 0 },
-                    { n: 23, o: 10, s: "Светих 45 мученика из Никопоља", f: 0 },
-                    { n: 24, o: 11, s: "Света великомученица Ефимија", f: 0 },
-                    { n: 25, o: 12, s: "Свети мученик Прокло и Иларије", f: 0 },
-                    { n: 26, o: 13, s: "Сабор Светог Архангела Гаврила", f: 1 },
-                    { n: 27, o: 14, s: "Свети апостол Акила", f: 0 },
-                    { n: 28, o: 15, s: "Свети мученици Кирик и Јулита", f: 0 },
-                    { n: 29, o: 16, s: "Свети свештеномученик Антиноген", f: 2 },
-                    { n: 30, o: 17, s: "Света великомученица Марина", f: 0, note: "Огњена Марија" },
-                    { n: 31, o: 18, s: "Свети мученик Емилијан", f: 0 }
-                ]
-            },
-            {
-                name: "АВГУСТ",
-                firstDay: 6,
-                days: [
-                    { n: 1, o: 19, s: "Преподобна Макрина", f: 3 },
-                    { n: 2, o: 20, s: "Свети пророк Илија", f: 0, feast: true, note: "Илиндан" },
-                    { n: 3, o: 21, s: "Свети пророк Језекиљ", f: 0 },
-                    { n: 4, o: 22, s: "Света Марија Магдалина", f: 0, note: "Блага Марија" },
-                    { n: 5, o: 23, s: "Свети мученици Трофим, Теофил", f: 0 },
-                    { n: 6, o: 24, s: "Света великомученица Христина", f: 3 },
-                    { n: 7, o: 25, s: "Успеније свете Ане", f: 0 },
-                    { n: 8, o: 26, s: "Преподобномученица Параскева", f: 1, note: "Петка" },
-                    { n: 9, o: 27, s: "Свети великомученик Пантелејмон", f: 0 },
-                    { n: 10, o: 28, s: "Свети апостоли и ђакони", f: 0 },
-                    { n: 11, o: 29, s: "Свети мученик Калиник", f: 0 },
-                    { n: 12, o: 30, s: "Преподобна мати Ангелина српска", f: 4 },
-                    { n: 13, o: 31, s: "Свети мученик Евдоким", f: 0, note: "Госпојинске покладе" },
-                    { n: 14, o: 1, s: "Изношење Часног Крста", f: 4, note: "Св. муч. Макавеји" },
-                    { n: 15, o: 2, s: "Пренос моштију Светог првомученика", f: 0 },
-                    { n: 16, o: 3, s: "Преподобни Исакије, Далмат и Фауст", f: 0 },
-                    { n: 17, o: 4, s: "Св. седам мученика у Ефесу", f: 0 },
-                    { n: 18, o: 5, s: "Свети мученик Евсигније", f: 0, note: "Претпразништво Преображења" },
-                    { n: 19, o: 6, s: "Преображење Господње", f: 2, feast: true },
-                    { n: 20, o: 7, s: "Свети преподобномученик Дометије", f: 3 },
-                    { n: 21, o: 8, s: "Свети Емилијан Исповедник", f: 0 },
-                    { n: 22, o: 9, s: "Свети апостол Матија", f: 0 },
-                    { n: 23, o: 10, s: "Свети мученик и архиђакон Лаврентије", f: 0 },
-                    { n: 24, o: 11, s: "Свети мученик и архиђакон Евпло", f: 0 },
-                    { n: 25, o: 12, s: "Свети мученици Фотије, Аникита", f: 0 },
-                    { n: 26, o: 13, s: "Свети мученик Иполит", f: 0, note: "Оданије Преображења" },
-                    { n: 27, o: 14, s: "Свети пророк Михеј", f: 0, note: "Претпразништво Успенија" },
-                    { n: 28, o: 15, s: "Успеније Пресвете Богородице", f: 2, feast: true, note: "Велика Госпојина" },
-                    { n: 29, o: 16, s: "Нерукот. Образ Господа Исуса Христа", f: 0 },
-                    { n: 30, o: 17, s: "Свети мученик Мирон", f: 0 },
-                    { n: 31, o: 18, s: "Свети мученик Флор", f: 0 }
-                ]
-            },
-            {
-                name: "СЕПТЕМБАР",
-                firstDay: 2,
-                days: [
-                    { n: 1, o: 19, s: "Свети мученик Андреј Стратилат", f: 0 },
-                    { n: 2, o: 20, s: "Св. пророк Самуило", f: 0 },
-                    { n: 3, o: 21, s: "Св. ап. Тадеј", f: 0 },
-                    { n: 4, o: 22, s: "Св. мученик Агатоник", f: 3 },
-                    { n: 5, o: 23, s: "Св.свештеномуч. Иринеј", f: 0, note: "Оданије Успенија" },
-                    { n: 6, o: 24, s: "Свети свештеномученик Евтихије", f: 0 },
-                    { n: 7, o: 25, s: "Пренос моштију Светог апостола", f: 0 },
-                    { n: 8, o: 26, s: "Свети мученици Адријан и Наталија", f: 0 },
-                    { n: 9, o: 27, s: "Преподобни Пимен Велики", f: 0 },
-                    { n: 10, o: 28, s: "Преподобни Мојсеј Мурин", f: 0 },
-                    { n: 11, o: 29, s: "Усековање главе Светог Јована", f: 4 },
-                    { n: 12, o: 30, s: "Пренос моштију светог Александра", f: 0 },
-                    { n: 13, o: 31, s: "Полагање појаса Пресвете Богородице", f: 0 },
-                    { n: 14, o: 1, s: "Преподобни Симеон Столпник", f: 1, note: "Црквена Нова година" },
-                    { n: 15, o: 2, s: "Св. муч. Мамант", f: 0 },
-                    { n: 16, o: 3, s: "Св. свештеномуч. Антим", f: 0 },
-                    { n: 17, o: 4, s: "Св. свештеномуч. Вавила", f: 0 },
-                    { n: 18, o: 5, s: "Свети пророк Захарија", f: 3 },
-                    { n: 19, o: 6, s: "Чудо Светог Архангела Михаила", f: 0 },
-                    { n: 20, o: 7, s: "Свети мученик Созонт", f: 0, note: "Претпразништво Рођења" },
-                    { n: 21, o: 8, s: "Рођење Пресвете Богородице", f: 2, feast: true, note: "Мала Госпојина" },
-                    { n: 22, o: 9, s: "Свети праведни Јоаким и Ана", f: 2 },
-                    { n: 23, o: 10, s: "Свете мученице Минодора, Митродора", f: 0 },
-                    { n: 24, o: 11, s: "Преподобна Теодора", f: 0 },
-                    { n: 25, o: 12, s: "Св. свештеномученик Автоном", f: 0, note: "Оданије Рођења" },
-                    { n: 26, o: 13, s: "Св. свештмуч. Корнилије", f: 2 },
-                    { n: 27, o: 14, s: "Воздвижење часног Крста", f: 4, feast: true, note: "Крстовдан" },
-                    { n: 28, o: 15, s: "Свети великомученик Никита", f: 0 },
-                    { n: 29, o: 16, s: "Св. великомученица Јефимија", f: 0 },
-                    { n: 30, o: 17, s: "Свете мученице Вера, Нада и Љубав", f: 0 }
-                ]
-            },
-            {
-                name: "ОКТОБАР",
-                firstDay: 4,
-                days: [
-                    { n: 1, o: 18, s: "Свети Евменије Гортински", f: 0 },
-                    { n: 2, o: 19, s: "Свети мученици Трофим, Саватије", f: 0 },
-                    { n: 3, o: 20, s: "Свети великомученик Јевстатије", f: 3 },
-                    { n: 4, o: 21, s: "Свети апостол Кодрат", f: 0, note: "Оданије Воздвижења" },
-                    { n: 5, o: 22, s: "Св. свештеномуч. Фока", f: 0 },
-                    { n: 6, o: 23, s: "Зачеће Светог Јована Претече", f: 0 },
-                    { n: 7, o: 24, s: "Св. првомуч. Текла", f: 0 },
-                    { n: 8, o: 25, s: "Преподобна Ефросинија", f: 0 },
-                    { n: 9, o: 26, s: "Свети апостол и јеванђелист Јован", f: 0 },
-                    { n: 10, o: 27, s: "Свети мученик Калистрат", f: 4, note: "Задушнице" },
-                    { n: 11, o: 28, s: "Преподобни Харитон Исповедник", f: 0 },
-                    { n: 12, o: 29, s: "Преподобни Киријак Отшелник", f: 0, note: "Михољдан" },
-                    { n: 13, o: 30, s: "Свети свештеномученик Григорије", f: 0 },
-                    { n: 14, o: 1, s: "Покров Пресвете Богородице", f: 1 },
-                    { n: 15, o: 2, s: "Св. свештеномуч. Кипријан", f: 0 },
-                    { n: 16, o: 3, s: "Св. свештеномуч. Дионисије Ареопагит", f: 0 },
-                    { n: 17, o: 4, s: "Свети Стефан и Јелена", f: 0 },
-                    { n: 18, o: 5, s: "Св. мученица Харитина", f: 3 },
-                    { n: 19, o: 6, s: "Свети апостол Тома", f: 0, note: "Томиндан" },
-                    { n: 20, o: 7, s: "Свети мученици Сергије и Вакхо", f: 0, note: "Срђевдан" },
-                    { n: 21, o: 8, s: "Преп. Пелагија", f: 0 },
-                    { n: 22, o: 9, s: "Свети апостол Јаков", f: 0 },
-                    { n: 23, o: 10, s: "Свети мученици Евлампије", f: 0 },
-                    { n: 24, o: 11, s: "Св. апостол Филип, ђакон", f: 0 },
-                    { n: 25, o: 12, s: "Св. мученици Тарах, Пров и Андроник", f: 0 },
-                    { n: 26, o: 13, s: "Свети мученик Карп", f: 2 },
-                    { n: 27, o: 14, s: "Преподобна мати Параскева", f: 0, note: "Света Петка" },
-                    { n: 28, o: 15, s: "Свети свештеномученик Лукијан", f: 0 },
-                    { n: 29, o: 16, s: "Свети мученик Лонгин Сотник", f: 0 },
-                    { n: 30, o: 17, s: "Свети пророк Осија", f: 0 },
-                    { n: 31, o: 18, s: "Свети апостол и јеванђелист Лука", f: 1 }
-                ]
-            },
-            {
-                name: "НОВЕМБАР",
-                firstDay: 0,
-                days: [
-                    { n: 1, o: 19, s: "Свети пророк Јоил", f: 3 },
-                    { n: 2, o: 20, s: "Св. великомуч. Артемије", f: 0 },
-                    { n: 3, o: 21, s: "Преподобни Иларион", f: 0 },
-                    { n: 4, o: 22, s: "Св. равноапостолни Аверкије", f: 0 },
-                    { n: 5, o: 23, s: "Свети апостол Јаков", f: 1 },
-                    { n: 6, o: 24, s: "Свети великомученик Арета", f: 0 },
-                    { n: 7, o: 25, s: "Свети мученици Маркијан и Мартирије", f: 0, note: "Задушнице" },
-                    { n: 8, o: 26, s: "Свети великомученик Димитрије", f: 0, feast: true, note: "Митровдан" },
-                    { n: 9, o: 27, s: "Свети мученик Нестор", f: 4 },
-                    { n: 10, o: 28, s: "Св. муч. Терентије", f: 0 },
-                    { n: 11, o: 29, s: "Св. Аврамије Затворник", f: 0 },
-                    { n: 12, o: 30, s: "Св. краљ Милутин", f: 0 },
-                    { n: 13, o: 31, s: "Св. ап. Стахије, Амплије", f: 0 },
-                    { n: 14, o: 1, s: "Свети бесребреници Козма и Дамјан", f: 1, note: "Врачеви" },
-                    { n: 15, o: 2, s: "Свети мученици Акиндин, Пигасије", f: 0 },
-                    { n: 16, o: 3, s: "Обновљење храма Светог Георгија", f: 1, note: "Ђурђиц" },
-                    { n: 17, o: 4, s: "Преподобни Јоаникије Велики", f: 3 },
-                    { n: 18, o: 5, s: "Преподобномученици Галактион", f: 0 },
-                    { n: 19, o: 6, s: "Свети Павле Исповедник", f: 0 },
-                    { n: 20, o: 7, s: "Света 33 мученика у Мелитини", f: 0 },
-                    { n: 21, o: 8, s: "Сабор Св. Архангела Михаила", f: 0, feast: true, note: "Аранђеловдан" },
-                    { n: 22, o: 9, s: "Св. муч. Онисифор и Порфирије", f: 0 },
-                    { n: 23, o: 10, s: "Свети апостоли Олимп, Ераст", f: 0 },
-                    { n: 24, o: 11, s: "Св. великомуч.Мина", f: 2 },
-                    { n: 25, o: 12, s: "Свети Јован Милостиви", f: 1 },
-                    { n: 26, o: 13, s: "Свети Јован Златоусти", f: 1 },
-                    { n: 27, o: 14, s: "Свети апостол Филип", f: 0, note: "Божићне покладе" },
-                    { n: 28, o: 15, s: "Свети мученици Гурије, Самон", f: 4, note: "Почетак поста" },
-                    { n: 29, o: 16, s: "Свети апостол и јеванђелист Матеј", f: 0 },
-                    { n: 30, o: 17, s: "Св. Григорије Чудотворац", f: 0 }
-                ]
-            },
-            {
-                name: "ДЕЦЕМБАР",
-                firstDay: 2,
-                days: [
-                    { n: 1, o: 18, s: "Свети мученик Платон", f: 3 },
-                    { n: 2, o: 19, s: "Св. пророк Авдија", f: 0 },
-                    { n: 3, o: 20, s: "Преп. Григорије Декаполит", f: 0, note: "Претпразништво Ваведења" },
-                    { n: 4, o: 21, s: "Ваведење Пресвете Богородице", f: 2 },
-                    { n: 5, o: 22, s: "Св. апостоли Филимон, Архип", f: 0 },
-                    { n: 6, o: 23, s: "Св. Амфилохије Иконијски", f: 0 },
-                    { n: 7, o: 24, s: "Света великомуч. Екатерина", f: 1 },
-                    { n: 8, o: 25, s: "Св. свештеномуч. Климент", f: 0, note: "Оданије Ваведења" },
-                    { n: 9, o: 26, s: "Преподобни Алимпије Столпник", f: 4 },
-                    { n: 10, o: 27, s: "Св.муч. Јаков Персијанац", f: 0 },
-                    { n: 11, o: 28, s: "Преподобномуч. Стефан", f: 0 },
-                    { n: 12, o: 29, s: "Свети мученици Парамон и Филумен", f: 0 },
-                    { n: 13, o: 30, s: "Свети апостол Андреј Првозвани", f: 0 },
-                    { n: 14, o: 1, s: "Свети пророк Наум", f: 0 },
-                    { n: 15, o: 2, s: "Св. пророк Авакум", f: 0 },
-                    { n: 16, o: 3, s: "Свети пророк Софоније", f: 0 },
-                    { n: 17, o: 4, s: "Света великомуч. Варвара", f: 3 },
-                    { n: 18, o: 5, s: "Преподобни Сава Освећени", f: 1 },
-                    { n: 19, o: 6, s: "Свети Николај, Архиепископ", f: 0, feast: true, note: "Никољдан" },
-                    { n: 20, o: 7, s: "Свети Амвросије", f: 0, note: "Детињци" },
-                    { n: 21, o: 8, s: "Преподобни Патапије", f: 0 },
-                    { n: 22, o: 9, s: "Зачеће Свете Ане", f: 0 },
-                    { n: 23, o: 10, s: "Свети мученик Мина", f: 0 },
-                    { n: 24, o: 11, s: "Преподобни Данило Столпник", f: 2 },
-                    { n: 25, o: 12, s: "Свети Спиридон Чудотворац", f: 0 },
-                    { n: 26, o: 13, s: "Свети мученик Евстратије", f: 0 },
-                    { n: 27, o: 14, s: "Свети мученици Тирс, Левкије", f: 0, note: "Материце" },
-                    { n: 28, o: 15, s: "Свети свештеномученик Елевтерије", f: 0 },
-                    { n: 29, o: 16, s: "Свети пророк Агеј", f: 0 },
-                    { n: 30, o: 17, s: "Св. пророк Данило", f: 3 },
-                    { n: 31, o: 18, s: "Свети мученик Севастијан", f: 0 }
-                ]
-            }
-        ];
+        // ===== CALENDAR DATA =====
+        const months = [{
+            name: "ЈАНУАР",
+            firstDay: 4,
+            days: [
+                { n: 1, o: 19, s: "Свети мученик Бонифатије", f: 0 },
+                { n: 2, o: 20, s: "Свети Игњатије Богоносац", f: 1, note: "Претпр. Рождества" },
+                { n: 3, o: 21, s: "Света мученица Јулијана; Свети Петар Кијевски", f: 2 },
+                { n: 4, o: 22, s: "Света великомученица Анастасија", f: 0, note: "Оци" },
+                { n: 5, o: 23, s: "Светих 10 мученика Критских", f: 0, note: "Туциндан" },
+                { n: 6, o: 24, s: "Света преподобномученица Евгенија", f: 0, note: "Бадњи дан" },
+                { n: 7, o: 25, s: "Рождество Христово – Божић", f: 0, feast: true },
+                { n: 8, o: 26, s: "Сабор Пресвете Богородице", f: 0 },
+                { n: 9, o: 27, s: "Свети првомученик и архиђакон Стефан", f: 1 },
+                { n: 10, o: 28, s: "Светих 20.000 мученика Никомидијских", f: 3 },
+                { n: 11, o: 29, s: "Светих 14.000 младенаца Витлејемских", f: 0 },
+                { n: 12, o: 30, s: "Света мученица Анисија", f: 0 },
+                { n: 13, o: 31, s: "Преп. Меланија", f: 0, note: "Оданије Рождества" },
+                { n: 14, o: 1, s: "Обрезање Господње; Свети Василије Велики", f: 0, feast: true,
+                note: "Нова година" },
+                { n: 15, o: 2, s: "Св. Силвестар Римски; Преп. Серафим Саровски", f: 0,
+                note: "Претпразништво Богојављења" },
+                { n: 16, o: 3, s: "Свети пророк Малахија", f: 0 },
+                { n: 17, o: 4, s: "Сабор 70 светих апостола", f: 0 },
+                { n: 18, o: 5, s: "Свети Теопемпт и Теона", f: 0, note: "Крстовдан", fast: 4 },
+                { n: 19, o: 6, s: "Богојављење", f: 0, feast: true },
+                { n: 20, o: 7, s: "Сабор светог Јована Крститеља", f: 0, note: "Јовањдан" },
+                { n: 21, o: 8, s: "Преп. Георгије Хозевит", f: 0 },
+                { n: 22, o: 9, s: "Свети мученик Полиевкт", f: 0 },
+                { n: 23, o: 10, s: "Св. Григорије Ниски", f: 1 },
+                { n: 24, o: 11, s: "Преподобни Теодосије Велики", f: 0 },
+                { n: 25, o: 12, s: "Света мученица Татијана", f: 0 },
+                { n: 26, o: 13, s: "Свети мученици Ермил и Стратоник", f: 3, note: "Оданије Богојављења" },
+                { n: 27, o: 14, s: "Свети Сава, први Архиепископ српски", f: 0, note: "Савиндан" },
+                { n: 28, o: 15, s: "Преп. Павле Тивејски и Јован Колибар", f: 0 },
+                { n: 29, o: 16, s: "Часне вериге Светог апостола Петра", f: 1 },
+                { n: 30, o: 17, s: "Преподобни Антоније Велики", f: 0 },
+                { n: 31, o: 18, s: "Свети Атанасије Велики", f: 1 }
+            ]
+        }, {
+            name: "ФЕБРУАР",
+            firstDay: 0,
+            days: [
+                { n: 1, o: 19, s: "Преподобни Макарије Египатски", f: 2 },
+                { n: 2, o: 20, s: "Преподобни Јевтимије Велики", f: 0 },
+                { n: 3, o: 21, s: "Преподобни Максим Исповедник", f: 0 },
+                { n: 4, o: 22, s: "Свети апостол Тимотеј", f: 0 },
+                { n: 5, o: 23, s: "Свети свештеномученик Климент", f: 0 },
+                { n: 6, o: 24, s: "Преп. Ксенија Римљанка", f: 0 },
+                { n: 7, o: 25, s: "Св. Григорије Богослов", f: 0 },
+                { n: 8, o: 26, s: "Преподобни Ксенофонт и Марија", f: 0 },
+                { n: 9, o: 27, s: "Пренос моштију светог Јована Златоуста", f: 3 },
+                { n: 10, o: 28, s: "Преподобни Јефрем Сирин", f: 0 },
+                { n: 11, o: 29, s: "Пренос моштију Светог Игњатија", f: 0 },
+                { n: 12, o: 30, s: "Света Три Јерарха", f: 1 },
+                { n: 13, o: 31, s: "Свети бесребреници Кир и Јован", f: 0, note: "Претпразништво Сретења" },
+                { n: 14, o: 1, s: "Свети мученик Трифун", f: 0, note: "Задушнице" },
+                { n: 15, o: 2, s: "Сретење Господње", f: 0, feast: true },
+                { n: 16, o: 3, s: "Свети Симеон и Ана", f: 0 },
+                { n: 17, o: 4, s: "Преподобни Исидор Пелусиот", f: 0, fast: 4 },
+                { n: 18, o: 5, s: "Света мученица Агатија", f: 0 },
+                { n: 19, o: 6, s: "Свети Вукол, Епископ Смирнски", f: 0, note: "Оданије Сретења" },
+                { n: 20, o: 7, s: "Свети Партеније", f: 0 },
+                { n: 21, o: 8, s: "Св. Теодор Стратилат", f: 0 },
+                { n: 22, o: 9, s: "Свети мученик Никифор", f: 0, note: "Беле покладе" },
+                { n: 23, o: 10, s: "Свети свештеномученик Харалампије", f: 4, note: "Почетак поста" },
+                { n: 24, o: 11, s: "Свети свештеномученик Власије", f: 3 },
+                { n: 25, o: 12, s: "Свети Мелетије Антиохијски", f: 0 },
+                { n: 26, o: 13, s: "Преподобни Мартинијан", f: 0 },
+                { n: 27, o: 14, s: "Преподобни Авксентије", f: 0 },
+                { n: 28, o: 15, s: "Свети апостол Онисим", f: 0, note: "Теодорова субота" }
+            ]
+        }, {
+            name: "МАРТ",
+            firstDay: 0,
+            days: [
+                { n: 1, o: 16, s: "Свети мученици Памфил, Порфирије", f: 0 },
+                { n: 2, o: 17, s: "Свети великомученик Теодор Тирон", f: 1 },
+                { n: 3, o: 18, s: "Свети Лав, Папа Римски", f: 2 },
+                { n: 4, o: 19, s: "Свети апостоли Архип, Филимон", f: 0 },
+                { n: 5, o: 20, s: "Свети Лав, Епископ Катански", f: 0 },
+                { n: 6, o: 21, s: "Преподобни Тимотеј Пустињак", f: 0 },
+                { n: 7, o: 22, s: "Обретење моштију Светих мученика", f: 0 },
+                { n: 8, o: 23, s: "Свети свештеномученик Поликарп", f: 0 },
+                { n: 9, o: 24, s: "Прво и друго обретење главе Светог Јована", f: 0 },
+                { n: 10, o: 25, s: "Свети Тарасије, Патријарх", f: 0 },
+                { n: 11, o: 26, s: "Свети Порфирије, Епископ Гаски", f: 3 },
+                { n: 12, o: 27, s: "Преподобни Прокопије Декаполит", f: 0 },
+                { n: 13, o: 28, s: "Преподобни Василије Исповедник", f: 0 },
+                { n: 14, o: 1, s: "Света преподобномученица Евдокија", f: 0 },
+                { n: 15, o: 2, s: "Свети свештеномученик Теодот", f: 0 },
+                { n: 16, o: 3, s: "Свети мученици Евтропије, Клеоник", f: 0 },
+                { n: 17, o: 4, s: "Преподобни Герасим Јордански", f: 0 },
+                { n: 18, o: 5, s: "Свети мученик Конон Исавријски", f: 0 },
+                { n: 19, o: 6, s: "Света 42 мученика Аморејска", f: 4 },
+                { n: 20, o: 7, s: "Светих седам свештеномученика", f: 0 },
+                { n: 21, o: 8, s: "Свети Теофилакт Исповедник", f: 0 },
+                { n: 22, o: 9, s: "Светих 40 мученика Севастијских", f: 2, note: "Младенци" },
+                { n: 23, o: 10, s: "Свети мученик Кодрат Коринтски", f: 0 },
+                { n: 24, o: 11, s: "Свети Софроније, Патријарх", f: 0 },
+                { n: 25, o: 12, s: "Преп. Теофан Исповедник", f: 3, note: "Прво бденије" },
+                { n: 26, o: 13, s: "Пренос моштију Светог Никифора", f: 0 },
+                { n: 27, o: 14, s: "Преподобни Бенедикт Нурсијски", f: 0, note: "Друго бденије" },
+                { n: 28, o: 15, s: "Свети мученик Агапије", f: 0 },
+                { n: 29, o: 16, s: "Свети мученик Савин Египћанин", f: 0 },
+                { n: 30, o: 17, s: "Преподобни Алексије, Човек Божији", f: 0 },
+                { n: 31, o: 18, s: "Свети Кирило, Епископ јерусалимски", f: 0 }
+            ]
+        }, {
+            name: "АПРИЛ",
+            firstDay: 3,
+            days: [
+                { n: 1, o: 19, s: "Свети мученици Хризант, Дарија", f: 0 },
+                { n: 2, o: 20, s: "Преподобни Оци поубијани у манастиру", f: 2 },
+                { n: 3, o: 21, s: "Преподобни Јаков Исповедник", f: 0 },
+                { n: 4, o: 22, s: "Свети свештеномученик Василије Анкирски", f: 0, note: "Лазарева субота (Врбица)" },
+                { n: 5, o: 23, s: "Улазак Господа Исуса Христа у Јерусалим", f: 2, feast: true, note: "Цвети" },
+                { n: 6, o: 24, s: "Преподобни Захарије", f: 0 },
+                { n: 7, o: 25, s: "Благовести", f: 2 },
+                { n: 8, o: 26, s: "Сабор Светог Архангела Гаврила", f: 2 },
+                { n: 9, o: 27, s: "Велики четвртак", f: 4, feast: true },
+                { n: 10, o: 28, s: "Велики петак", f: 4, feast: true },
+                { n: 11, o: 29, s: "Велика субота", f: 4 },
+                { n: 12, o: 30, s: "Васкрсење Господа Исуса Христа", f: 0, feast: true, note: "ВАСКРС" },
+                { n: 13, o: 31, s: "Васкрсни понедељак", f: 0 },
+                { n: 14, o: 1, s: "Васкрсни уторак", f: 0 },
+                { n: 15, o: 2, s: "Преподобни Тит Чудотворац", f: 0 },
+                { n: 16, o: 3, s: "Преподобни Никита Исповедник", f: 0 },
+                { n: 17, o: 4, s: "Преп. Јосиф Химнограф", f: 0, fast: 4 },
+                { n: 18, o: 5, s: "Свети мученици Агатопод и Теодул", f: 0 },
+                { n: 19, o: 6, s: "Свети Евтихије, Патријарх", f: 0 },
+                { n: 20, o: 7, s: "Преподобни Георгије, Митр. Митиленски", f: 0, note: "Побусани понедељак" },
+                { n: 21, o: 8, s: "Свети апостол Иродион", f: 0 },
+                { n: 22, o: 9, s: "Свети мученик Евпсихије", f: 0 },
+                { n: 23, o: 10, s: "Свети мученик Терентије", f: 0 },
+                { n: 24, o: 11, s: "Свети свештеномученик Антипа", f: 3 },
+                { n: 25, o: 12, s: "Преподобни Василије Исповедник", f: 0 },
+                { n: 26, o: 13, s: "Свети свештеномученик Артемон", f: 0 },
+                { n: 27, o: 14, s: "Свети Мартин Исповедник", f: 0 },
+                { n: 28, o: 15, s: "Свети апостоли Аристарх, Пуд и Трофим", f: 0 },
+                { n: 29, o: 16, s: "Свете мученице Агапија, Хионија", f: 0 },
+                { n: 30, o: 17, s: "Преподобни Симеон, Епископ Персијски", f: 0 }
+            ]
+        }, {
+            name: "МАЈ",
+            firstDay: 5,
+            days: [
+                { n: 1, o: 18, s: "Преподобни Јован, ученик Св. Григорија", f: 2 },
+                { n: 2, o: 19, s: "Преподобни Јован Ветхопештерник", f: 0 },
+                { n: 3, o: 20, s: "Преподобни Теодор Трихин", f: 0 },
+                { n: 4, o: 21, s: "Свети свештеномученик Јануарије", f: 0 },
+                { n: 5, o: 22, s: "Преподобни Теодор Сикеот", f: 0 },
+                { n: 6, o: 23, s: "Свети великомученик Георгије", f: 0, feast: true, note: "Ђурђевдан" },
+                { n: 7, o: 24, s: "Свети муч. Сава Стратилат", f: 0 },
+                { n: 8, o: 25, s: "Свети апостол и јеванђелист Марко", f: 0, note: "Марковдан" },
+                { n: 9, o: 26, s: "Свети свештеномученик Василије", f: 3 },
+                { n: 10, o: 27, s: "Св. ап. Симеон, Еп. јерусалимски", f: 0 },
+                { n: 11, o: 28, s: "Свети апостоли Јасон и Сосипатр", f: 0 },
+                { n: 12, o: 29, s: "Свети Василије Острошки Чудотворац", f: 1 },
+                { n: 13, o: 30, s: "Свети апостол Јаков Зеведејев", f: 0, note: "Оданије Преполовљења" },
+                { n: 14, o: 1, s: "Свети пророк Јеремија", f: 1 },
+                { n: 15, o: 2, s: "Свети Атанасије Велики", f: 0 },
+                { n: 16, o: 3, s: "Свети мученици Тимотеј и Мавра", f: 4 },
+                { n: 17, o: 4, s: "Света преподобномученица Пелагија", f: 0 },
+                { n: 18, o: 5, s: "Света великомученица Ирина", f: 0 },
+                { n: 19, o: 6, s: "Праведни Јов", f: 0 },
+                { n: 20, o: 7, s: "Спомен појаве Часног Крста", f: 0, note: "Оданије Пасхе" },
+                { n: 21, o: 8, s: "Вазнесење Господње", f: 0, feast: true, note: "Спасовдан" },
+                { n: 22, o: 9, s: "Пренос моштију Светог оца Николаја", f: 0 },
+                { n: 23, o: 10, s: "Свети апостол Симон Зилот", f: 3 },
+                { n: 24, o: 11, s: "Свети равноспостолни Кирило и Методије", f: 0 },
+                { n: 25, o: 12, s: "Св. Епифаније Кипарски", f: 0 },
+                { n: 26, o: 13, s: "Света мученица Гликерија", f: 0 },
+                { n: 27, o: 14, s: "Свети мученик Исидор Хиоски", f: 0 },
+                { n: 28, o: 15, s: "Преподобни Пахомије Велики", f: 0 },
+                { n: 29, o: 16, s: "Преп. Теодор", f: 0, note: "Оданије Вазнесења" },
+                { n: 30, o: 17, s: "Свети апостол Андроник", f: 0, note: "Задушнице" },
+                { n: 31, o: 18, s: "Силазак Светог Духа на апостоле", f: 2, feast: true, note: "ДУХОВИ" }
+            ]
+        }, {
+            name: "ЈУН",
+            firstDay: 1,
+            days: [
+                { n: 1, o: 19, s: "Духовски понедељак", f: 0 },
+                { n: 2, o: 20, s: "Духовски уторак", f: 0 },
+                { n: 3, o: 21, s: "Свети цар Константин и царица Јелена", f: 1 },
+                { n: 4, o: 22, s: "Свети мученик Василиск", f: 0 },
+                { n: 5, o: 23, s: "Преподобни Михаило Исповедник", f: 0 },
+                { n: 6, o: 24, s: "Преподобни Симеон Дивногорац", f: 0, note: "Оданије Педесетнице" },
+                { n: 7, o: 25, s: "Треће обретење главе Светог Јована", f: 0, note: "Петровске покладе" },
+                { n: 8, o: 26, s: "Свети апостоли Карп и Алфеј", f: 4, note: "Почетак поста" },
+                { n: 9, o: 27, s: "Свети свештеномученик Терапонт", f: 0 },
+                { n: 10, o: 28, s: "Преподобни Никита Исповедник", f: 0 },
+                { n: 11, o: 29, s: "Преподобномученица Теодосија", f: 0 },
+                { n: 12, o: 30, s: "Преподобни Исакије Далматски", f: 0 },
+                { n: 13, o: 31, s: "Свети ап. Јерма", f: 0 },
+                { n: 14, o: 1, s: "Св. муч. Јустин, Мученик и Философ", f: 0 },
+                { n: 15, o: 2, s: "Свети Никифор Цариградски", f: 4 },
+                { n: 16, o: 3, s: "Свети мученик Лукилијан", f: 0 },
+                { n: 17, o: 4, s: "Свети Митрофан", f: 0 },
+                { n: 18, o: 5, s: "Свети свештеномученик Доротеј", f: 0 },
+                { n: 19, o: 6, s: "Преподобни Висарион", f: 0 },
+                { n: 20, o: 7, s: "Свети свештеномученик Теодот", f: 0 },
+                { n: 21, o: 8, s: "Свети великомученик Теодор Стратилат", f: 3 },
+                { n: 22, o: 9, s: "Св. Кирило Архиепископ александријски", f: 0 },
+                { n: 23, o: 10, s: "Свети свештеномученик Тимотеј", f: 0 },
+                { n: 24, o: 11, s: "Св. апостоли Вартоломеј и Варнава", f: 0 },
+                { n: 25, o: 12, s: "Преподобни Онуфрије Велики", f: 0 },
+                { n: 26, o: 13, s: "Св. муч. Акилина", f: 0 },
+                { n: 27, o: 14, s: "Свети пророк Јелисеј", f: 1 },
+                { n: 28, o: 15, s: "Св. мученик Кнез Лазар", f: 0, feast: true, note: "Видовдан" },
+                { n: 29, o: 16, s: "Св. Тихон Чудотворац", f: 0 },
+                { n: 30, o: 17, s: "Свети мученици Мануил, Савел и Исмаил", f: 2 }
+            ]
+        }, {
+            name: "ЈУЛ",
+            firstDay: 3,
+            days: [
+                { n: 1, o: 18, s: "Свети мученици Леонтије, Ипатије", f: 0 },
+                { n: 2, o: 19, s: "Свети апостол Јуда", f: 0 },
+                { n: 3, o: 20, s: "Св. свштеномуч. Методије", f: 0 },
+                { n: 4, o: 21, s: "Свети мученик Јулијан Тарсијски", f: 0 },
+                { n: 5, o: 22, s: "Свети свштеномученик Јевсевије", f: 0 },
+                { n: 6, o: 23, s: "Света мученица Агрипина", f: 0 },
+                { n: 7, o: 24, s: "Рођење Светог Јована Претече", f: 3, feast: true, note: "Ивањдан" },
+                { n: 8, o: 25, s: "Света преподобномученица Февронија", f: 0 },
+                { n: 9, o: 26, s: "Преподобни Давид Солунски", f: 0 },
+                { n: 10, o: 27, s: "Преподобни Сампсон Странопримац", f: 0 },
+                { n: 11, o: 28, s: "Пренос моштију Св. бесребреника Кира", f: 0 },
+                { n: 12, o: 29, s: "Свети апостоли Петар и Павле", f: 0, feast: true, note: "Петровдан" },
+                { n: 13, o: 30, s: "Сабор Светих дванаест апостола", f: 0, note: "Павловдан" },
+                { n: 14, o: 1, s: "Свети мученици и бесребреници Козма и Дамјан", f: 4 },
+                { n: 15, o: 2, s: "Полагање ризе Пресвете Богородице", f: 0 },
+                { n: 16, o: 3, s: "Св. муч. Јакинт", f: 0 },
+                { n: 17, o: 4, s: "Свети Андреј Критски", f: 0 },
+                { n: 18, o: 5, s: "Преподобни Атанасије Атонски", f: 0 },
+                { n: 19, o: 6, s: "Преподобни Сисоје Велики", f: 0 },
+                { n: 20, o: 7, s: "Преподобни Тома Малеин", f: 0 },
+                { n: 21, o: 8, s: "Свети великомученик Прокопије", f: 3 },
+                { n: 22, o: 9, s: "Свештеномученик Панкратије", f: 0 },
+                { n: 23, o: 10, s: "Светих 45 мученика из Никопоља", f: 0 },
+                { n: 24, o: 11, s: "Света великомученица Ефимија", f: 0 },
+                { n: 25, o: 12, s: "Свети мученик Прокло и Иларије", f: 0 },
+                { n: 26, o: 13, s: "Сабор Светог Архангела Гаврила", f: 1 },
+                { n: 27, o: 14, s: "Свети апостол Акила", f: 0 },
+                { n: 28, o: 15, s: "Свети мученици Кирик и Јулита", f: 0 },
+                { n: 29, o: 16, s: "Свети свештеномученик Антиноген", f: 2 },
+                { n: 30, o: 17, s: "Света великомученица Марина", f: 0, note: "Огњена Марија" },
+                { n: 31, o: 18, s: "Свети мученик Емилијан", f: 0 }
+            ]
+        }, {
+            name: "АВГУСТ",
+            firstDay: 6,
+            days: [
+                { n: 1, o: 19, s: "Преподобна Макрина", f: 3 },
+                { n: 2, o: 20, s: "Свети пророк Илија", f: 0, feast: true, note: "Илиндан" },
+                { n: 3, o: 21, s: "Свети пророк Језекиљ", f: 0 },
+                { n: 4, o: 22, s: "Света Марија Магдалина", f: 0, note: "Блага Марија" },
+                { n: 5, o: 23, s: "Свети мученици Трофим, Теофил", f: 0 },
+                { n: 6, o: 24, s: "Света великомученица Христина", f: 3 },
+                { n: 7, o: 25, s: "Успеније свете Ане", f: 0 },
+                { n: 8, o: 26, s: "Преподобномученица Параскева", f: 1, note: "Петка" },
+                { n: 9, o: 27, s: "Свети великомученик Пантелејмон", f: 0 },
+                { n: 10, o: 28, s: "Свети апостоли и ђакони", f: 0 },
+                { n: 11, o: 29, s: "Свети мученик Калиник", f: 0 },
+                { n: 12, o: 30, s: "Преподобна мати Ангелина српска", f: 4 },
+                { n: 13, o: 31, s: "Свети мученик Евдоким", f: 0, note: "Госпојинске покладе" },
+                { n: 14, o: 1, s: "Изношење Часног Крста", f: 4, note: "Св. муч. Макавеји" },
+                { n: 15, o: 2, s: "Пренос моштију Светог првомученика", f: 0 },
+                { n: 16, o: 3, s: "Преподобни Исакије, Далмат и Фауст", f: 0 },
+                { n: 17, o: 4, s: "Св. седам мученика у Ефесу", f: 0 },
+                { n: 18, o: 5, s: "Свети мученик Евсигније", f: 0, note: "Претпразништво Преображења" },
+                { n: 19, o: 6, s: "Преображење Господње", f: 2, feast: true },
+                { n: 20, o: 7, s: "Свети преподобномученик Дометије", f: 3 },
+                { n: 21, o: 8, s: "Свети Емилијан Исповедник", f: 0 },
+                { n: 22, o: 9, s: "Свети апостол Матија", f: 0 },
+                { n: 23, o: 10, s: "Свети мученик и архиђакон Лаврентије", f: 0 },
+                { n: 24, o: 11, s: "Свети мученик и архиђакон Евпло", f: 0 },
+                { n: 25, o: 12, s: "Свети мученици Фотије, Аникита", f: 0 },
+                { n: 26, o: 13, s: "Свети мученик Иполит", f: 0, note: "Оданије Преображења" },
+                { n: 27, o: 14, s: "Свети пророк Михеј", f: 0, note: "Претпразништво Успенија" },
+                { n: 28, o: 15, s: "Успеније Пресвете Богородице", f: 2, feast: true, note: "Велика Госпојина" },
+                { n: 29, o: 16, s: "Нерукот. Образ Господа Исуса Христа", f: 0 },
+                { n: 30, o: 17, s: "Свети мученик Мирон", f: 0 },
+                { n: 31, o: 18, s: "Свети мученик Флор", f: 0 }
+            ]
+        }, {
+            name: "СЕПТЕМБАР",
+            firstDay: 2,
+            days: [
+                { n: 1, o: 19, s: "Свети мученик Андреј Стратилат", f: 0 },
+                { n: 2, o: 20, s: "Св. пророк Самуило", f: 0 },
+                { n: 3, o: 21, s: "Св. ап. Тадеј", f: 0 },
+                { n: 4, o: 22, s: "Св. мученик Агатоник", f: 3 },
+                { n: 5, o: 23, s: "Св.свештеномуч. Иринеј", f: 0, note: "Оданије Успенија" },
+                { n: 6, o: 24, s: "Свети свештеномученик Евтихије", f: 0 },
+                { n: 7, o: 25, s: "Пренос моштију Светог апостола", f: 0 },
+                { n: 8, o: 26, s: "Свети мученици Адријан и Наталија", f: 0 },
+                { n: 9, o: 27, s: "Преподобни Пимен Велики", f: 0 },
+                { n: 10, o: 28, s: "Преподобни Мојсеј Мурин", f: 0 },
+                { n: 11, o: 29, s: "Усековање главе Светог Јована", f: 4 },
+                { n: 12, o: 30, s: "Пренос моштију светог Александра", f: 0 },
+                { n: 13, o: 31, s: "Полагање појаса Пресвете Богородице", f: 0 },
+                { n: 14, o: 1, s: "Преподобни Симеон Столпник", f: 1, note: "Црквена Нова година" },
+                { n: 15, o: 2, s: "Св. муч. Мамант", f: 0 },
+                { n: 16, o: 3, s: "Св. свештеномуч. Антим", f: 0 },
+                { n: 17, o: 4, s: "Св. свештеномуч. Вавила", f: 0 },
+                { n: 18, o: 5, s: "Свети пророк Захарија", f: 3 },
+                { n: 19, o: 6, s: "Чудо Светог Архангела Михаила", f: 0 },
+                { n: 20, o: 7, s: "Свети мученик Созонт", f: 0, note: "Претпразништво Рођења" },
+                { n: 21, o: 8, s: "Рођење Пресвете Богородице", f: 2, feast: true, note: "Мала Госпојина" },
+                { n: 22, o: 9, s: "Свети праведни Јоаким и Ана", f: 2 },
+                { n: 23, o: 10, s: "Свете мученице Минодора, Митродора", f: 0 },
+                { n: 24, o: 11, s: "Преподобна Теодора", f: 0 },
+                { n: 25, o: 12, s: "Св. свештеномученик Автоном", f: 0, note: "Оданије Рођења" },
+                { n: 26, o: 13, s: "Св. свештмуч. Корнилије", f: 2 },
+                { n: 27, o: 14, s: "Воздвижење часног Крста", f: 4, feast: true, note: "Крстовдан" },
+                { n: 28, o: 15, s: "Свети великомученик Никита", f: 0 },
+                { n: 29, o: 16, s: "Св. великомученица Јефимија", f: 0 },
+                { n: 30, o: 17, s: "Свете мученице Вера, Нада и Љубав", f: 0 }
+            ]
+        }, {
+            name: "ОКТОБАР",
+            firstDay: 4,
+            days: [
+                { n: 1, o: 18, s: "Свети Евменије Гортински", f: 0 },
+                { n: 2, o: 19, s: "Свети мученици Трофим, Саватије", f: 0 },
+                { n: 3, o: 20, s: "Свети великомученик Јевстатије", f: 3 },
+                { n: 4, o: 21, s: "Свети апостол Кодрат", f: 0, note: "Оданије Воздвижења" },
+                { n: 5, o: 22, s: "Св. свештеномуч. Фока", f: 0 },
+                { n: 6, o: 23, s: "Зачеће Светог Јована Претече", f: 0 },
+                { n: 7, o: 24, s: "Св. првомуч. Текла", f: 0 },
+                { n: 8, o: 25, s: "Преподобна Ефросинија", f: 0 },
+                { n: 9, o: 26, s: "Свети апостол и јеванђелист Јован", f: 0 },
+                { n: 10, o: 27, s: "Свети мученик Калистрат", f: 4, note: "Задушнице" },
+                { n: 11, o: 28, s: "Преподобни Харитон Исповедник", f: 0 },
+                { n: 12, o: 29, s: "Преподобни Киријак Отшелник", f: 0, note: "Михољдан" },
+                { n: 13, o: 30, s: "Свети свештеномученик Григорије", f: 0 },
+                { n: 14, o: 1, s: "Покров Пресвете Богородице", f: 1 },
+                { n: 15, o: 2, s: "Св. свештеномуч. Кипријан", f: 0 },
+                { n: 16, o: 3, s: "Св. свештеномуч. Дионисије Ареопагит", f: 0 },
+                { n: 17, o: 4, s: "Свети Стефан и Јелена", f: 0 },
+                { n: 18, o: 5, s: "Св. мученица Харитина", f: 3 },
+                { n: 19, o: 6, s: "Свети апостол Тома", f: 0, note: "Томиндан" },
+                { n: 20, o: 7, s: "Свети мученици Сергије и Вакхо", f: 0, note: "Срђевдан" },
+                { n: 21, o: 8, s: "Преп. Пелагија", f: 0 },
+                { n: 22, o: 9, s: "Свети апостол Јаков", f: 0 },
+                { n: 23, o: 10, s: "Свети мученици Евлампије", f: 0 },
+                { n: 24, o: 11, s: "Св. апостол Филип, ђакон", f: 0 },
+                { n: 25, o: 12, s: "Св. мученици Тарах, Пров и Андроник", f: 0 },
+                { n: 26, o: 13, s: "Свети мученик Карп", f: 2 },
+                { n: 27, o: 14, s: "Преподобна мати Параскева", f: 0, note: "Света Петка" },
+                { n: 28, o: 15, s: "Свети свештеномученик Лукијан", f: 0 },
+                { n: 29, o: 16, s: "Свети мученик Лонгин Сотник", f: 0 },
+                { n: 30, o: 17, s: "Свети пророк Осија", f: 0 },
+                { n: 31, o: 18, s: "Свети апостол и јеванђелист Лука", f: 1 }
+            ]
+        }, {
+            name: "НОВЕМБАР",
+            firstDay: 0,
+            days: [
+                { n: 1, o: 19, s: "Свети пророк Јоил", f: 3 },
+                { n: 2, o: 20, s: "Св. великомуч. Артемије", f: 0 },
+                { n: 3, o: 21, s: "Преподобни Иларион", f: 0 },
+                { n: 4, o: 22, s: "Св. равноапостолни Аверкије", f: 0 },
+                { n: 5, o: 23, s: "Свети апостол Јаков", f: 1 },
+                { n: 6, o: 24, s: "Свети великомученик Арета", f: 0 },
+                { n: 7, o: 25, s: "Свети мученици Маркијан и Мартирије", f: 0, note: "Задушнице" },
+                { n: 8, o: 26, s: "Свети великомученик Димитрије", f: 0, feast: true, note: "Митровдан" },
+                { n: 9, o: 27, s: "Свети мученик Нестор", f: 4 },
+                { n: 10, o: 28, s: "Св. муч. Терентије", f: 0 },
+                { n: 11, o: 29, s: "Св. Аврамије Затворник", f: 0 },
+                { n: 12, o: 30, s: "Св. краљ Милутин", f: 0 },
+                { n: 13, o: 31, s: "Св. ап. Стахије, Амплије", f: 0 },
+                { n: 14, o: 1, s: "Свети бесребреници Козма и Дамјан", f: 1, note: "Врачеви" },
+                { n: 15, o: 2, s: "Свети мученици Акиндин, Пигасије", f: 0 },
+                { n: 16, o: 3, s: "Обновљење храма Светог Георгија", f: 1, note: "Ђурђиц" },
+                { n: 17, o: 4, s: "Преподобни Јоаникије Велики", f: 3 },
+                { n: 18, o: 5, s: "Преподобномученици Галактион", f: 0 },
+                { n: 19, o: 6, s: "Свети Павле Исповедник", f: 0 },
+                { n: 20, o: 7, s: "Света 33 мученика у Мелитини", f: 0 },
+                { n: 21, o: 8, s: "Сабор Св. Архангела Михаила", f: 0, feast: true, note: "Аранђеловдан" },
+                { n: 22, o: 9, s: "Св. муч. Онисифор и Порфирије", f: 0 },
+                { n: 23, o: 10, s: "Свети апостоли Олимп, Ераст", f: 0 },
+                { n: 24, o: 11, s: "Св. великомуч.Мина", f: 2 },
+                { n: 25, o: 12, s: "Свети Јован Милостиви", f: 1 },
+                { n: 26, o: 13, s: "Свети Јован Златоусти", f: 1 },
+                { n: 27, o: 14, s: "Свети апостол Филип", f: 0, note: "Божићне покладе" },
+                { n: 28, o: 15, s: "Свети мученици Гурије, Самон", f: 4, note: "Почетак поста" },
+                { n: 29, o: 16, s: "Свети апостол и јеванђелист Матеј", f: 0 },
+                { n: 30, o: 17, s: "Св. Григорије Чудотворац", f: 0 }
+            ]
+        }, {
+            name: "ДЕЦЕМБАР",
+            firstDay: 2,
+            days: [
+                { n: 1, o: 18, s: "Свети мученик Платон", f: 3 },
+                { n: 2, o: 19, s: "Св. пророк Авдија", f: 0 },
+                { n: 3, o: 20, s: "Преп. Григорије Декаполит", f: 0, note: "Претпразништво Ваведења" },
+                { n: 4, o: 21, s: "Ваведење Пресвете Богородице", f: 2 },
+                { n: 5, o: 22, s: "Св. апостоли Филимон, Архип", f: 0 },
+                { n: 6, o: 23, s: "Св. Амфилохије Иконијски", f: 0 },
+                { n: 7, o: 24, s: "Света великомуч. Екатерина", f: 1 },
+                { n: 8, o: 25, s: "Св. свештеномуч. Климент", f: 0, note: "Оданије Ваведења" },
+                { n: 9, o: 26, s: "Преподобни Алимпије Столпник", f: 4 },
+                { n: 10, o: 27, s: "Св.муч. Јаков Персијанац", f: 0 },
+                { n: 11, o: 28, s: "Преподобномуч. Стефан", f: 0 },
+                { n: 12, o: 29, s: "Свети мученици Парамон и Филумен", f: 0 },
+                { n: 13, o: 30, s: "Свети апостол Андреј Првозвани", f: 0 },
+                { n: 14, o: 1, s: "Свети пророк Наум", f: 0 },
+                { n: 15, o: 2, s: "Св. пророк Авакум", f: 0 },
+                { n: 16, o: 3, s: "Свети пророк Софоније", f: 0 },
+                { n: 17, o: 4, s: "Света великомуч. Варвара", f: 3 },
+                { n: 18, o: 5, s: "Преподобни Сава Освећени", f: 1 },
+                { n: 19, o: 6, s: "Свети Николај, Архиепископ", f: 0, feast: true, note: "Никољдан" },
+                { n: 20, o: 7, s: "Свети Амвросије", f: 0, note: "Детињци" },
+                { n: 21, o: 8, s: "Преподобни Патапије", f: 0 },
+                { n: 22, o: 9, s: "Зачеће Свете Ане", f: 0 },
+                { n: 23, o: 10, s: "Свети мученик Мина", f: 0 },
+                { n: 24, o: 11, s: "Преподобни Данило Столпник", f: 2 },
+                { n: 25, o: 12, s: "Свети Спиридон Чудотворац", f: 0 },
+                { n: 26, o: 13, s: "Свети мученик Евстратије", f: 0 },
+                { n: 27, o: 14, s: "Свети мученици Тирс, Левкије", f: 0, note: "Материце" },
+                { n: 28, o: 15, s: "Свети свештеномученик Елевтерије", f: 0 },
+                { n: 29, o: 16, s: "Свети пророк Агеј", f: 0 },
+                { n: 30, o: 17, s: "Св. пророк Данило", f: 3 },
+                { n: 31, o: 18, s: "Свети мученик Севастијан", f: 0 }
+            ]
+        }];
 
         const weekDays = ["Пон", "Уто", "Сре", "Чет", "Пет", "Суб", "Нед"];
-        const fastSymbols = { 1: "⬤", 2: "◐", 3: "◑", 4: "ⵔ" };
+
+        const fastClassNames = { 0: "mrsno", 1: "suho", 2: "bez", 3: "ulje", 4: "riba" };
+
+        let currentMonthIndex = 0;
+        let legendCollapsed = false;
+
+        const cyrillicToLatin = {
+            'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'ђ': 'dj', 'е': 'e',
+            'ж': 'z', 'з': 'z', 'и': 'i', 'ј': 'j', 'к': 'k', 'л': 'l', 'љ': 'lj',
+            'м': 'm', 'н': 'n', 'њ': 'nj', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's',
+            'т': 't', 'ћ': 'c', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'c', 'ч': 'c',
+            'џ': 'dz', 'ш': 's'
+        };
+
+        function toLatin(text) {
+            return text.toLowerCase().split('').map(ch => cyrillicToLatin[ch] || ch).join('');
+        }
+
+        function highlightMatch(text, query) {
+            const queryLower = query.toLowerCase().trim();
+            const textLower = text.toLowerCase();
+            const index = textLower.indexOf(queryLower);
+            if (index === -1) return text;
+            const before = text.substring(0, index);
+            const match = text.substring(index, index + queryLower.length);
+            const after = text.substring(index + queryLower.length);
+            return `${before}<span class="search-highlight">${match}</span>${after}`;
+        }
+
+        function renderMonthNames() {
+            const container = document.getElementById('monthNames');
+            const todayMonth = new Date().getMonth();
+            container.innerHTML = months.map((month, index) =>
+                `<button class="month-name-btn ${index === todayMonth ? 'active' : ''}" 
+                         onclick="scrollToMonth(${index})">${month.name}</button>`
+            ).join('');
+            currentMonthIndex = todayMonth;
+        }
+
+        function updateActiveMonth(index) {
+            document.querySelectorAll('.month-name-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+            currentMonthIndex = index;
+        }
+
+        function scrollToMonth(index) {
+            const target = document.getElementById(`month-${index}`);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                updateActiveMonth(index);
+            }
+        }
+
+        function navigateMonth(direction) {
+            const newIndex = Math.max(0, Math.min(11, currentMonthIndex + direction));
+            scrollToMonth(newIndex);
+        }
+
+        function goToToday() {
+            const todayMonth = new Date().getMonth();
+            scrollToMonth(todayMonth);
+        }
+
+        function toggleLegend() {
+            legendCollapsed = !legendCollapsed;
+            const body = document.getElementById('legendBody');
+            const toggle = document.getElementById('legendToggle');
+            body.classList.toggle('collapsed', legendCollapsed);
+            toggle.classList.toggle('rotated', legendCollapsed);
+        }
+
+        function clearCalendarHighlights() {
+            document.querySelectorAll('.search-highlight-day').forEach(el => {
+                el.classList.remove('search-highlight-day');
+            });
+        }
+
+        function searchSaints(query) {
+            const resultsContainer = document.getElementById('searchResults');
+            
+            // Clear previous calendar highlights
+            clearCalendarHighlights();
+
+            if (!query || query.trim().length < 2) {
+                resultsContainer.classList.remove('active');
+                return;
+            }
+
+            const q = query.trim();
+            const qLower = q.toLowerCase();
+            const qLatin = toLatin(qLower);
+            const results = [];
+
+            // Find matches for dropdown
+            months.forEach((month, monthIndex) => {
+                month.days.forEach((day) => {
+                    const saintLower = day.s.toLowerCase();
+                    const saintLatin = toLatin(saintLower);
+                    if (saintLower.includes(qLower) || saintLatin.includes(qLatin)) {
+                        results.push({
+                            saint: day.s,
+                            date: `${day.n}. ${month.name}`,
+                            monthIndex: monthIndex,
+                            day: day.n
+                        });
+                    }
+                });
+            });
+
+            // Build dropdown results
+            if (results.length === 0) {
+                resultsContainer.innerHTML =
+                    `<div class="search-result-item"><span class="result-saint">Нема резултата</span></div>`;
+                resultsContainer.classList.add('active');
+                return;
+            }
+
+            resultsContainer.innerHTML = results.slice(0, 10).map(r => {
+                let highlightedSaint = r.saint;
+                if (r.saint.toLowerCase().includes(qLower)) {
+                    highlightedSaint = highlightMatch(r.saint, qLower);
+                } else {
+                    const saintLatin = toLatin(r.saint);
+                    const latinIndex = saintLatin.indexOf(qLatin);
+                    if (latinIndex !== -1) {
+                        let matchFound = false;
+                        for (let i = 0; i <= r.saint.length - qLower.length; i++) {
+                            const sub = r.saint.substring(i, i + qLower.length);
+                            if (toLatin(sub) === qLatin) {
+                                const before = r.saint.substring(0, i);
+                                const match = r.saint.substring(i, i + qLower.length);
+                                const after = r.saint.substring(i + qLower.length);
+                                highlightedSaint = `${before}<span class="search-highlight">${match}</span>${after}`;
+                                matchFound = true;
+                                break;
+                            }
+                        }
+                        if (!matchFound) {
+                            highlightedSaint = `<span class="search-highlight">${r.saint}</span>`;
+                        }
+                    }
+                }
+                return `
+                    <div class="search-result-item" onclick="scrollToMonth(${r.monthIndex})">
+                        <span class="result-saint">${highlightedSaint}</span>
+                        <span class="result-date">${r.date}</span>
+                    </div>
+                `;
+            }).join('');
+
+            resultsContainer.classList.add('active');
+
+            // ===== CALENDAR HIGHLIGHTING =====
+            // Scan all day cells and highlight those that match the search
+            const allDays = document.querySelectorAll('.day:not(.empty)');
+            allDays.forEach(dayEl => {
+                const saintEl = dayEl.querySelector('.day-saint');
+                if (!saintEl) return;
+                const saintText = saintEl.textContent.trim();
+                const saintLower = saintText.toLowerCase();
+                const saintLatin = toLatin(saintLower);
+                // Check if this saint matches the search query
+                if (saintLower.includes(qLower) || saintLatin.includes(qLatin)) {
+                    dayEl.classList.add('search-highlight-day');
+                }
+            });
+        }
 
         function renderCalendar() {
             const calendar = document.getElementById('calendar');
             let html = '';
-            const currentDate = new Date();
+            const today = new Date();
+            const todayStr =
+                `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
             months.forEach((month, monthIndex) => {
                 html += `
-                    <div class="month">
+                    <div class="month" id="month-${monthIndex}" data-month="${monthIndex}">
                         <div class="month-header">
                             <h2>${month.name}</h2>
                         </div>
@@ -1152,16 +1826,26 @@
                 month.days.forEach((day, index) => {
                     const dayOfWeek = (month.firstDay + index) % 7;
                     const isWeekend = dayOfWeek === 5 || dayOfWeek === 6;
-                    const isCurrentDay = currentDate.getFullYear() === 2026 && currentDate.getMonth() === monthIndex && currentDate.getDate() === day.n;
-                    const dayClass = `day ${day.feast ? 'feast' : ''} ${day.f > 0 ? 'fast' : ''} ${isWeekend ? 'weekend' : ''} ${isCurrentDay ? 'current-day' : ''}`;
-                    const fastSymbol = day.f > 0 ? `<span class="fast-symbol">${fastSymbols[day.f]}</span>` : '';
+
+                    const dayStr =
+                        `2026-${String(monthIndex+1).padStart(2,'0')}-${String(day.n).padStart(2,'0')}`;
+                    const isToday = dayStr === todayStr;
+
+                    let fastVal = day.f !== undefined ? day.f : (day.fast !== undefined ? day.fast : 0);
+                    if (fastVal > 4) fastVal = 4;
+
+                    const dayClass =
+                        `day ${day.feast ? 'feast' : ''} ${fastVal > 0 ? 'fast' : ''} ${isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}`;
+
+                    const fastIndicator = `<span class="fast-indicator ${fastClassNames[fastVal]}"></span>`;
+
                     const note = day.note ? `<div class="special-note">${day.note}</div>` : '';
-                    
+
                     html += `
                         <div class="${dayClass}">
                             <div class="day-number">${day.n}</div>
                             <div class="day-old-style">${day.o}</div>
-                            <div class="day-saint">${day.s}${fastSymbol}</div>
+                            <div class="day-saint">${day.s} ${fastIndicator}</div>
                             ${note}
                         </div>
                     `;
@@ -1175,19 +1859,25 @@
             });
 
             calendar.innerHTML = html;
+            renderMonthNames();
+
+            setTimeout(() => {
+                const todayMonth = new Date().getMonth();
+                const targetMonth = document.getElementById(`month-${todayMonth}`);
+                if (targetMonth) {
+                    targetMonth.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+                updateActiveMonth(todayMonth);
+            }, 300);
         }
 
         function toggleTheme() {
             const html = document.documentElement;
-            const btn = document.getElementById('theme-icon');
-            
             if (html.getAttribute('data-theme') === 'dark') {
                 html.removeAttribute('data-theme');
-                btn.textContent = '🌙';
                 localStorage.setItem('theme', 'light');
             } else {
                 html.setAttribute('data-theme', 'dark');
-                btn.textContent = '☀️';
                 localStorage.setItem('theme', 'dark');
             }
         }
@@ -1197,11 +1887,43 @@
         }
 
         function scrollToTop() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') {
+                if (e.key === 'Escape') {
+                    document.getElementById('searchResults').classList.remove('active');
+                    clearCalendarHighlights();
+                    e.target.blur();
+                }
+                return;
+            }
+            switch (e.key.toLowerCase()) {
+                case 't':
+                    toggleTheme();
+                    break;
+                case 'p':
+                    printCalendar();
+                    break;
+                case 'd':
+                    goToToday();
+                    break;
+                case 'escape':
+                    document.getElementById('searchResults').classList.remove('active');
+                    clearCalendarHighlights();
+                    break;
+            }
+        });
+
+        // Clear highlights when clicking outside search
+        document.addEventListener('click', (e) => {
+            const searchContainer = document.querySelector('.search-container');
+            if (!searchContainer.contains(e.target)) {
+                document.getElementById('searchResults').classList.remove('active');
+                clearCalendarHighlights();
+            }
+        });
 
         const scrollTopBtn = document.getElementById('scrollTopBtn');
         window.addEventListener('scroll', () => {
@@ -1212,28 +1934,20 @@
             }
         });
 
+        const keyboardHint = document.getElementById('keyboardHint');
+        setTimeout(() => {
+            keyboardHint.classList.add('visible');
+            setTimeout(() => {
+                keyboardHint.classList.remove('visible');
+            }, 6000);
+        }, 2000);
+
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
-            document.getElementById('theme-icon').textContent = '☀️';
         }
 
         renderCalendar();
-
-        const now = new Date();
-        if (now.getFullYear() === 2026) {
-            setTimeout(() => {
-                const currentDayEl = document.querySelector('.current-day');
-                if (currentDayEl) {
-                    currentDayEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                } else {
-                    const monthElements = document.querySelectorAll('.month');
-                    if (monthElements[now.getMonth()]) {
-                        monthElements[now.getMonth()].scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                }
-            }, 500);
-        }
 
         if ('serviceWorker' in navigator) {
             const swCode = `
