@@ -68,7 +68,7 @@ No external dependencies required
 
 **Architecture**
 
-The application is built as a single HTML file with embedded CSS and JavaScript, making it easy to deploy and maintain. All calendar data is stored in a JavaScript array structure, allowing for easy updates and modifications.
+The application is built as a single HTML file with embedded CSS and JavaScript, accompanied by a small `manifest.json` and `sw.js` for PWA support, making it easy to deploy and maintain. All calendar data is stored in a JavaScript array structure, allowing for easy updates and modifications.
 
 **Technologies Used**
 
