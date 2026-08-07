@@ -2,10 +2,10 @@
 <html lang="sr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Православни календар 2026</title>
     <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="manifest" href="application/json;base64,eyJuYW1lIjoi0JvQvtC1INCy0LDRiNC80Y/Rg9C10Lkg0L/QsNC70LzQvdCwIDIwMjYiLCJzaG9ydF9uYW1lIjoi0JvQvtC1INC80L3QsCIsInRoZW1lX2NvbG9yIjoiIzZkMjhkOSIsImJhY2tncm91bmRfY29sb3IiOiIjZmFmYWZhIn0=">
+    <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#6d28d9">
     <style>
@@ -172,7 +172,7 @@
         }
 
         .search-input-wrapper input::placeholder {
-            color: transparent;
+            color: var(--text-muted);
         }
 
         .search-input-wrapper button {
@@ -513,17 +513,6 @@
             padding-bottom: 0.5rem;
             border-bottom: 2px solid var(--purple-300);
             position: relative;
-        }
-
-        .week-header .week-number {
-            position: absolute;
-            left: -2.5rem;
-            font-size: 0.6rem;
-            color: var(--text-muted);
-            opacity: 0.5;
-            top: 50%;
-            transform: translateY(-50%);
-            font-weight: 600;
         }
 
         .week-day {
@@ -1160,7 +1149,7 @@
 
         <div class="search-container">
             <div class="search-input-wrapper">
-                <input type="text" id="searchInput" placeholder="" oninput="searchSaints(this.value)">
+                <input type="text" id="searchInput" placeholder="Тражи светитеља или празник..." oninput="searchSaints(this.value)">
                 <button onclick="searchSaints(document.getElementById('searchInput').value)">Тражи</button>
             </div>
             <div class="search-results" id="searchResults"></div>
@@ -1684,6 +1673,11 @@
             }
         }
 
+        function selectSearchResult(monthIndex) {
+            scrollToMonth(monthIndex);
+            document.getElementById('searchResults').classList.remove('active');
+        }
+
         function navigateMonth(direction) {
             const newIndex = Math.max(0, Math.min(11, currentMonthIndex + direction));
             scrollToMonth(newIndex);
@@ -1774,7 +1768,7 @@
                     }
                 }
                 return `
-                    <div class="search-result-item" onclick="scrollToMonth(${r.monthIndex})">
+                    <div class="search-result-item" onclick="selectSearchResult(${r.monthIndex})">
                         <span class="result-saint">${highlightedSaint}</span>
                         <span class="result-date">${r.date}</span>
                     </div>
@@ -1819,13 +1813,13 @@
                             <div class="calendar-grid">
                 `;
 
-                for (let i = 0; i < month.firstDay; i++) {
+                for (let i = 0; i < (month.firstDay + 6) % 7; i++) {
                     html += '<div class="day empty"></div>';
                 }
 
                 month.days.forEach((day, index) => {
                     const dayOfWeek = (month.firstDay + index) % 7;
-                    const isWeekend = dayOfWeek === 5 || dayOfWeek === 6;
+                    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
                     const dayStr =
                         `2026-${String(monthIndex+1).padStart(2,'0')}-${String(day.n).padStart(2,'0')}`;
@@ -1950,26 +1944,7 @@
         renderCalendar();
 
         if ('serviceWorker' in navigator) {
-            const swCode = `
-                const CACHE_NAME = 'orthodox-calendar-v3';
-                self.addEventListener('install', event => { event.waitUntil(self.skipWaiting()); });
-                self.addEventListener('activate', event => { event.waitUntil(self.clients.claim()); });
-                self.addEventListener('fetch', event => {
-                    event.respondWith(
-                        caches.match(event.request).then(response => {
-                            return response || fetch(event.request).then(fetchResponse => {
-                                return caches.open(CACHE_NAME).then(cache => {
-                                    cache.put(event.request, fetchResponse.clone());
-                                    return fetchResponse;
-                                });
-                            });
-                        })
-                    );
-                });
-            `;
-            const swBlob = new Blob([swCode], { type: 'application/javascript' });
-            const swUrl = URL.createObjectURL(swBlob);
-            navigator.serviceWorker.register(swUrl).catch(err => {});
+            navigator.serviceWorker.register('sw.js').catch(() => {});
         }
     </script>
 </body>
