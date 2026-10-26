@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu, nativeImage, nativeTheme } = require('electron');
+const { app, BrowserWindow, Tray, Menu, nativeImage, nativeTheme, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
@@ -6,6 +6,46 @@ const os = require('os');
 let mainWindow = null;
 let tray = null;
 let isQuitting = false;
+let trayScript = 'cyr';
+
+const TRAY_STRINGS = {
+    cyr: {
+        tooltip: 'Православни календар 2026',
+        showHide: 'Прикажи/Сакриј',
+        quit: 'Изађи'
+    },
+    lat: {
+        tooltip: 'Pravoslavni kalendar 2026',
+        showHide: 'Prikaži/sakrij',
+        quit: 'Izađi'
+    }
+};
+
+function buildTrayMenu() {
+    const labels = TRAY_STRINGS[trayScript] || TRAY_STRINGS.cyr;
+    return Menu.buildFromTemplate([
+        {
+            label: labels.showHide,
+            click: () => toggleWindow()
+        },
+        { type: 'separator' },
+        {
+            label: labels.quit,
+            click: () => {
+                isQuitting = true;
+                app.quit();
+            }
+        }
+    ]);
+}
+
+function applyTrayScript(script) {
+    trayScript = script === 'lat' ? 'lat' : 'cyr';
+    if (!tray) return;
+    const labels = TRAY_STRINGS[trayScript];
+    tray.setToolTip(labels.tooltip);
+    tray.setContextMenu(buildTrayMenu());
+}
 
 app.setName('orthodox-calendar');
 
@@ -25,6 +65,12 @@ if (!gotLock) {
     app.whenReady().then(() => {
         Menu.setApplicationMenu(null);
 
+        ipcMain.on('calendar:set-script', (_event, script) => {
+            if (script === 'cyr' || script === 'lat') {
+                applyTrayScript(script);
+            }
+        });
+
         mainWindow = new BrowserWindow({
             width: 1380,
             height: 1065,
@@ -36,6 +82,7 @@ if (!gotLock) {
             autoHideMenuBar: true,
             show: false,
             webPreferences: {
+                preload: path.join(__dirname, 'preload.js'),
                 contextIsolation: true,
                 nodeIntegration: false
             }
@@ -65,26 +112,21 @@ if (!gotLock) {
         // Initialize Tray
         const initialIcon = nativeImage.createFromPath(getTrayIconPath());
         tray = new Tray(initialIcon);
-        tray.setToolTip('Православни календар 2026');
-
-        const contextMenu = Menu.buildFromTemplate([
-            {
-                label: 'Прикажи/Сакриј',
-                click: () => toggleWindow()
-            },
-            { type: 'separator' },
-            {
-                label: 'Изађи',
-                click: () => {
-                    isQuitting = true;
-                    app.quit();
-                }
-            }
-        ]);
-        tray.setContextMenu(contextMenu);
+        applyTrayScript(trayScript);
 
         tray.on('click', () => toggleWindow());
         tray.on('double-click', () => toggleWindow());
+
+        // Restore the tray language from the persisted app preference. The
+        // renderer also sends this over IPC whenever the script changes.
+        mainWindow.webContents.once('did-finish-load', async () => {
+            try {
+                const savedScript = await mainWindow.webContents.executeJavaScript(
+                    "localStorage.getItem('script') || 'cyr'"
+                );
+                applyTrayScript(savedScript);
+            } catch (e) {}
+        });
 
         // Dynamic theme switching: automatically adapts to Light / Dark KDE theme
         nativeTheme.on('updated', () => {
