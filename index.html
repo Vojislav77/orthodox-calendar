@@ -591,6 +591,18 @@
             box-shadow: 0 0 20px var(--today-glow);
         }
 
+        @keyframes todayPulseAnimation {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.7); }
+            50% { transform: scale(1.05); box-shadow: 0 0 25px 8px rgba(124, 58, 237, 0.45); }
+            100% { transform: scale(1); box-shadow: 0 0 20px var(--today-glow); }
+        }
+
+        .day.today.today-pulse {
+            animation: todayPulseAnimation 1.2s ease-in-out;
+            z-index: 15;
+            position: relative;
+        }
+
         .day-old-style {
             font-size: 0.75rem;
             color: var(--text-muted);
@@ -1212,7 +1224,7 @@
                 note: "Претпразништво Богојављења" },
                 { n: 16, o: 3, s: "Свети пророк Малахија", f: 0 },
                 { n: 17, o: 4, s: "Сабор 70 светих апостола", f: 0 },
-                { n: 18, o: 5, s: "Свети Теопемпт и Теона", f: 0, note: "Крстовдан", fast: 4 },
+                { n: 18, o: 5, s: "Свети Теопемпт и Теона", f: 4, note: "Крстовдан" },
                 { n: 19, o: 6, s: "Богојављење", f: 0, feast: true },
                 { n: 20, o: 7, s: "Сабор светог Јована Крститеља", f: 0, note: "Јовањдан" },
                 { n: 21, o: 8, s: "Преп. Георгије Хозевит", f: 0 },
@@ -1247,7 +1259,7 @@
                 { n: 14, o: 1, s: "Свети мученик Трифун", f: 0, note: "Задушнице" },
                 { n: 15, o: 2, s: "Сретење Господње", f: 0, feast: true },
                 { n: 16, o: 3, s: "Свети Симеон и Ана", f: 0 },
-                { n: 17, o: 4, s: "Преподобни Исидор Пелусиот", f: 0, fast: 4 },
+                { n: 17, o: 4, s: "Преподобни Исидор Пелусиот", f: 4 },
                 { n: 18, o: 5, s: "Света мученица Агатија", f: 0 },
                 { n: 19, o: 6, s: "Свети Вукол, Епископ Смирнски", f: 0, note: "Оданије Сретења" },
                 { n: 20, o: 7, s: "Свети Партеније", f: 0 },
@@ -1316,7 +1328,7 @@
                 { n: 14, o: 1, s: "Васкрсни уторак", f: 0 },
                 { n: 15, o: 2, s: "Преподобни Тит Чудотворац", f: 0 },
                 { n: 16, o: 3, s: "Преподобни Никита Исповедник", f: 0 },
-                { n: 17, o: 4, s: "Преп. Јосиф Химнограф", f: 0, fast: 4 },
+                { n: 17, o: 4, s: "Преп. Јосиф Химнограф", f: 4 },
                 { n: 18, o: 5, s: "Свети мученици Агатопод и Теодул", f: 0 },
                 { n: 19, o: 6, s: "Свети Евтихије, Патријарх", f: 0 },
                 { n: 20, o: 7, s: "Преподобни Георгије, Митр. Митиленски", f: 0, note: "Побусани понедељак" },
@@ -1630,7 +1642,8 @@
             'ж': 'z', 'з': 'z', 'и': 'i', 'ј': 'j', 'к': 'k', 'л': 'l', 'љ': 'lj',
             'м': 'm', 'н': 'n', 'њ': 'nj', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's',
             'т': 't', 'ћ': 'c', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'c', 'ч': 'c',
-            'џ': 'dz', 'ш': 's'
+            'џ': 'dz', 'ш': 's',
+            'č': 'c', 'ć': 'c', 'ž': 'z', 'š': 's', 'đ': 'dj'
         };
 
         function toLatin(text) {
@@ -1673,9 +1686,17 @@
             }
         }
 
-        function selectSearchResult(monthIndex) {
-            scrollToMonth(monthIndex);
+        function selectSearchResult(monthIndex, dayNum) {
+            updateActiveMonth(monthIndex);
             document.getElementById('searchResults').classList.remove('active');
+            if (dayNum) {
+                const targetDay = document.getElementById(`day-${monthIndex}-${dayNum}`);
+                if (targetDay) {
+                    targetDay.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return;
+                }
+            }
+            scrollToMonth(monthIndex);
         }
 
         function navigateMonth(direction) {
@@ -1684,8 +1705,20 @@
         }
 
         function goToToday() {
-            const todayMonth = new Date().getMonth();
-            scrollToMonth(todayMonth);
+            const today = new Date();
+            const todayMonth = today.getMonth();
+            updateActiveMonth(todayMonth);
+
+            const todayEl = document.querySelector('.day.today');
+            if (todayEl) {
+                todayEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                todayEl.classList.remove('today-pulse');
+                void todayEl.offsetWidth;
+                todayEl.classList.add('today-pulse');
+                setTimeout(() => todayEl.classList.remove('today-pulse'), 1200);
+            } else {
+                scrollToMonth(todayMonth);
+            }
         }
 
         function toggleLegend() {
@@ -1747,28 +1780,27 @@
                 if (r.saint.toLowerCase().includes(qLower)) {
                     highlightedSaint = highlightMatch(r.saint, qLower);
                 } else {
-                    const saintLatin = toLatin(r.saint);
-                    const latinIndex = saintLatin.indexOf(qLatin);
-                    if (latinIndex !== -1) {
-                        let matchFound = false;
-                        for (let i = 0; i <= r.saint.length - qLower.length; i++) {
-                            const sub = r.saint.substring(i, i + qLower.length);
+                    let matchFound = false;
+                    for (let i = 0; i < r.saint.length; i++) {
+                        for (let j = i + 1; j <= r.saint.length; j++) {
+                            const sub = r.saint.substring(i, j);
                             if (toLatin(sub) === qLatin) {
                                 const before = r.saint.substring(0, i);
-                                const match = r.saint.substring(i, i + qLower.length);
-                                const after = r.saint.substring(i + qLower.length);
+                                const match = sub;
+                                const after = r.saint.substring(j);
                                 highlightedSaint = `${before}<span class="search-highlight">${match}</span>${after}`;
                                 matchFound = true;
                                 break;
                             }
                         }
-                        if (!matchFound) {
-                            highlightedSaint = `<span class="search-highlight">${r.saint}</span>`;
-                        }
+                        if (matchFound) break;
+                    }
+                    if (!matchFound) {
+                        highlightedSaint = `<span class="search-highlight">${r.saint}</span>`;
                     }
                 }
                 return `
-                    <div class="search-result-item" onclick="selectSearchResult(${r.monthIndex})">
+                    <div class="search-result-item" onclick="selectSearchResult(${r.monthIndex}, ${r.day})">
                         <span class="result-saint">${highlightedSaint}</span>
                         <span class="result-date">${r.date}</span>
                     </div>
@@ -1825,7 +1857,7 @@
                         `2026-${String(monthIndex+1).padStart(2,'0')}-${String(day.n).padStart(2,'0')}`;
                     const isToday = dayStr === todayStr;
 
-                    let fastVal = day.f !== undefined ? day.f : (day.fast !== undefined ? day.fast : 0);
+                    let fastVal = day.fast !== undefined ? day.fast : (day.f !== undefined ? day.f : 0);
                     if (fastVal > 4) fastVal = 4;
 
                     const dayClass =
@@ -1836,7 +1868,7 @@
                     const note = day.note ? `<div class="special-note">${day.note}</div>` : '';
 
                     html += `
-                        <div class="${dayClass}">
+                        <div class="${dayClass}" id="day-${monthIndex}-${day.n}">
                             <div class="day-number">${day.n}</div>
                             <div class="day-old-style">${day.o}</div>
                             <div class="day-saint">${day.s} ${fastIndicator}</div>
@@ -1859,7 +1891,7 @@
                 const todayMonth = new Date().getMonth();
                 const targetMonth = document.getElementById(`month-${todayMonth}`);
                 if (targetMonth) {
-                    targetMonth.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    targetMonth.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
                 updateActiveMonth(todayMonth);
             }, 300);
