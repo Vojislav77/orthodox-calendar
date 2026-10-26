@@ -1,4 +1,4 @@
-const CACHE_NAME = 'orthodox-calendar-v3';
+const CACHE_NAME = 'orthodox-calendar-v4';
 const PRECACHE_URLS = [
     './',
     './index.html',
