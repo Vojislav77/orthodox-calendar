@@ -1,218 +1,362 @@
 # Православни календар 2026 (Orthodox Calendar 2026)
 
-A complete Orthodox liturgical calendar web application for the year 2026, following the Serbian Orthodox Church calendar. This single-page application provides a comprehensive view of all ecclesiastical feasts, saints' days, fasting rules, and liturgical commemorations throughout the year.
-
-The application displays both New Style (Gregorian) and Old Style (Julian) dates, includes detailed fasting guidelines, highlights major feasts, and features an intelligent search system for saints and feast days.
+A complete Orthodox liturgical calendar for 2026 following the Serbian Orthodox Church (Српска православна црква) calendar. The application is a single-page, dependency-free web app that shows every day of the year with its New Style (Gregorian) and Old Style (Julian) date, saints and feasts, fasting rules, patron-saint days (крсне славе), readings, and folk customs.
 
 ![License](https://img.shields.io/badge/license-MIT-purple)
 ![PWA](https://img.shields.io/badge/PWA-enabled-blue)
+![Version](https://img.shields.io/badge/version-3.0.0-b4892f)
 
 <img width="1184" height="159" alt="pc" src="https://github.com/user-attachments/assets/1f2549ad-77b2-4474-b4a8-dc05ec71c315" />
 
+---
 
-## Features
+## What's new in v3.0
 
-**Calendar Display**
+### Accurate 2026 fasting data
 
-Complete annual calendar with all twelve months displayed in a grid layout
-Each day shows the New Style and Old Style dates
-Saints and feasts listed for each day
-Visual indicators for fasting levels (strict, oil, fish, etc.)
-Special notes for important liturgical commemorations
+All 365 days were re-checked against the 2026 fasting calendar of the Serbian Orthodox Church
+(`srpskikalendar.rs/cir/kalendar-posta/2026/`). The year now contains exactly:
 
-**Fasting Guide**
+| Category | Days |
+|---|---:|
+| Fast-free / мрсно | 166 |
+| Strict fast / сухоједење | 5 |
+| On water / пост на води (no oil) | 85 |
+| Oil and wine / пост на уљу | 76 |
+| Fish, oil and wine / риба дозвољена | 26 |
+| White dairy, no meat / бели мрс | 7 |
+| **Total** | **365** |
 
-Five fasting categories displayed with color-coded indicators:
+That gives **192 fasting days** in 2026: **90 on water** (including the 5 strict days), **76 on oil**
+and **26 with fish**, plus the 7 dairy days of Cheesefare week that are not counted as fasting days.
+The four major fasts are: Great Lent (23 Feb – 11 Apr), Apostles' Fast (8 Jun – 11 Jul),
+Dormition Fast (14 – 27 Aug) and Nativity Fast (28 Nov 2026 – 6 Jan 2027).
 
-Strict fasting (dry eating)
-No oil
-Oil and wine
-Fish, oil, and wine
-Non-fasting (all foods allowed)
+Special 2026 note: **Annunciation falls on Great Tuesday (7 April)**, inside Holy Week, so fish is
+not allowed that day — wine and oil only.
 
-Interactive legend explaining each fasting type
-Collapsible legend section for compact viewing
+### New features and fixes
 
-**Navigation and Interaction**
-
-Month-by-month navigation with previous/next buttons
-Quick jump to any month via month name buttons
-Today button to scroll to the current date
-Keyboard shortcuts for power users
-
-**Search Functionality**
-
-Search for saints and feasts by name
-Results displayed in a dropdown list with date information
-Matching days highlighted directly in the calendar
-Support for both Cyrillic and Latin script search
-Search terms highlighted within results
-
-**Visual Themes**
-
-Light and dark themes with persistent preference storage
-Clean, modern design with purple accent colors
-Responsive layout optimized for all screen sizes
-Print-friendly styles for physical copies
-
-**Technical Features**
-
-Progressive Web App (PWA) support with offline caching
-Service Worker registration for offline access
-Smooth scrolling and transitions
-Keyboard navigation support
-Mobile-optimized touch interactions
-No external dependencies required
-
-## Technical Implementation
-
-**Architecture**
-
-The application is built as a single HTML file with embedded CSS and JavaScript, accompanied by a small `manifest.json` and `sw.js` for PWA support, making it easy to deploy and maintain. All calendar data is stored in a JavaScript array structure, allowing for easy updates and modifications.
-
-**Technologies Used**
-
-Pure HTML5
-CSS3 with CSS custom properties for theming
-Vanilla JavaScript (ES6+)
-Service Worker API for offline support
-Local Storage for theme persistence
-Web App Manifest for PWA capabilities
-
-**Data Structure**
-
-The calendar data is organized by month, with each month containing:
-Month name (in Serbian)
-First day of the month (0-6 for Sunday-Saturday)
-Array of days with properties:
-Date (New Style and Old Style)
-Saint or feast name
-Fasting level (0-4)
-Feast flag (true/false)
-Special notes
-
-## Live Demo
-
-[Click here to try it live](https://vojislav77.github.io/orthodox-calendar/)
-
-## Desktop Application (AppImage)
-
-The desktop edition can be run natively on Linux using the standalone AppImage:
-```bash
-chmod +x OrthodoxCalendar-2026-v2-x86_64.AppImage
-./OrthodoxCalendar-2026-v2-x86_64.AppImage
-```
-
-## Changelog & Recent Bug Fixes (v2.0)
-
-- **Fasting Rule Property Fix**: Resolved property conflict where both `f: 0` and `fast: 4` co-existed on Krstovdan (Jan 18) and other dates, which previously caused fasting days to render incorrectly as non-fasting (`mrsno`). Normalized property precedence across the calendar.
-- **Enhanced Search with Serbian Latin Diacritics**: Added normalization for Serbian Latin diacritics (`č`, `ć`, `ž`, `š`, `đ` ↔ `dj`). Users typing on Serbian Latin keyboards or standard keyboards now reliably match Cyrillic feast and saint entries. Clicking a search result now scrolls directly to that specific day.
-- **Accurate "Today" (`D`) Navigation & Visual Pulse**: The "Today" button and keyboard shortcut (`D`) smoothly center directly onto the exact day cell with an animated visual pulse to orient the user.
-- **Initial Launch Month Visibility**: On initial launch, the entire current month is automatically centered and fully visible in the application window.
-- **Adaptive Monochrome KDE Plasma Tray Icon**: Designed and integrated a dynamic monochrome cross icon (22x22 and 44x44 @2x HiDPI) that automatically adapts to KDE Plasma themes — rendering black on light panels and white on dark panels, with live theme detection.
-- **Service Worker & PWA Cache Update**: Upgraded cache version to v4 to ensure instant client-side updates.
-
-## Usage
-
-**Basic Navigation**
-
-Click on month names in the navigation bar to jump to a specific month
-Use the arrow buttons to move between months
-Press the "Today" button to scroll to the current date
-
-**Searching**
-
-Type a saint's name or feast name in the search bar
-Results will appear in a dropdown list
-Click on a result to scroll to the relevant month
-Matching days will be highlighted in the calendar
-
-**Keyboard Shortcuts**
-
-T - Toggle between light and dark themes
-P - Open print dialog
-D - Scroll to today's date
-Esc - Close search results
-
-**Printing**
-
-Click the "Print" button or use the P keyboard shortcut
-Print styles are optimized for paper output
-Navigation elements and controls are hidden in print view
-
-## Installation
-
-    1. Clone the repository:
-       git clone https://github.com/Vojislav77/orthodox-calendar-2026.git
-    2. Navigate to the project directory:
-       cd orthodox-calendar-2026
-    3. Open index.html in your web browser.
-    No server or build process is required. The application runs entirely client-side.
-
-## Customization
-
-**Adding New Data**
-
-To add or modify calendar data, edit the months array in the JavaScript section. Each month object follows this structure:
-
-    {
-      name: "JANUARY", // Month name in uppercase
-      firstDay: 4,     // Day of week (0-6, Sunday-Saturday)
-      days: [
-        {
-          n: 1,        // Day number (New Style)
-          o: 19,       // Day number (Old Style)
-          s: "Saint name", // Saint or feast name
-          f: 0,        // Fasting level (0-4)
-          feast: true, // Optional, marks major feast
-          note: "Special note" // Optional
-        }
-      ]
-    }
-
-**Styling Customization**
-
-The CSS uses custom properties (CSS variables) for theming. To modify colors or other visual aspects, edit the :root and [data-theme="dark"] sections in the CSS.
-
-**Browser Support**
-
-The application supports all modern browsers:
-Chrome 60+
-Firefox 55+
-Safari 12+
-Edge 79+
-Opera 50+
-Mobile browsers (iOS Safari 12+, Android Chrome 60+)
-
-## License
-
-This project is open source and available under the MIT License.
-
-## Contributing
-
-Contributions are welcome! 
-Areas that could benefit from community input:
-
-Adding more saints and feast days
-Improving translation accuracy
-Adding additional liturgical notes
-Enhancing accessibility
-Optimizing performance
-
-Please submit pull requests with clear descriptions of changes made.
-
-**Acknowledgments**
-
-Calendar data compiled from traditional Serbian Orthodox Church sources
-Design inspired by Orthodox liturgical traditions
-Built with a focus on accessibility and user experience
-
-**Contact**
-
-For questions, suggestions, or issues, please contact the project maintainer.
+- **Fast tracker** — four cards for the major fasts with start/end dates, current status, remaining
+  days, a progress bar and a click-to-jump action.
+- **Saint of the day** — a compact horizontal card: “Светитељ дана: Свети мученик Карп, 26. Октобар
+  2026. (ст. 13.), Мрсно (без поста) · Детаљи дана”, with feast / patron-saint badges and the
+  day's reading inline. The old stacked layout is gone, so the card no longer leaves a large empty
+  area on the right.
+- **.ics export** — the “Извези .ics” button (shortcut `E`) downloads `pravoslavni-kalendar-2026.ics`
+  with all 365 days as all-day events. Each event carries the saint, new and old calendar dates,
+  fasting rule, feast/slava category and notes. The export follows the active Cyrillic/Latin script.
+- **“Стари календар” wording** — the Old Style label in the day modal is now “Стари календар”
+  (Latin: “Stari kalendar”) instead of “Стари стил”.
+- **Detailed day modal** — feast and slava badges, the exact fasting rule, Scripture readings,
+  a short description of the feast, folk customs, the calendar note and a disclaimer.
+- **Corrected feast and slava flags** — 26 major feasts and the 10 most common Serbian patron-saint
+  days (Никољдан, Ђурђевдан, Аранђеловдан, Јовањдан, Митровдан, Видовдан, Св. Петка,
+  Св. Василије, Савиндан, Илиндан) are marked consistently.
+- **Dark theme corrected** — the purple-on-dark contrast problems are fixed with targeted overrides
+  instead of a global colour inversion; borders, buttons, search, legend, modal and footer all pass
+  a visual contrast check.
+- **Sticky month navigation + scroll spy** — the month bar stays visible while scrolling and the
+  active month follows the page. Month jumps respect the sticky header offset.
+- **Scroll position preserved** when switching Cyrillic ↔ Latin, filtering a slava, or searching.
+- **Mobile layout rebuilt** — on phones the seven-column grid becomes a readable one-column day list
+  (day number, old-style date, saint, fast dot, note); the month bar scrolls horizontally instead of
+  growing into a tall block.
+- **Search fixes** — Latin and Cyrillic queries, Serbian diacritics, correct result dates, result
+  highlighting and calendar highlighting all work in both scripts.
+- **Accessibility** — ARIA labels and roles on day cells, search results, legend and dialog; roving
+  tabindex with arrow-key navigation between days; focus trap, `inert` background and focus restore
+  in the modal; `aria-pressed` on script and slava buttons; visible focus rings.
+- **Print layout** — only the twelve months are printed; tracker, legend, search, controls and modal
+  are hidden; white backgrounds and page breaks are enforced.
+- **Tray menu follows the script** — the Electron tray menu and tooltip now switch between
+  Cyrillic and Latin together with the app (via `preload.js` + IPC).
+- **PWA cache** — service worker cache bumped to `orthodox-calendar-v7`.
+- **Desktop build** — the AppImage was rebuilt and overwrites
+  `OrthodoxCalendar-2026-v3-x86_64.AppImage`.
 
 ---
 
-**Made with ❤️ for the Orthodox Christian community**
+## Features
 
-This application is provided as a reference tool for the Orthodox Christian community. While efforts have been made to ensure accuracy, users are encouraged to consult their local parish for official liturgical guidance.
+### Calendar
+
+- All twelve months of 2026 in one page.
+- New Style and Old Style date on every day.
+- Saints, feasts and liturgical notes for every day.
+- Colour-coded fasting indicator on every day (including grey for fast-free days).
+- Major feasts highlighted with a coloured left border and bold text.
+- Patron-saint days marked with a small cross and the “Крсна слава” badge in the modal.
+- “Today” highlighting with a pulse animation.
+- Month-by-month navigation, previous/next arrows, and quick jump to any month.
+
+### Fasting guide
+
+Six categories are used throughout the app and explained in the collapsible legend:
+
+| `f` | Class | Meaning |
+|---:|---|---|
+| 0 | `mrsno` | Fast-free — all food allowed |
+| 1 | `suho` | Strict fast — dry eating (bread, water, raw fruit/vegetables, nuts, honey) |
+| 2 | `bez` | On water — cooked food without oil or wine |
+| 3 | `ulje` | Oil and wine allowed; no meat, fish, dairy or eggs |
+| 4 | `riba` | Fish, oil and wine allowed |
+| 5 | `beli` | White dairy (milk, eggs, cheese); no meat or fish |
+
+### Search
+
+- Search by saint or feast name in Serbian Cyrillic or Latin.
+- Diacritic-insensitive matching (`c` ↔ `č`/`ć`, `s` ↔ `š`, `z` ↔ `ž`, `dj` ↔ `đ`).
+- Dropdown results with the exact date; the calendar scrolls to the selected day and highlights all
+  matching days.
+- Works in both scripts, including Latin result rendering and highlighting.
+
+### Calendar export (.ics)
+
+- “Извези .ics” (or `E`) downloads `pravoslavni-kalendar-2026.ics`.
+- The file contains 365 all-day events — one per calendar day — with the saint, new and old
+  calendar dates, fasting rule, feast/slava categories, notes and readings.
+- UTF-8, CRLF line endings and RFC 5545 line folding are used, so the file imports into Google
+  Calendar, Apple Calendar, Thunderbird and Outlook.
+- The export follows the active script: Cyrillic or Serbian Latin.
+
+### Krsne slave filter
+
+- Quick filter for the ten most common Serbian patron-saint days.
+- Selecting a slava scrolls to the day, highlights it, and updates the active month.
+- “Поништи” clears the filter. Button state is exposed through `aria-pressed`.
+
+### Script switcher
+
+- One-click switch between Serbian Cyrillic and Latin script.
+- The choice is stored in `localStorage` and restored on the next launch.
+- The whole UI is translated: header, month names, weekday names, saints, notes, legend, fast
+  tracker, modal, search placeholder, footer and the Electron tray menu / tooltip.
+
+### Themes and responsive design
+
+- Light and dark themes with persistent preference and a `theme-color` update.
+- Desktop/tablet seven-column calendar grid; phone list layout.
+- Sticky, horizontally scrollable month bar on small screens.
+- Print styles for A4 paper.
+
+### Keyboard shortcuts
+
+| Key | Action |
+|---|---|
+| `T` | Toggle light/dark theme |
+| `P` | Print |
+| `D` | Jump to today |
+| `E` | Export the calendar as an `.ics` file |
+| `Esc` | Close search, modal or highlights |
+| `Enter` / `Space` | Open the focused day |
+| `←` `→` `↑` `↓` | Move between days when a day cell is focused |
+
+---
+
+## Desktop application (AppImage)
+
+The Linux desktop edition bundles Electron and the same web app. It also provides a tray icon and
+a native window (`main.js`). The tray context menu follows the app's Cyrillic/Latin preference via
+`preload.js` and IPC, so it is never left in the wrong script.
+
+```bash
+chmod +x OrthodoxCalendar-2026-v3-x86_64.AppImage
+./OrthodoxCalendar-2026-v3-x86_64.AppImage
+```
+
+The AppImage stores the application in `usr/share/orthodox-calendar/` and uses Electron’s runtime
+from `usr/lib/electron/`. To inspect it:
+
+```bash
+./OrthodoxCalendar-2026-v3-x86_64.AppImage --appimage-extract
+```
+
+### Rebuilding the AppImage
+
+The build is intentionally simple and does not require `electron-builder`:
+
+```bash
+# 1. Extract the current AppImage
+./OrthodoxCalendar-2026-v3-x86_64.AppImage --appimage-extract
+
+# 2. Copy the updated web files into the extracted tree
+cp index.html main.js preload.js sw.js manifest.json package.json \
+   squashfs-root/usr/share/orthodox-calendar/
+
+# 3. Repack the squashfs
+mksquashfs squashfs-root app.squashfs -comp gzip -b 131072 -all-root -noappend
+
+# 4. Prepend the original AppImage runtime
+OFFSET=$(./OrthodoxCalendar-2026-v3-x86_64.AppImage --appimage-offset)
+head -c "$OFFSET" OrthodoxCalendar-2026-v3-x86_64.AppImage > new.AppImage
+cat app.squashfs >> new.AppImage
+chmod +x new.AppImage
+```
+
+The runtime length can change between Electron versions. `--appimage-offset` prints the exact
+number of runtime bytes (193728 for this build), which is more reliable than searching for the
+`hsqs` magic because the Electron runtime can contain the same byte sequence.
+
+---
+
+## Project structure
+
+```
+orthodox-calendar/
+├── index.html                              # App, data, CSS and JavaScript
+├── main.js                                 # Electron main process (window + tray)
+├── preload.js                              # Secure bridge for the tray language
+├── manifest.json                           # PWA manifest
+├── sw.js                                   # Service worker (cache v7)
+├── favicon.png                             # 192×192 icon
+├── logo.png                                # Large logo
+├── tray-icon*.png                          # Adaptive KDE tray icons
+├── package.json                            # Electron app metadata (v3.0.0)
+├── README.md
+└── OrthodoxCalendar-2026-v3-x86_64.AppImage
+```
+
+### Data structure
+
+Calendar data lives in the `months` array inside `index.html`:
+
+```js
+{
+  name: "ЈАНУАР",
+  firstDay: 4,          // 0 = Sunday … 6 = Saturday
+  days: [
+    {
+      n: 1,             // New Style day number
+      o: 19,            // Old Style day number
+      s: "Свети мученик Бонифатије",
+      f: 3,             // Fasting category 0–5
+      feast: true,      // Optional: major feast badge
+      slava: true,      // Optional: patron-saint day badge
+      note: "Туциндан"  // Optional: liturgical or folk note
+    }
+  ]
+}
+```
+
+Additional maps in the same script:
+
+- `dayDetails` — descriptions, readings and folk customs for major days.
+- `fastPeriods` — the four major fasts with 2026/2027 boundaries and colours.
+- `slaveList` — the ten patron-saint days used by the filter.
+- `fastLabels`, `fastDescriptions`, `fastColors` — the six fasting categories.
+
+### Customizing
+
+- **Colours and themes:** edit the `:root` and `[data-theme="dark"]` custom properties.
+- **Fasting categories:** update `fastLabels`, `fastDescriptions`, `fastColors` and the
+  `.legend-dot` / `.fast-indicator` rules.
+- **Data:** edit the `months` array; keep `f` in the 0–5 range and use `feast` / `slava` only where
+  appropriate.
+- **Translations:** `cyrToLat` handles automatic transliteration; UI strings are in
+  `updateStaticUI()` and the render functions.
+
+---
+
+## Usage
+
+1. Open `index.html` directly in a browser, or serve the folder with any static server.
+2. For PWA/offline use, serve over HTTP(S); service workers do not register from `file://`.
+3. Click any day to open its details. Click a fast card to jump to the start of that fast.
+4. Use the search field, slava filter and month bar to navigate.
+5. Click “Извези .ics” (or press `E`) to download the whole year as an `.ics` file and import it
+   into Google Calendar, Apple Calendar, Thunderbird or Outlook.
+
+### Installation (web)
+
+```bash
+git clone https://github.com/Vojislav77/orthodox-calendar-2026.git
+cd orthodox-calendar-2026
+# open index.html, or:
+python3 -m http.server 8000
+# then visit http://localhost:8000
+```
+
+No build step, no npm dependencies and no external CDN requests are required.
+
+---
+
+## Changelog
+
+### v3.0 (current)
+
+- Replaced the 2026 fasting data with the exact per-day categories from the Serbian Orthodox
+  fasting calendar (192 fasting days; 90 water / 76 oil / 26 fish; 7 dairy days).
+- Added strict-fast days, white-dairy days and the sixth legend category.
+- Added the fast tracker, saint-of-the-day card and detailed day modal.
+- Added feast flags for Annunciation, Entrance of the Theotokos, Beheading of St John and Holy
+  Saturday; added `slava` flags for ten patron-saint days.
+- Fixed dark-theme contrast, sticky navigation, scroll spy, scroll-to-top placement and the
+  scroll position when switching scripts.
+- Rebuilt the mobile calendar as a readable list and made the month bar scroll horizontally.
+- Fixed Latin/Cyrillic search results and highlight rendering.
+- Added accessibility: ARIA roles/labels, roving tabindex, arrow-key day navigation, focus trap,
+  `inert` background, focus restore and visible focus rings.
+- Added `.ics` export for all 365 days, with script-aware summaries and descriptions.
+- Renamed “Стари стил” to “Стари календар” (“Stari kalendar”).
+- Rebuilt the saint-of-the-day card as a single horizontal line.
+- Localized the Electron tray menu and tooltip through `preload.js`.
+- Updated the service worker cache to `orthodox-calendar-v7`.
+- Rebuilt `OrthodoxCalendar-2026-v3-x86_64.AppImage`.
+
+### v2.0
+
+- Fixed the `f` / `fast` property conflict that rendered some fasting days as fast-free.
+- Added Serbian Latin diacritic normalization to search.
+- Improved “Today” navigation with a visual pulse.
+- Centered the current month on first launch.
+- Added adaptive monochrome KDE tray icons.
+- Updated the PWA cache to v4.
+
+---
+
+## Browser support
+
+The app targets current browsers and the bundled Electron 43 runtime:
+
+- Chrome / Edge 100+
+- Firefox 100+
+- Safari 16+
+- Modern Android and iOS browsers
+
+It uses `overflow: clip`, `inert`, `:focus-visible`, CSS custom properties and `backdrop-filter`.
+
+---
+
+## Data sources and accuracy
+
+- Calendar dates, saints and fasting categories: Serbian Orthodox Church calendar for 2026
+  (`srpskikalendar.rs`).
+- Old Style dates are calculated from the Julian calendar (13-day difference in 2026).
+- Fasting rules are general. Individual parishes, monks and the faithful may have a blessing for a
+  different practice; always follow the guidance of your parish priest.
+
+**Disclaimer:** This application is a reference tool. It is not an official liturgical publication.
+For services, fasting exceptions and pastoral questions, consult your local parish.
+
+---
+
+## License
+
+MIT License. See `LICENSE`.
+
+## Contributing
+
+Contributions are welcome:
+
+- Corrections to saints, feasts, readings or fasting categories.
+- Additional `dayDetails` entries and folk customs.
+- Translation and accessibility improvements.
+- Performance and print-layout improvements.
+
+Please open an issue or a pull request with a clear description and a source for any calendar
+correction.
+
+---
+
+**Made with ❤️ for the Orthodox Christian community.**
