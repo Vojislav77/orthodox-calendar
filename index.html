@@ -16,7 +16,7 @@
         }
 
         html, body {
-            overflow-x: hidden;
+            overflow-x: clip;
             max-width: 100%;
             scroll-behavior: smooth;
         }
@@ -48,6 +48,7 @@
             --today-glow: rgba(124, 58, 237, 0.25);
             --highlight-bg: #fef08a;
             --search-highlight-border: #7c3aed;
+            --modal-bg: rgba(0,0,0,0.55);
         }
 
         [data-theme="dark"] {
@@ -74,7 +75,43 @@
             background: var(--bg-primary);
             color: var(--text-primary);
             line-height: 1.6;
-            transition: all 0.3s ease;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        body, .month, .day, .legend, .slave-filter, .saint-of-day, .fast-card {
+            transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        button, .day, .month-name-btn, .slave-btn {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button:focus-visible,
+        .day:focus-visible,
+        .month-name-btn:focus-visible,
+        .month-nav-btn:focus-visible,
+        .slave-btn:focus-visible,
+        .btn:focus-visible,
+        .search-input-wrapper button:focus-visible,
+        .fast-card:focus-visible {
+            outline: 3px solid var(--accent-light);
+            outline-offset: 2px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        [data-theme="dark"] {
+            color-scheme: dark;
         }
 
         header {
@@ -270,12 +307,17 @@
             align-items: center;
             gap: 0.8rem;
             margin-bottom: 2rem;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             background: var(--bg-secondary);
             padding: 0.8rem 1.5rem;
             border-radius: 12px;
             border: 2px solid var(--purple-200);
             box-shadow: 0 4px 15px var(--shadow);
+            position: sticky;
+            top: 0.75rem;
+            z-index: 600;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
         .month-nav-btn {
@@ -307,12 +349,21 @@
 
         .month-nav-names {
             display: flex;
+            flex: 1 1 auto;
+            min-width: 0;
             gap: 0.3rem;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             justify-content: center;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .month-nav-names::-webkit-scrollbar {
+            display: none;
         }
 
         .month-name-btn {
+            flex: 0 0 auto;
             padding: 0.3rem 0.7rem;
             border-radius: 20px;
             border: 2px solid transparent;
@@ -413,21 +464,18 @@
         }
 
         .legend-items {
-            display: flex;
-            flex-wrap: nowrap;
-            gap: 1.2rem;
-            overflow-x: auto;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.8rem 1.2rem;
             padding-bottom: 0.3rem;
-            -webkit-overflow-scrolling: touch;
         }
 
         .legend-item {
-            flex: 0 0 auto;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 0.6rem;
             font-size: 0.85rem;
-            white-space: nowrap;
+            white-space: normal;
         }
 
         .legend-dot {
@@ -443,19 +491,22 @@
         .legend-dot.bez { background: #ea580c; }
         .legend-dot.ulje { background: #eab308; }
         .legend-dot.riba { background: #2563eb; }
+        .legend-dot.beli { background: #a855f7; }
         .legend-dot.mrsno { background: #9ca3af; }
 
         [data-theme="dark"] .legend-dot.suho { background: #dc2626; }
         [data-theme="dark"] .legend-dot.bez { background: #f97316; }
         [data-theme="dark"] .legend-dot.ulje { background: #facc15; }
         [data-theme="dark"] .legend-dot.riba { background: #3b82f6; }
+        [data-theme="dark"] .legend-dot.beli { background: #c084fc; }
         [data-theme="dark"] .legend-dot.mrsno { background: #d1d5db; }
 
         .legend-text {
             display: flex;
             flex-direction: row;
+            flex-wrap: wrap;
             align-items: center;
-            gap: 0.4rem;
+            gap: 0 0.4rem;
         }
 
         .legend-text strong {
@@ -478,7 +529,7 @@
             box-shadow: 0 4px 15px var(--shadow);
             border: 2px solid var(--purple-200);
             transition: all 0.3s ease;
-            scroll-margin-top: 20px;
+            scroll-margin-top: 110px;
         }
 
         .month:hover {
@@ -633,12 +684,14 @@
         .fast-indicator.bez { background: #ea580c !important; box-shadow: 0 0 6px rgba(234, 88, 12, 0.4) !important; }
         .fast-indicator.ulje { background: #eab308 !important; box-shadow: 0 0 6px rgba(234, 179, 8, 0.4) !important; }
         .fast-indicator.riba { background: #2563eb !important; box-shadow: 0 0 6px rgba(37, 99, 235, 0.4) !important; }
+        .fast-indicator.beli { background: #a855f7 !important; box-shadow: 0 0 6px rgba(168, 85, 247, 0.4) !important; }
         .fast-indicator.mrsno { background: #9ca3af !important; box-shadow: 0 0 6px rgba(156, 163, 175, 0.4) !important; }
 
         [data-theme="dark"] .fast-indicator.suho { background: #dc2626 !important; box-shadow: 0 0 8px rgba(220, 38, 38, 0.5) !important; }
         [data-theme="dark"] .fast-indicator.bez { background: #f97316 !important; box-shadow: 0 0 8px rgba(249, 115, 22, 0.5) !important; }
         [data-theme="dark"] .fast-indicator.ulje { background: #facc15 !important; box-shadow: 0 0 8px rgba(250, 204, 21, 0.5) !important; }
         [data-theme="dark"] .fast-indicator.riba { background: #3b82f6 !important; box-shadow: 0 0 8px rgba(59, 130, 246, 0.5) !important; }
+        [data-theme="dark"] .fast-indicator.beli { background: #c084fc !important; box-shadow: 0 0 8px rgba(192, 132, 252, 0.5) !important; }
         [data-theme="dark"] .fast-indicator.mrsno { background: #d1d5db !important; box-shadow: 0 0 8px rgba(209, 213, 219, 0.5) !important; }
 
         .feast {
@@ -755,7 +808,7 @@
         .scroll-top {
             position: fixed;
             bottom: 2rem;
-            right: calc((100vw - 1200px) / 2 - 70px);
+            right: 1.5rem;
             width: 50px;
             height: 50px;
             border-radius: 50%;
@@ -791,21 +844,21 @@
         }
 
         .keyboard-hint {
-            position: fixed;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--bg-secondary);
-            padding: 0.5rem 1.5rem;
+            position: static;
+            width: fit-content;
+            max-width: 100%;
+            margin: 0.45rem auto 0;
+            background: rgba(255, 255, 255, 0.12);
+            padding: 0.35rem 1.1rem;
             border-radius: 50px;
-            border: 2px solid var(--purple-200);
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            box-shadow: 0 4px 15px var(--shadow);
-            opacity: 0.7;
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            font-size: 0.72rem;
+            color: rgba(255, 255, 255, 0.85);
+            box-shadow: none;
+            opacity: 1;
             transition: all 0.3s ease;
             z-index: 99;
-            display: none;
+            display: block;
         }
 
         .keyboard-hint.visible {
@@ -813,14 +866,15 @@
         }
 
         .keyboard-hint:hover {
-            opacity: 1;
+            background: rgba(255, 255, 255, 0.18);
         }
 
         .keyboard-hint kbd {
-            background: var(--bg-primary);
+            background: rgba(0, 0, 0, 0.22);
             padding: 0.1rem 0.5rem;
             border-radius: 4px;
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
             font-size: 0.7rem;
             font-family: inherit;
         }
@@ -838,8 +892,13 @@
                 margin: 0 !important;
             }
 
-            .controls, .legend, .scroll-top, header, .month-navigation, .search-container, .keyboard-hint {
+            .controls, .legend, .scroll-top, header, .month-navigation, .search-container, .keyboard-hint, .fast-tracker {
                 display: none !important;
+            }
+
+            body, .day, .month, .month-content, .container {
+                background: white !important;
+                color: #111111 !important;
             }
 
             .month {
@@ -1035,10 +1094,22 @@
                 font-size: 1.2rem;
             }
             .month-navigation {
-                padding: 0.5rem 0.8rem;
-                gap: 0.4rem;
+                padding: 0.5rem;
+                gap: 0.35rem;
+                top: 0.4rem;
+            }
+            .month-nav-names {
+                flex-wrap: nowrap;
+                justify-content: flex-start;
+                overflow-x: auto;
+                scrollbar-width: none;
+                -webkit-overflow-scrolling: touch;
+            }
+            .month-nav-names::-webkit-scrollbar {
+                display: none;
             }
             .month-name-btn {
+                flex: 0 0 auto;
                 font-size: 0.6rem;
                 padding: 0.2rem 0.5rem;
             }
@@ -1056,7 +1127,8 @@
             }
 
             .legend-items {
-                gap: 0.8rem;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0.6rem 0.8rem;
             }
             .legend-text small {
                 display: none;
@@ -1091,6 +1163,708 @@
                 font-size: 0.85rem !important;
             }
         }
+
+        @media (max-width: 1200px) {
+            .month-nav-names {
+                justify-content: flex-start;
+            }
+        }
+
+        /* Compact list layout for phones: full-width, readable rows */        @media (max-width: 600px) {
+            .calendar-grid {
+                grid-template-columns: 1fr;
+                gap: 0.4rem;
+            }
+            .week-header {
+                display: none;
+            }
+            .day.empty {
+                display: none;
+            }
+            .day {
+                display: grid;
+                grid-template-columns: 2.6rem minmax(0, 1fr);
+                grid-template-rows: auto auto;
+                align-items: center;
+                column-gap: 0.6rem;
+                min-height: 0;
+                padding: 0.45rem 0.65rem;
+            }
+            .day-number {
+                grid-column: 1;
+                grid-row: 1;
+                margin: 0;
+                font-size: 1.05rem;
+                line-height: 1.1;
+                text-align: center;
+            }
+            .day.today .day-number::after {
+                display: none;
+            }
+            .day-old-style {
+                grid-column: 1;
+                grid-row: 2;
+                margin: 0;
+                font-size: 0.62rem;
+                line-height: 1.2;
+                text-align: center;
+            }
+            .day-saint {
+                grid-column: 2;
+                grid-row: 1;
+                font-size: 0.82rem;
+                line-height: 1.3;
+            }
+            .special-note {
+                grid-column: 2;
+                grid-row: 2;
+                margin-top: 0.1rem;
+                font-size: 0.66rem;
+                line-height: 1.3;
+            }
+            .slava-mark {
+                top: 5px;
+                right: 7px;
+            }
+        }
+
+        /* ===== SCRIPT SWITCHER ===== */
+        .script-switcher {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .script-btn {
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 20px;
+            padding: 0.3rem 0.8rem;
+            color: white;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.2s ease;
+            letter-spacing: 0.5px;
+        }
+        .script-btn:hover { background: rgba(255,255,255,0.25); }
+        .script-btn.active {
+            background: rgba(255,255,255,0.9);
+            color: var(--purple-800);
+            border-color: white;
+        }
+
+        /* ===== SAINT OF THE DAY CARD ===== */
+        .saint-of-day {
+            background: linear-gradient(135deg, var(--purple-50) 0%, var(--bg-secondary) 100%);
+            border: 2px solid var(--purple-200);
+            border-radius: 12px;
+            padding: 0.85rem 1.2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        [data-theme="dark"] .saint-of-day {
+            background: linear-gradient(135deg, #2e1065 0%, #1a1a1a 100%);
+        }
+        .saint-of-day-icon {
+            font-size: 1.7rem;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+        .saint-of-day-body {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+        .saint-of-day-line {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.28rem 0.45rem;
+            line-height: 1.45;
+        }
+        .saint-of-day-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            color: var(--purple-600);
+        }
+        .saint-of-day-date {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+        .saint-of-day-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+        .saint-of-day-fast {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.74rem;
+            color: var(--text-secondary);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 0.15rem 0.6rem;
+        }
+        .saint-of-day-note {
+            font-size: 0.75rem;
+            color: var(--purple-600);
+            font-style: italic;
+        }
+
+        /* ===== KRSNE SLAVE FILTER ===== */
+        .slave-filter {
+            background: var(--bg-secondary);
+            border: 2px solid var(--purple-200);
+            border-radius: 12px;
+            padding: 0.9rem 1.2rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+        .slave-filter-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 0.7rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--purple-700);
+        }
+        .slave-filter-btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+        .slave-btn {
+            background: transparent;
+            border: 2px solid var(--purple-200);
+            border-radius: 20px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.2s ease;
+        }
+        .slave-btn:hover {
+            background: var(--purple-50);
+            border-color: var(--purple-400);
+            color: var(--purple-700);
+        }
+        .slave-btn.active {
+            background: var(--purple-600);
+            border-color: var(--purple-600);
+            color: white;
+        }
+        .slave-btn.clear-btn {
+            border-color: var(--border-color);
+            color: var(--text-muted);
+        }
+        .slave-btn.clear-btn:hover {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #dc2626;
+        }
+        .day.slava-highlight {
+            border: 2px solid #f59e0b !important;
+            background: #fffbeb !important;
+        }
+        [data-theme="dark"] .day.slava-highlight {
+            background: #292200 !important;
+        }
+
+        .slava-mark {
+            position: absolute;
+            top: 4px;
+            right: 5px;
+            color: #b45309;
+            font-size: 0.85rem;
+            line-height: 1;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.12);
+        }
+        [data-theme="dark"] .slava-mark { color: #fbbf24; }
+
+        /* ===== FAST TRACKER ===== */
+        .fast-tracker {
+            background: var(--bg-secondary);
+            border: 2px solid var(--purple-200);
+            border-radius: 12px;
+            padding: 1.2rem 1.35rem;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+        .fast-tracker-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 0.35rem 0.9rem;
+            margin-bottom: 0.9rem;
+        }
+        .fast-tracker-header h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--purple-800);
+            letter-spacing: 0.2px;
+        }
+        .fast-tracker-sub {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+        .fast-tracker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 0.75rem;
+        }
+        .fast-card {
+            position: relative;
+            background: var(--bg-primary);
+            border: 2px solid var(--purple-200);
+            border-left: 5px solid var(--fast-color, var(--purple-500));
+            border-radius: 10px;
+            padding: 0.8rem 0.9rem;
+            cursor: pointer;
+            text-align: left;
+            font-family: inherit;
+            color: inherit;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .fast-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(124, 58, 237, 0.18);
+        }
+        .fast-card.is-active {
+            border-color: #f59e0b;
+            border-left-color: var(--fast-color, #f59e0b);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.16);
+        }
+        .fast-card.is-past { opacity: 0.78; }
+        .fast-card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 0.4rem;
+        }
+        .fast-card h4,
+        .fast-card .fast-card-title {
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: var(--purple-800);
+            line-height: 1.3;
+            margin: 0;
+            display: block;
+        }
+        .fast-card-icon {
+            font-size: 1rem;
+            line-height: 1;
+            flex-shrink: 0;
+            opacity: 0.85;
+        }
+        .fast-card-range {
+            display: block;
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+        .fast-card-status {
+            display: inline-block;
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--purple-700);
+            margin-top: 0.45rem;
+        }
+        .fast-card-meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.5rem;
+            font-size: 0.64rem;
+            color: var(--text-muted);
+            margin-top: 0.35rem;
+        }
+        .fast-progress {
+            display: block;
+            height: 6px;
+            border-radius: 99px;
+            background: var(--border-color);
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        .fast-progress span {
+            display: block;
+            height: 100%;
+            width: 0;
+            border-radius: 99px;
+            background: var(--fast-color, var(--purple-500));
+            transition: width 0.6s ease;
+        }
+
+        .saint-of-day-reading {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.45;
+        }
+        .saint-of-day-reading strong {
+            color: var(--purple-700);
+            font-weight: 600;
+        }
+        .saint-of-day-btn {
+            border: 1px solid var(--purple-300);
+            background: var(--bg-secondary);
+            color: var(--purple-700);
+            border-radius: 20px;
+            padding: 0.22rem 0.7rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .saint-of-day-btn:hover {
+            background: var(--purple-50);
+            border-color: var(--purple-500);
+        }
+        .saint-of-day-slava {
+            display: inline-block;
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+            border-radius: 20px;
+            padding: 0.18rem 0.65rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-right: 0.3rem;
+            vertical-align: middle;
+        }
+        [data-theme="dark"] .saint-of-day-slava {
+            background: #3b2500;
+            color: #fcd34d;
+            border-color: #b45309;
+        }
+
+        /* ===== DAY DETAIL MODAL ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .modal-overlay.open { display: flex; }
+        body.modal-open { overflow: hidden; }
+        .modal-box {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            border: 2px solid var(--purple-200);
+            animation: modalIn 0.2s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+        .modal-header {
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--purple-800) 100%);
+            color: white;
+            padding: 1.2rem 1.5rem;
+            border-radius: 14px 14px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .modal-header-dates { flex: 1; }
+        .modal-header-ns {
+            font-size: 1.6rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .modal-header-month {
+            font-size: 0.85rem;
+            opacity: 0.85;
+            margin-top: 0.2rem;
+        }
+        .modal-header-os {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 0.1rem;
+        }
+        .modal-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        .modal-close:hover { background: rgba(255,255,255,0.35); }
+        .modal-body { padding: 1.5rem; }
+        .modal-section { margin-bottom: 1.2rem; }
+        .modal-section:last-child { margin-bottom: 0; }
+        .modal-section-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--purple-600);
+            margin-bottom: 0.4rem;
+        }
+        .modal-saint-name {
+            font-size: 0.98rem;
+            color: var(--text-primary);
+            line-height: 1.5;
+            font-weight: 500;
+        }
+        .modal-fast-row {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+        }
+        .modal-fast-dot {
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        .modal-note {
+            font-size: 0.88rem;
+            color: var(--purple-700);
+            font-style: italic;
+            background: var(--purple-50);
+            border-radius: 8px;
+            padding: 0.5rem 0.8rem;
+        }
+        [data-theme="dark"] .modal-note { background: var(--feast-bg); }
+        .modal-feast-badge {
+            display: inline-block;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 20px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .modal-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            align-items: center;
+        }
+        .modal-badge-slava {
+            display: inline-block;
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+            border-radius: 20px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+        [data-theme="dark"] .modal-badge-slava {
+            background: #3b2500;
+            color: #fcd34d;
+            border-color: #b45309;
+        }
+        .modal-fast-desc {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-top: 0.45rem;
+        }
+        .modal-detail-text {
+            font-size: 0.86rem;
+            color: var(--text-secondary);
+            line-height: 1.55;
+        }
+        .modal-detail-text + .modal-detail-text { margin-top: 0.45rem; }
+        .modal-footer-note {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            padding-top: 0.7rem;
+            margin-top: 1.1rem;
+            line-height: 1.45;
+        }
+
+        /* ===== DARK THEME CONTRAST FIXES ===== */
+        [data-theme="dark"] .month,
+        [data-theme="dark"] .legend,
+        [data-theme="dark"] .slave-filter,
+        [data-theme="dark"] .fast-tracker,
+        [data-theme="dark"] .month-navigation,
+        [data-theme="dark"] .search-input-wrapper,
+        [data-theme="dark"] .search-results,
+        [data-theme="dark"] .saint-of-day,
+        [data-theme="dark"] .keyboard-hint,
+        [data-theme="dark"] .modal-box {
+            border-color: #3b2566;
+        }
+        [data-theme="dark"] .day {
+            border-color: #333333;
+        }
+        [data-theme="dark"] .week-header {
+            border-bottom-color: #3b2566;
+        }
+        [data-theme="dark"] .day-number,
+        [data-theme="dark"] .weekend .day-number,
+        [data-theme="dark"] .day.today .day-number {
+            color: #ddd6fe;
+        }
+        [data-theme="dark"] .week-day {
+            color: #c4b5fd;
+        }
+        [data-theme="dark"] .feast .day-saint,
+        [data-theme="dark"] .search-highlight-day .day-saint {
+            color: #ede9fe;
+        }
+        [data-theme="dark"] .special-note {
+            color: #c4b5fd;
+        }
+        [data-theme="dark"] .month-name-btn {
+            color: #b9b0c9;
+        }
+        [data-theme="dark"] .month-name-btn:hover {
+            color: #ede9fe;
+            background: #2b1a4a;
+            border-color: #5b3f8c;
+        }
+        [data-theme="dark"] .month-name-btn.active {
+            color: #f5f3ff;
+            background: #4c1d95;
+            border-color: #a78bfa;
+        }
+        [data-theme="dark"] .month-nav-btn {
+            color: #c4b5fd;
+        }
+        [data-theme="dark"] .month-nav-btn:hover,
+        [data-theme="dark"] .legend-toggle:hover,
+        [data-theme="dark"] .btn:hover,
+        [data-theme="dark"] .saint-of-day-btn:hover {
+            background: #2b1a4a;
+        }
+        [data-theme="dark"] .btn {
+            color: #ddd6fe;
+            border-color: #5b3f8c;
+        }
+        [data-theme="dark"] .legend-header h3,
+        [data-theme="dark"] .slave-filter-header,
+        [data-theme="dark"] .saint-of-day-label,
+        [data-theme="dark"] .saint-of-day-note,
+        [data-theme="dark"] .saint-of-day-reading strong,
+        [data-theme="dark"] .fast-tracker-header h3,
+        [data-theme="dark"] .fast-card h4,
+        [data-theme="dark"] .fast-card .fast-card-title,
+        [data-theme="dark"] .fast-card-status,
+        [data-theme="dark"] .modal-section-label {
+            color: #ddd6fe;
+        }
+        [data-theme="dark"] .legend-toggle {
+            color: #c4b5fd;
+        }
+        [data-theme="dark"] .legend-text small,
+        [data-theme="dark"] .modal-footer-note,
+        [data-theme="dark"] .fast-tracker-sub,
+        [data-theme="dark"] .fast-card-range,
+        [data-theme="dark"] .fast-card-meta {
+            color: #a1a1aa;
+        }
+        [data-theme="dark"] .search-input-wrapper button {
+            background: #3b0764;
+            color: #e9d5ff;
+        }
+        [data-theme="dark"] .search-input-wrapper button:hover {
+            background: #4c1d95;
+        }
+        [data-theme="dark"] .search-result-item:hover {
+            background: #2b1a4a;
+        }
+        [data-theme="dark"] .search-result-item .result-date {
+            color: #a1a1aa;
+        }
+        [data-theme="dark"] .search-highlight {
+            color: #fff7ed;
+        }
+        [data-theme="dark"] .slave-btn {
+            color: #d4d4d8;
+            border-color: #3b2566;
+        }
+        [data-theme="dark"] .slave-btn:hover {
+            background: #2b1a4a;
+            color: #ede9fe;
+            border-color: #8b5cf6;
+        }
+        [data-theme="dark"] .slave-btn.active {
+            background: #7c3aed;
+            border-color: #a78bfa;
+            color: white;
+        }
+        [data-theme="dark"] .slave-btn.clear-btn {
+            color: #a1a1aa;
+            border-color: #333333;
+        }
+        [data-theme="dark"] .slave-btn.clear-btn:hover {
+            background: #3f1d1d;
+            border-color: #ef4444;
+            color: #fca5a5;
+        }
+        [data-theme="dark"] .saint-of-day-btn {
+            background: #1a1a1a;
+            border-color: #5b3f8c;
+            color: #ddd6fe;
+        }
+        [data-theme="dark"] .fast-card {
+            border-color: #333333;
+        }
+        [data-theme="dark"] .fast-progress {
+            background: #333333;
+        }
+        [data-theme="dark"] .modal-note {
+            color: #ede9fe;
+        }
+        [data-theme="dark"] footer {
+            color: #c4b5fd;
+        }
+
+        @media print {
+            .saint-of-day, .slave-filter, .fast-tracker, .script-switcher, .modal-overlay { display: none !important; }
+        }
+        @media (max-width: 768px) {
+            .script-switcher { top: 0.5rem; right: 0.5rem; }
+            .script-btn { font-size: 0.7rem; padding: 0.2rem 0.6rem; }
+            .saint-of-day { padding: 0.75rem 0.85rem; gap: 0.55rem; align-items: flex-start; }
+            .saint-of-day-icon { font-size: 1.4rem; }
+            .saint-of-day-label { font-size: 0.8rem; }
+            .saint-of-day-name { font-size: 0.9rem; }
+            .slave-filter-btns { gap: 0.3rem; }
+            .slave-btn { font-size: 0.7rem; padding: 0.2rem 0.6rem; }
+        }
     </style>
 </head>
 <body>
@@ -1102,21 +1876,39 @@
                 </div>
                 <h1>Православни календар 2026</h1>
             </div>
+            <div class="keyboard-hint" id="keyboardHint">
+                <kbd>T</kbd> тема &nbsp;·&nbsp; <kbd>P</kbd> штампа &nbsp;·&nbsp; <kbd>D</kbd> данас &nbsp;·&nbsp; <kbd>E</kbd> .ics &nbsp;·&nbsp; <kbd>Esc</kbd> затвори
+            </div>
+        </div>
+        <div class="script-switcher">
+            <button class="script-btn active" id="btnCyr" aria-pressed="true" onclick="setScript('cyr')">Ћир</button>
+            <button class="script-btn" id="btnLat" aria-pressed="false" onclick="setScript('lat')">Lat</button>
         </div>
     </header>
 
-    <div class="container">
+    <div class="container" role="main" id="mainContent">
 
-        <div class="month-navigation">
-            <button class="month-nav-btn" onclick="navigateMonth(-1)" title="Претходни месец">‹</button>
+        <div class="saint-of-day" id="saintOfDay"></div>
+
+        <section class="fast-tracker" id="fastTracker" aria-labelledby="fastTrackerTitle">
+            <div class="fast-tracker-header">
+                <h3 id="fastTrackerTitle">Велики постови 2026.</h3>
+                <span class="fast-tracker-sub" id="fastTrackerSub">192 посна дана · 90 на води · 76 на уљу · 26 са рибом</span>
+            </div>
+            <div class="fast-tracker-grid" id="fastTrackerGrid"></div>
+        </section>
+
+        <div class="month-navigation" role="navigation" aria-label="Навигација по месецима">
+            <button class="month-nav-btn" onclick="navigateMonth(-1)" title="Претходни месец" aria-label="Претходни месец">‹</button>
             <div class="month-nav-names" id="monthNames"></div>
-            <button class="month-nav-btn" onclick="navigateMonth(1)" title="Следећи месец">›</button>
+            <button class="month-nav-btn" onclick="navigateMonth(1)" title="Следећи месец" aria-label="Следећи месец">›</button>
         </div>
 
         <div class="legend">
-            <div class="legend-header" onclick="toggleLegend()">
+            <div class="legend-header" onclick="toggleLegend()" role="button" tabindex="0" aria-expanded="true" aria-controls="legendBody"
+                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleLegend();}">
                 <h3>Легенда поста</h3>
-                <button class="legend-toggle" id="legendToggle">›</button>
+                <span class="legend-toggle" id="legendToggle" aria-hidden="true">›</span>
             </div>
             <div class="legend-body" id="legendBody">
                 <div class="legend-items">
@@ -1149,6 +1941,13 @@
                         </div>
                     </div>
                     <div class="legend-item">
+                        <span class="legend-dot beli"></span>
+                        <div class="legend-text">
+                            <strong>Бели мрс</strong>
+                            <small>млеко, јаја и сир – без меса</small>
+                        </div>
+                    </div>
+                    <div class="legend-item">
                         <span class="legend-dot mrsno"></span>
                         <div class="legend-text">
                             <strong>Мрсно</strong>
@@ -1159,12 +1958,17 @@
             </div>
         </div>
 
+        <div class="slave-filter">
+            <div class="slave-filter-header">☩ <span>Крсне славе</span></div>
+            <div class="slave-filter-btns" id="slaveBtns"></div>
+        </div>
+
         <div class="search-container">
             <div class="search-input-wrapper">
-                <input type="text" id="searchInput" placeholder="Тражи светитеља или празник..." oninput="searchSaints(this.value)">
+                <input type="text" id="searchInput" placeholder="Тражи светитеља или празник..." oninput="searchSaints(this.value)" aria-label="Претрага светитеља или празника" aria-controls="searchResults" autocomplete="off">
                 <button onclick="searchSaints(document.getElementById('searchInput').value)">Тражи</button>
             </div>
-            <div class="search-results" id="searchResults"></div>
+            <div class="search-results" id="searchResults" role="listbox" aria-live="polite"></div>
         </div>
 
         <div id="calendar"></div>
@@ -1182,13 +1986,27 @@
                 <span>Данас</span>
                 <span class="shortcut-hint">D</span>
             </button>
-        </div>
-
-        <div class="keyboard-hint" id="keyboardHint">
-            <kbd>T</kbd> тема &nbsp;·&nbsp; <kbd>P</kbd> штампа &nbsp;·&nbsp; <kbd>D</kbd> данас &nbsp;·&nbsp; <kbd>Esc</kbd> затвори
+            <button class="btn" onclick="exportICS()" title="Извези календар као .ics датотеку">
+                <span>Извези .ics</span>
+                <span class="shortcut-hint">E</span>
+            </button>
         </div>
 
         <button class="scroll-top" id="scrollTopBtn" onclick="scrollToTop()" title="На врх странице">↑</button>
+    </div>
+
+    <div class="modal-overlay" id="dayModal" onclick="closeModal(event)" role="dialog" aria-modal="true" aria-labelledby="modalNS modalMonth" aria-hidden="true">
+        <div class="modal-box" role="document">
+            <div class="modal-header">
+                <div class="modal-header-dates">
+                    <div class="modal-header-ns" id="modalNS"></div>
+                    <div class="modal-header-month" id="modalMonth"></div>
+                    <div class="modal-header-os" id="modalOS"></div>
+                </div>
+                <button class="modal-close" id="modalClose" aria-label="Затвори" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
     </div>
 
     <footer>
@@ -1201,49 +2019,49 @@
 
     <script>
         // ===== CALENDAR DATA =====
-        const months = [{
+        const months = [
+        {
             name: "ЈАНУАР",
             firstDay: 4,
             days: [
-                { n: 1, o: 19, s: "Свети мученик Бонифатије", f: 0 },
-                { n: 2, o: 20, s: "Свети Игњатије Богоносац", f: 1, note: "Претпр. Рождества" },
-                { n: 3, o: 21, s: "Света мученица Јулијана; Свети Петар Кијевски", f: 2 },
-                { n: 4, o: 22, s: "Света великомученица Анастасија", f: 0, note: "Оци" },
-                { n: 5, o: 23, s: "Светих 10 мученика Критских", f: 0, note: "Туциндан" },
-                { n: 6, o: 24, s: "Света преподобномученица Евгенија", f: 0, note: "Бадњи дан" },
+                { n: 1, o: 19, s: "Свети мученик Бонифатије", f: 3 },
+                { n: 2, o: 20, s: "Свети Игњатије Богоносац", f: 3, note: "Претпр. Рождества" },
+                { n: 3, o: 21, s: "Света мученица Јулијана; Свети Петар Кијевски", f: 3 },
+                { n: 4, o: 22, s: "Света великомученица Анастасија", f: 3, note: "Оци" },
+                { n: 5, o: 23, s: "Светих 10 мученика Критских", f: 1, note: "Туциндан" },
+                { n: 6, o: 24, s: "Света преподобномученица Евгенија", f: 1, note: "Бадњи дан" },
                 { n: 7, o: 25, s: "Рождество Христово – Божић", f: 0, feast: true },
                 { n: 8, o: 26, s: "Сабор Пресвете Богородице", f: 0 },
-                { n: 9, o: 27, s: "Свети првомученик и архиђакон Стефан", f: 1 },
-                { n: 10, o: 28, s: "Светих 20.000 мученика Никомидијских", f: 3 },
+                { n: 9, o: 27, s: "Свети првомученик и архиђакон Стефан", f: 0 },
+                { n: 10, o: 28, s: "Светих 20.000 мученика Никомидијских", f: 0 },
                 { n: 11, o: 29, s: "Светих 14.000 младенаца Витлејемских", f: 0 },
                 { n: 12, o: 30, s: "Света мученица Анисија", f: 0 },
                 { n: 13, o: 31, s: "Преп. Меланија", f: 0, note: "Оданије Рождества" },
-                { n: 14, o: 1, s: "Обрезање Господње; Свети Василије Велики", f: 0, feast: true,
-                note: "Нова година" },
-                { n: 15, o: 2, s: "Св. Силвестар Римски; Преп. Серафим Саровски", f: 0,
-                note: "Претпразништво Богојављења" },
+                { n: 14, o: 1, s: "Обрезање Господње; Свети Василије Велики", f: 0, note: "Нова година", feast: true },
+                { n: 15, o: 2, s: "Св. Силвестар Римски; Преп. Серафим Саровски", f: 0, note: "Претпразништво Богојављења" },
                 { n: 16, o: 3, s: "Свети пророк Малахија", f: 0 },
                 { n: 17, o: 4, s: "Сабор 70 светих апостола", f: 0 },
-                { n: 18, o: 5, s: "Свети Теопемпт и Теона", f: 4, note: "Крстовдан" },
+                { n: 18, o: 5, s: "Свети Теопемпт и Теона", f: 3, note: "Крстовдан" },
                 { n: 19, o: 6, s: "Богојављење", f: 0, feast: true },
-                { n: 20, o: 7, s: "Сабор светог Јована Крститеља", f: 0, note: "Јовањдан" },
-                { n: 21, o: 8, s: "Преп. Георгије Хозевит", f: 0 },
+                { n: 20, o: 7, s: "Сабор светог Јована Крститеља", f: 0, note: "Јовањдан", slava: true },
+                { n: 21, o: 8, s: "Преп. Георгије Хозевит", f: 2 },
                 { n: 22, o: 9, s: "Свети мученик Полиевкт", f: 0 },
-                { n: 23, o: 10, s: "Св. Григорије Ниски", f: 1 },
+                { n: 23, o: 10, s: "Св. Григорије Ниски", f: 2 },
                 { n: 24, o: 11, s: "Преподобни Теодосије Велики", f: 0 },
                 { n: 25, o: 12, s: "Света мученица Татијана", f: 0 },
-                { n: 26, o: 13, s: "Свети мученици Ермил и Стратоник", f: 3, note: "Оданије Богојављења" },
-                { n: 27, o: 14, s: "Свети Сава, први Архиепископ српски", f: 0, note: "Савиндан" },
-                { n: 28, o: 15, s: "Преп. Павле Тивејски и Јован Колибар", f: 0 },
-                { n: 29, o: 16, s: "Часне вериге Светог апостола Петра", f: 1 },
-                { n: 30, o: 17, s: "Преподобни Антоније Велики", f: 0 },
-                { n: 31, o: 18, s: "Свети Атанасије Велики", f: 1 }
+                { n: 26, o: 13, s: "Свети мученици Ермил и Стратоник", f: 0, note: "Оданије Богојављења" },
+                { n: 27, o: 14, s: "Свети Сава, први Архиепископ српски", f: 0, note: "Савиндан", slava: true },
+                { n: 28, o: 15, s: "Преп. Павле Тивејски и Јован Колибар", f: 3 },
+                { n: 29, o: 16, s: "Часне вериге Светог апостола Петра", f: 0 },
+                { n: 30, o: 17, s: "Преподобни Антоније Велики", f: 3 },
+                { n: 31, o: 18, s: "Свети Атанасије Велики", f: 0 }
             ]
-        }, {
+        },
+        {
             name: "ФЕБРУАР",
             firstDay: 0,
             days: [
-                { n: 1, o: 19, s: "Преподобни Макарије Египатски", f: 2 },
+                { n: 1, o: 19, s: "Преподобни Макарије Египатски", f: 0 },
                 { n: 2, o: 20, s: "Преподобни Јевтимије Велики", f: 0 },
                 { n: 3, o: 21, s: "Преподобни Максим Исповедник", f: 0 },
                 { n: 4, o: 22, s: "Свети апостол Тимотеј", f: 0 },
@@ -1251,391 +2069,625 @@
                 { n: 6, o: 24, s: "Преп. Ксенија Римљанка", f: 0 },
                 { n: 7, o: 25, s: "Св. Григорије Богослов", f: 0 },
                 { n: 8, o: 26, s: "Преподобни Ксенофонт и Марија", f: 0 },
-                { n: 9, o: 27, s: "Пренос моштију светог Јована Златоуста", f: 3 },
+                { n: 9, o: 27, s: "Пренос моштију светог Јована Златоуста", f: 0 },
                 { n: 10, o: 28, s: "Преподобни Јефрем Сирин", f: 0 },
-                { n: 11, o: 29, s: "Пренос моштију Светог Игњатија", f: 0 },
-                { n: 12, o: 30, s: "Света Три Јерарха", f: 1 },
-                { n: 13, o: 31, s: "Свети бесребреници Кир и Јован", f: 0, note: "Претпразништво Сретења" },
+                { n: 11, o: 29, s: "Пренос моштију Светог Игњатија", f: 2 },
+                { n: 12, o: 30, s: "Света Три Јерарха", f: 0 },
+                { n: 13, o: 31, s: "Свети бесребреници Кир и Јован", f: 2, note: "Претпразништво Сретења" },
                 { n: 14, o: 1, s: "Свети мученик Трифун", f: 0, note: "Задушнице" },
                 { n: 15, o: 2, s: "Сретење Господње", f: 0, feast: true },
-                { n: 16, o: 3, s: "Свети Симеон и Ана", f: 0 },
-                { n: 17, o: 4, s: "Преподобни Исидор Пелусиот", f: 4 },
-                { n: 18, o: 5, s: "Света мученица Агатија", f: 0 },
-                { n: 19, o: 6, s: "Свети Вукол, Епископ Смирнски", f: 0, note: "Оданије Сретења" },
-                { n: 20, o: 7, s: "Свети Партеније", f: 0 },
-                { n: 21, o: 8, s: "Св. Теодор Стратилат", f: 0 },
-                { n: 22, o: 9, s: "Свети мученик Никифор", f: 0, note: "Беле покладе" },
-                { n: 23, o: 10, s: "Свети свештеномученик Харалампије", f: 4, note: "Почетак поста" },
+                { n: 16, o: 3, s: "Свети Симеон и Ана", f: 5 },
+                { n: 17, o: 4, s: "Преподобни Исидор Пелусиот", f: 5 },
+                { n: 18, o: 5, s: "Света мученица Агатија", f: 5 },
+                { n: 19, o: 6, s: "Свети Вукол, Епископ Смирнски", f: 5, note: "Оданије Сретења" },
+                { n: 20, o: 7, s: "Свети Партеније", f: 5 },
+                { n: 21, o: 8, s: "Св. Теодор Стратилат", f: 5 },
+                { n: 22, o: 9, s: "Свети мученик Никифор", f: 5, note: "Беле покладе" },
+                { n: 23, o: 10, s: "Свети свештеномученик Харалампије", f: 3, note: "Почетак Великог поста" },
                 { n: 24, o: 11, s: "Свети свештеномученик Власије", f: 3 },
-                { n: 25, o: 12, s: "Свети Мелетије Антиохијски", f: 0 },
-                { n: 26, o: 13, s: "Преподобни Мартинијан", f: 0 },
-                { n: 27, o: 14, s: "Преподобни Авксентије", f: 0 },
-                { n: 28, o: 15, s: "Свети апостол Онисим", f: 0, note: "Теодорова субота" }
+                { n: 25, o: 12, s: "Свети Мелетије Антиохијски", f: 2 },
+                { n: 26, o: 13, s: "Преподобни Мартинијан", f: 3 },
+                { n: 27, o: 14, s: "Преподобни Авксентије", f: 2 },
+                { n: 28, o: 15, s: "Свети апостол Онисим", f: 3, note: "Теодорова субота" }
             ]
-        }, {
+        },
+        {
             name: "МАРТ",
             firstDay: 0,
             days: [
-                { n: 1, o: 16, s: "Свети мученици Памфил, Порфирије", f: 0 },
-                { n: 2, o: 17, s: "Свети великомученик Теодор Тирон", f: 1 },
+                { n: 1, o: 16, s: "Свети мученици Памфил, Порфирије", f: 3 },
+                { n: 2, o: 17, s: "Свети великомученик Теодор Тирон", f: 2 },
                 { n: 3, o: 18, s: "Свети Лав, Папа Римски", f: 2 },
-                { n: 4, o: 19, s: "Свети апостоли Архип, Филимон", f: 0 },
-                { n: 5, o: 20, s: "Свети Лав, Епископ Катански", f: 0 },
-                { n: 6, o: 21, s: "Преподобни Тимотеј Пустињак", f: 0 },
-                { n: 7, o: 22, s: "Обретење моштију Светих мученика", f: 0 },
-                { n: 8, o: 23, s: "Свети свештеномученик Поликарп", f: 0 },
-                { n: 9, o: 24, s: "Прво и друго обретење главе Светог Јована", f: 0 },
-                { n: 10, o: 25, s: "Свети Тарасије, Патријарх", f: 0 },
-                { n: 11, o: 26, s: "Свети Порфирије, Епископ Гаски", f: 3 },
-                { n: 12, o: 27, s: "Преподобни Прокопије Декаполит", f: 0 },
-                { n: 13, o: 28, s: "Преподобни Василије Исповедник", f: 0 },
-                { n: 14, o: 1, s: "Света преподобномученица Евдокија", f: 0 },
-                { n: 15, o: 2, s: "Свети свештеномученик Теодот", f: 0 },
-                { n: 16, o: 3, s: "Свети мученици Евтропије, Клеоник", f: 0 },
-                { n: 17, o: 4, s: "Преподобни Герасим Јордански", f: 0 },
-                { n: 18, o: 5, s: "Свети мученик Конон Исавријски", f: 0 },
-                { n: 19, o: 6, s: "Света 42 мученика Аморејска", f: 4 },
-                { n: 20, o: 7, s: "Светих седам свештеномученика", f: 0 },
-                { n: 21, o: 8, s: "Свети Теофилакт Исповедник", f: 0 },
-                { n: 22, o: 9, s: "Светих 40 мученика Севастијских", f: 2, note: "Младенци" },
-                { n: 23, o: 10, s: "Свети мученик Кодрат Коринтски", f: 0 },
-                { n: 24, o: 11, s: "Свети Софроније, Патријарх", f: 0 },
+                { n: 4, o: 19, s: "Свети апостоли Архип, Филимон", f: 2 },
+                { n: 5, o: 20, s: "Свети Лав, Епископ Катански", f: 2 },
+                { n: 6, o: 21, s: "Преподобни Тимотеј Пустињак", f: 2 },
+                { n: 7, o: 22, s: "Обретење моштију Светих мученика", f: 3 },
+                { n: 8, o: 23, s: "Свети свештеномученик Поликарп", f: 3 },
+                { n: 9, o: 24, s: "Прво и друго обретење главе Светог Јована", f: 3 },
+                { n: 10, o: 25, s: "Свети Тарасије, Патријарх", f: 2 },
+                { n: 11, o: 26, s: "Свети Порфирије, Епископ Гаски", f: 2 },
+                { n: 12, o: 27, s: "Преподобни Прокопије Декаполит", f: 2 },
+                { n: 13, o: 28, s: "Преподобни Василије Исповедник", f: 2 },
+                { n: 14, o: 1, s: "Света преподобномученица Евдокија", f: 3 },
+                { n: 15, o: 2, s: "Свети свештеномученик Теодот", f: 3 },
+                { n: 16, o: 3, s: "Свети мученици Евтропије, Клеоник", f: 2 },
+                { n: 17, o: 4, s: "Преподобни Герасим Јордански", f: 2 },
+                { n: 18, o: 5, s: "Свети мученик Конон Исавријски", f: 2 },
+                { n: 19, o: 6, s: "Света 42 мученика Аморејска", f: 2 },
+                { n: 20, o: 7, s: "Светих седам свештеномученика", f: 2 },
+                { n: 21, o: 8, s: "Свети Теофилакт Исповедник", f: 3 },
+                { n: 22, o: 9, s: "Светих 40 мученика Севастијских", f: 3, note: "Младенци" },
+                { n: 23, o: 10, s: "Свети мученик Кодрат Коринтски", f: 2 },
+                { n: 24, o: 11, s: "Свети Софроније, Патријарх", f: 2 },
                 { n: 25, o: 12, s: "Преп. Теофан Исповедник", f: 3, note: "Прво бденије" },
-                { n: 26, o: 13, s: "Пренос моштију Светог Никифора", f: 0 },
-                { n: 27, o: 14, s: "Преподобни Бенедикт Нурсијски", f: 0, note: "Друго бденије" },
-                { n: 28, o: 15, s: "Свети мученик Агапије", f: 0 },
-                { n: 29, o: 16, s: "Свети мученик Савин Египћанин", f: 0 },
-                { n: 30, o: 17, s: "Преподобни Алексије, Човек Божији", f: 0 },
-                { n: 31, o: 18, s: "Свети Кирило, Епископ јерусалимски", f: 0 }
+                { n: 26, o: 13, s: "Пренос моштију Светог Никифора", f: 3 },
+                { n: 27, o: 14, s: "Преподобни Бенедикт Нурсијски", f: 3, note: "Друго бденије" },
+                { n: 28, o: 15, s: "Свети мученик Агапије", f: 3 },
+                { n: 29, o: 16, s: "Свети мученик Савин Египћанин", f: 3 },
+                { n: 30, o: 17, s: "Преподобни Алексије, Човек Божији", f: 2 },
+                { n: 31, o: 18, s: "Свети Кирило, Епископ јерусалимски", f: 2 }
             ]
-        }, {
+        },
+        {
             name: "АПРИЛ",
             firstDay: 3,
             days: [
-                { n: 1, o: 19, s: "Свети мученици Хризант, Дарија", f: 0 },
+                { n: 1, o: 19, s: "Свети мученици Хризант, Дарија", f: 2 },
                 { n: 2, o: 20, s: "Преподобни Оци поубијани у манастиру", f: 2 },
-                { n: 3, o: 21, s: "Преподобни Јаков Исповедник", f: 0 },
-                { n: 4, o: 22, s: "Свети свештеномученик Василије Анкирски", f: 0, note: "Лазарева субота (Врбица)" },
-                { n: 5, o: 23, s: "Улазак Господа Исуса Христа у Јерусалим", f: 2, feast: true, note: "Цвети" },
-                { n: 6, o: 24, s: "Преподобни Захарије", f: 0 },
-                { n: 7, o: 25, s: "Благовести", f: 2 },
+                { n: 3, o: 21, s: "Преподобни Јаков Исповедник", f: 2 },
+                { n: 4, o: 22, s: "Свети свештеномученик Василије Анкирски", f: 3, note: "Лазарева субота (Врбица)" },
+                { n: 5, o: 23, s: "Улазак Господа Исуса Христа у Јерусалим", f: 4, note: "Цвети", feast: true },
+                { n: 6, o: 24, s: "Преподобни Захарије", f: 2 },
+                { n: 7, o: 25, s: "Благовести", f: 3, feast: true },
                 { n: 8, o: 26, s: "Сабор Светог Архангела Гаврила", f: 2 },
-                { n: 9, o: 27, s: "Велики четвртак", f: 4, feast: true },
-                { n: 10, o: 28, s: "Велики петак", f: 4, feast: true },
-                { n: 11, o: 29, s: "Велика субота", f: 4 },
-                { n: 12, o: 30, s: "Васкрсење Господа Исуса Христа", f: 0, feast: true, note: "ВАСКРС" },
+                { n: 9, o: 27, s: "Велики четвртак", f: 3, feast: true },
+                { n: 10, o: 28, s: "Велики петак", f: 1, feast: true },
+                { n: 11, o: 29, s: "Велика субота", f: 1, feast: true },
+                { n: 12, o: 30, s: "Васкрсење Господа Исуса Христа", f: 0, note: "ВАСКРС", feast: true },
                 { n: 13, o: 31, s: "Васкрсни понедељак", f: 0 },
                 { n: 14, o: 1, s: "Васкрсни уторак", f: 0 },
                 { n: 15, o: 2, s: "Преподобни Тит Чудотворац", f: 0 },
                 { n: 16, o: 3, s: "Преподобни Никита Исповедник", f: 0 },
-                { n: 17, o: 4, s: "Преп. Јосиф Химнограф", f: 4 },
+                { n: 17, o: 4, s: "Преп. Јосиф Химнограф", f: 0 },
                 { n: 18, o: 5, s: "Свети мученици Агатопод и Теодул", f: 0 },
                 { n: 19, o: 6, s: "Свети Евтихије, Патријарх", f: 0 },
                 { n: 20, o: 7, s: "Преподобни Георгије, Митр. Митиленски", f: 0, note: "Побусани понедељак" },
                 { n: 21, o: 8, s: "Свети апостол Иродион", f: 0 },
-                { n: 22, o: 9, s: "Свети мученик Евпсихије", f: 0 },
+                { n: 22, o: 9, s: "Свети мученик Евпсихије", f: 3 },
                 { n: 23, o: 10, s: "Свети мученик Терентије", f: 0 },
                 { n: 24, o: 11, s: "Свети свештеномученик Антипа", f: 3 },
                 { n: 25, o: 12, s: "Преподобни Василије Исповедник", f: 0 },
                 { n: 26, o: 13, s: "Свети свештеномученик Артемон", f: 0 },
                 { n: 27, o: 14, s: "Свети Мартин Исповедник", f: 0 },
                 { n: 28, o: 15, s: "Свети апостоли Аристарх, Пуд и Трофим", f: 0 },
-                { n: 29, o: 16, s: "Свете мученице Агапија, Хионија", f: 0 },
+                { n: 29, o: 16, s: "Свете мученице Агапија, Хионија", f: 3 },
                 { n: 30, o: 17, s: "Преподобни Симеон, Епископ Персијски", f: 0 }
             ]
-        }, {
+        },
+        {
             name: "МАЈ",
             firstDay: 5,
             days: [
-                { n: 1, o: 18, s: "Преподобни Јован, ученик Св. Григорија", f: 2 },
+                { n: 1, o: 18, s: "Преподобни Јован, ученик Св. Григорија", f: 3 },
                 { n: 2, o: 19, s: "Преподобни Јован Ветхопештерник", f: 0 },
                 { n: 3, o: 20, s: "Преподобни Теодор Трихин", f: 0 },
                 { n: 4, o: 21, s: "Свети свештеномученик Јануарије", f: 0 },
                 { n: 5, o: 22, s: "Преподобни Теодор Сикеот", f: 0 },
-                { n: 6, o: 23, s: "Свети великомученик Георгије", f: 0, feast: true, note: "Ђурђевдан" },
+                { n: 6, o: 23, s: "Свети великомученик Георгије", f: 4, note: "Ђурђевдан", feast: true, slava: true },
                 { n: 7, o: 24, s: "Свети муч. Сава Стратилат", f: 0 },
-                { n: 8, o: 25, s: "Свети апостол и јеванђелист Марко", f: 0, note: "Марковдан" },
-                { n: 9, o: 26, s: "Свети свештеномученик Василије", f: 3 },
+                { n: 8, o: 25, s: "Свети апостол и јеванђелист Марко", f: 3, note: "Марковдан" },
+                { n: 9, o: 26, s: "Свети свештеномученик Василије", f: 0 },
                 { n: 10, o: 27, s: "Св. ап. Симеон, Еп. јерусалимски", f: 0 },
                 { n: 11, o: 28, s: "Свети апостоли Јасон и Сосипатр", f: 0 },
-                { n: 12, o: 29, s: "Свети Василије Острошки Чудотворац", f: 1 },
-                { n: 13, o: 30, s: "Свети апостол Јаков Зеведејев", f: 0, note: "Оданије Преполовљења" },
-                { n: 14, o: 1, s: "Свети пророк Јеремија", f: 1 },
-                { n: 15, o: 2, s: "Свети Атанасије Велики", f: 0 },
-                { n: 16, o: 3, s: "Свети мученици Тимотеј и Мавра", f: 4 },
+                { n: 12, o: 29, s: "Свети Василије Острошки Чудотворац", f: 0, note: "Св. Василије Острошки", slava: true },
+                { n: 13, o: 30, s: "Свети апостол Јаков Зеведејев", f: 3, note: "Оданије Преполовљења" },
+                { n: 14, o: 1, s: "Свети пророк Јеремија", f: 0 },
+                { n: 15, o: 2, s: "Свети Атанасије Велики", f: 3 },
+                { n: 16, o: 3, s: "Свети мученици Тимотеј и Мавра", f: 0 },
                 { n: 17, o: 4, s: "Света преподобномученица Пелагија", f: 0 },
                 { n: 18, o: 5, s: "Света великомученица Ирина", f: 0 },
                 { n: 19, o: 6, s: "Праведни Јов", f: 0 },
-                { n: 20, o: 7, s: "Спомен појаве Часног Крста", f: 0, note: "Оданије Пасхе" },
-                { n: 21, o: 8, s: "Вазнесење Господње", f: 0, feast: true, note: "Спасовдан" },
-                { n: 22, o: 9, s: "Пренос моштију Светог оца Николаја", f: 0 },
-                { n: 23, o: 10, s: "Свети апостол Симон Зилот", f: 3 },
+                { n: 20, o: 7, s: "Спомен појаве Часног Крста", f: 4, note: "Оданије Пасхе" },
+                { n: 21, o: 8, s: "Вазнесење Господње", f: 0, note: "Спасовдан", feast: true },
+                { n: 22, o: 9, s: "Пренос моштију Светог оца Николаја", f: 3 },
+                { n: 23, o: 10, s: "Свети апостол Симон Зилот", f: 0 },
                 { n: 24, o: 11, s: "Свети равноспостолни Кирило и Методије", f: 0 },
                 { n: 25, o: 12, s: "Св. Епифаније Кипарски", f: 0 },
                 { n: 26, o: 13, s: "Света мученица Гликерија", f: 0 },
-                { n: 27, o: 14, s: "Свети мученик Исидор Хиоски", f: 0 },
+                { n: 27, o: 14, s: "Свети мученик Исидор Хиоски", f: 3 },
                 { n: 28, o: 15, s: "Преподобни Пахомије Велики", f: 0 },
-                { n: 29, o: 16, s: "Преп. Теодор", f: 0, note: "Оданије Вазнесења" },
+                { n: 29, o: 16, s: "Преп. Теодор", f: 3, note: "Оданије Вазнесења" },
                 { n: 30, o: 17, s: "Свети апостол Андроник", f: 0, note: "Задушнице" },
-                { n: 31, o: 18, s: "Силазак Светог Духа на апостоле", f: 2, feast: true, note: "ДУХОВИ" }
+                { n: 31, o: 18, s: "Силазак Светог Духа на апостоле", f: 0, note: "ДУХОВИ", feast: true }
             ]
-        }, {
+        },
+        {
             name: "ЈУН",
             firstDay: 1,
             days: [
                 { n: 1, o: 19, s: "Духовски понедељак", f: 0 },
                 { n: 2, o: 20, s: "Духовски уторак", f: 0 },
-                { n: 3, o: 21, s: "Свети цар Константин и царица Јелена", f: 1 },
+                { n: 3, o: 21, s: "Свети цар Константин и царица Јелена", f: 0 },
                 { n: 4, o: 22, s: "Свети мученик Василиск", f: 0 },
                 { n: 5, o: 23, s: "Преподобни Михаило Исповедник", f: 0 },
                 { n: 6, o: 24, s: "Преподобни Симеон Дивногорац", f: 0, note: "Оданије Педесетнице" },
                 { n: 7, o: 25, s: "Треће обретење главе Светог Јована", f: 0, note: "Петровске покладе" },
-                { n: 8, o: 26, s: "Свети апостоли Карп и Алфеј", f: 4, note: "Почетак поста" },
-                { n: 9, o: 27, s: "Свети свештеномученик Терапонт", f: 0 },
-                { n: 10, o: 28, s: "Преподобни Никита Исповедник", f: 0 },
-                { n: 11, o: 29, s: "Преподобномученица Теодосија", f: 0 },
-                { n: 12, o: 30, s: "Преподобни Исакије Далматски", f: 0 },
-                { n: 13, o: 31, s: "Свети ап. Јерма", f: 0 },
-                { n: 14, o: 1, s: "Св. муч. Јустин, Мученик и Философ", f: 0 },
-                { n: 15, o: 2, s: "Свети Никифор Цариградски", f: 4 },
-                { n: 16, o: 3, s: "Свети мученик Лукилијан", f: 0 },
-                { n: 17, o: 4, s: "Свети Митрофан", f: 0 },
-                { n: 18, o: 5, s: "Свети свештеномученик Доротеј", f: 0 },
-                { n: 19, o: 6, s: "Преподобни Висарион", f: 0 },
-                { n: 20, o: 7, s: "Свети свештеномученик Теодот", f: 0 },
-                { n: 21, o: 8, s: "Свети великомученик Теодор Стратилат", f: 3 },
-                { n: 22, o: 9, s: "Св. Кирило Архиепископ александријски", f: 0 },
-                { n: 23, o: 10, s: "Свети свештеномученик Тимотеј", f: 0 },
-                { n: 24, o: 11, s: "Св. апостоли Вартоломеј и Варнава", f: 0 },
-                { n: 25, o: 12, s: "Преподобни Онуфрије Велики", f: 0 },
-                { n: 26, o: 13, s: "Св. муч. Акилина", f: 0 },
-                { n: 27, o: 14, s: "Свети пророк Јелисеј", f: 1 },
-                { n: 28, o: 15, s: "Св. мученик Кнез Лазар", f: 0, feast: true, note: "Видовдан" },
-                { n: 29, o: 16, s: "Св. Тихон Чудотворац", f: 0 },
-                { n: 30, o: 17, s: "Свети мученици Мануил, Савел и Исмаил", f: 2 }
+                { n: 8, o: 26, s: "Свети апостоли Карп и Алфеј", f: 2, note: "Почетак Петровског поста" },
+                { n: 9, o: 27, s: "Свети свештеномученик Терапонт", f: 3 },
+                { n: 10, o: 28, s: "Преподобни Никита Исповедник", f: 2 },
+                { n: 11, o: 29, s: "Преподобномученица Теодосија", f: 3 },
+                { n: 12, o: 30, s: "Преподобни Исакије Далматски", f: 2 },
+                { n: 13, o: 31, s: "Свети ап. Јерма", f: 4 },
+                { n: 14, o: 1, s: "Св. муч. Јустин, Мученик и Философ", f: 4 },
+                { n: 15, o: 2, s: "Свети Никифор Цариградски", f: 2 },
+                { n: 16, o: 3, s: "Свети мученик Лукилијан", f: 3 },
+                { n: 17, o: 4, s: "Свети Митрофан", f: 2 },
+                { n: 18, o: 5, s: "Свети свештеномученик Доротеј", f: 3 },
+                { n: 19, o: 6, s: "Преподобни Висарион", f: 2 },
+                { n: 20, o: 7, s: "Свети свештеномученик Теодот", f: 4 },
+                { n: 21, o: 8, s: "Свети великомученик Теодор Стратилат", f: 4 },
+                { n: 22, o: 9, s: "Св. Кирило Архиепископ александријски", f: 2 },
+                { n: 23, o: 10, s: "Свети свештеномученик Тимотеј", f: 3 },
+                { n: 24, o: 11, s: "Св. апостоли Вартоломеј и Варнава", f: 3 },
+                { n: 25, o: 12, s: "Преподобни Онуфрије Велики", f: 3 },
+                { n: 26, o: 13, s: "Св. муч. Акилина", f: 2 },
+                { n: 27, o: 14, s: "Свети пророк Јелисеј", f: 4 },
+                { n: 28, o: 15, s: "Св. мученик Кнез Лазар", f: 4, note: "Видовдан", feast: true, slava: true },
+                { n: 29, o: 16, s: "Св. Тихон Чудотворац", f: 2 },
+                { n: 30, o: 17, s: "Свети мученици Мануил, Савел и Исмаил", f: 3 }
             ]
-        }, {
+        },
+        {
             name: "ЈУЛ",
             firstDay: 3,
             days: [
-                { n: 1, o: 18, s: "Свети мученици Леонтије, Ипатије", f: 0 },
-                { n: 2, o: 19, s: "Свети апостол Јуда", f: 0 },
-                { n: 3, o: 20, s: "Св. свштеномуч. Методије", f: 0 },
-                { n: 4, o: 21, s: "Свети мученик Јулијан Тарсијски", f: 0 },
-                { n: 5, o: 22, s: "Свети свштеномученик Јевсевије", f: 0 },
-                { n: 6, o: 23, s: "Света мученица Агрипина", f: 0 },
-                { n: 7, o: 24, s: "Рођење Светог Јована Претече", f: 3, feast: true, note: "Ивањдан" },
-                { n: 8, o: 25, s: "Света преподобномученица Февронија", f: 0 },
-                { n: 9, o: 26, s: "Преподобни Давид Солунски", f: 0 },
-                { n: 10, o: 27, s: "Преподобни Сампсон Странопримац", f: 0 },
-                { n: 11, o: 28, s: "Пренос моштију Св. бесребреника Кира", f: 0 },
-                { n: 12, o: 29, s: "Свети апостоли Петар и Павле", f: 0, feast: true, note: "Петровдан" },
+                { n: 1, o: 18, s: "Свети мученици Леонтије, Ипатије", f: 2 },
+                { n: 2, o: 19, s: "Свети апостол Јуда", f: 3 },
+                { n: 3, o: 20, s: "Св. свштеномуч. Методије", f: 2 },
+                { n: 4, o: 21, s: "Свети мученик Јулијан Тарсијски", f: 4 },
+                { n: 5, o: 22, s: "Свети свштеномученик Јевсевије", f: 4 },
+                { n: 6, o: 23, s: "Света мученица Агрипина", f: 2 },
+                { n: 7, o: 24, s: "Рођење Светог Јована Претече", f: 4, note: "Ивањдан", feast: true },
+                { n: 8, o: 25, s: "Света преподобномученица Февронија", f: 2 },
+                { n: 9, o: 26, s: "Преподобни Давид Солунски", f: 3 },
+                { n: 10, o: 27, s: "Преподобни Сампсон Странопримац", f: 2 },
+                { n: 11, o: 28, s: "Пренос моштију Св. бесребреника Кира", f: 4 },
+                { n: 12, o: 29, s: "Свети апостоли Петар и Павле", f: 0, note: "Петровдан", feast: true },
                 { n: 13, o: 30, s: "Сабор Светих дванаест апостола", f: 0, note: "Павловдан" },
-                { n: 14, o: 1, s: "Свети мученици и бесребреници Козма и Дамјан", f: 4 },
-                { n: 15, o: 2, s: "Полагање ризе Пресвете Богородице", f: 0 },
+                { n: 14, o: 1, s: "Свети мученици и бесребреници Козма и Дамјан", f: 0 },
+                { n: 15, o: 2, s: "Полагање ризе Пресвете Богородице", f: 3 },
                 { n: 16, o: 3, s: "Св. муч. Јакинт", f: 0 },
-                { n: 17, o: 4, s: "Свети Андреј Критски", f: 0 },
+                { n: 17, o: 4, s: "Свети Андреј Критски", f: 2 },
                 { n: 18, o: 5, s: "Преподобни Атанасије Атонски", f: 0 },
                 { n: 19, o: 6, s: "Преподобни Сисоје Велики", f: 0 },
                 { n: 20, o: 7, s: "Преподобни Тома Малеин", f: 0 },
-                { n: 21, o: 8, s: "Свети великомученик Прокопије", f: 3 },
-                { n: 22, o: 9, s: "Свештеномученик Панкратије", f: 0 },
+                { n: 21, o: 8, s: "Свети великомученик Прокопије", f: 0 },
+                { n: 22, o: 9, s: "Свештеномученик Панкратије", f: 2 },
                 { n: 23, o: 10, s: "Светих 45 мученика из Никопоља", f: 0 },
-                { n: 24, o: 11, s: "Света великомученица Ефимија", f: 0 },
+                { n: 24, o: 11, s: "Света великомученица Ефимија", f: 2 },
                 { n: 25, o: 12, s: "Свети мученик Прокло и Иларије", f: 0 },
-                { n: 26, o: 13, s: "Сабор Светог Архангела Гаврила", f: 1 },
+                { n: 26, o: 13, s: "Сабор Светог Архангела Гаврила", f: 0 },
                 { n: 27, o: 14, s: "Свети апостол Акила", f: 0 },
                 { n: 28, o: 15, s: "Свети мученици Кирик и Јулита", f: 0 },
                 { n: 29, o: 16, s: "Свети свештеномученик Антиноген", f: 2 },
                 { n: 30, o: 17, s: "Света великомученица Марина", f: 0, note: "Огњена Марија" },
-                { n: 31, o: 18, s: "Свети мученик Емилијан", f: 0 }
+                { n: 31, o: 18, s: "Свети мученик Емилијан", f: 2 }
             ]
-        }, {
+        },
+        {
             name: "АВГУСТ",
             firstDay: 6,
             days: [
-                { n: 1, o: 19, s: "Преподобна Макрина", f: 3 },
-                { n: 2, o: 20, s: "Свети пророк Илија", f: 0, feast: true, note: "Илиндан" },
+                { n: 1, o: 19, s: "Преподобна Макрина", f: 0 },
+                { n: 2, o: 20, s: "Свети пророк Илија", f: 0, note: "Илиндан", feast: true, slava: true },
                 { n: 3, o: 21, s: "Свети пророк Језекиљ", f: 0 },
                 { n: 4, o: 22, s: "Света Марија Магдалина", f: 0, note: "Блага Марија" },
-                { n: 5, o: 23, s: "Свети мученици Трофим, Теофил", f: 0 },
-                { n: 6, o: 24, s: "Света великомученица Христина", f: 3 },
-                { n: 7, o: 25, s: "Успеније свете Ане", f: 0 },
-                { n: 8, o: 26, s: "Преподобномученица Параскева", f: 1, note: "Петка" },
+                { n: 5, o: 23, s: "Свети мученици Трофим, Теофил", f: 2 },
+                { n: 6, o: 24, s: "Света великомученица Христина", f: 0 },
+                { n: 7, o: 25, s: "Успеније свете Ане", f: 3 },
+                { n: 8, o: 26, s: "Преподобномученица Параскева", f: 0, note: "Петка" },
                 { n: 9, o: 27, s: "Свети великомученик Пантелејмон", f: 0 },
                 { n: 10, o: 28, s: "Свети апостоли и ђакони", f: 0 },
                 { n: 11, o: 29, s: "Свети мученик Калиник", f: 0 },
-                { n: 12, o: 30, s: "Преподобна мати Ангелина српска", f: 4 },
+                { n: 12, o: 30, s: "Преподобна мати Ангелина српска", f: 3 },
                 { n: 13, o: 31, s: "Свети мученик Евдоким", f: 0, note: "Госпојинске покладе" },
-                { n: 14, o: 1, s: "Изношење Часног Крста", f: 4, note: "Св. муч. Макавеји" },
-                { n: 15, o: 2, s: "Пренос моштију Светог првомученика", f: 0 },
-                { n: 16, o: 3, s: "Преподобни Исакије, Далмат и Фауст", f: 0 },
-                { n: 17, o: 4, s: "Св. седам мученика у Ефесу", f: 0 },
-                { n: 18, o: 5, s: "Свети мученик Евсигније", f: 0, note: "Претпразништво Преображења" },
-                { n: 19, o: 6, s: "Преображење Господње", f: 2, feast: true },
-                { n: 20, o: 7, s: "Свети преподобномученик Дометије", f: 3 },
-                { n: 21, o: 8, s: "Свети Емилијан Исповедник", f: 0 },
-                { n: 22, o: 9, s: "Свети апостол Матија", f: 0 },
-                { n: 23, o: 10, s: "Свети мученик и архиђакон Лаврентије", f: 0 },
-                { n: 24, o: 11, s: "Свети мученик и архиђакон Евпло", f: 0 },
-                { n: 25, o: 12, s: "Свети мученици Фотије, Аникита", f: 0 },
-                { n: 26, o: 13, s: "Свети мученик Иполит", f: 0, note: "Оданије Преображења" },
-                { n: 27, o: 14, s: "Свети пророк Михеј", f: 0, note: "Претпразништво Успенија" },
-                { n: 28, o: 15, s: "Успеније Пресвете Богородице", f: 2, feast: true, note: "Велика Госпојина" },
+                { n: 14, o: 1, s: "Изношење Часног Крста", f: 2, note: "Почетак Госпојинског поста; Изношење Часног Крста" },
+                { n: 15, o: 2, s: "Пренос моштију Светог првомученика", f: 3 },
+                { n: 16, o: 3, s: "Преподобни Исакије, Далмат и Фауст", f: 3 },
+                { n: 17, o: 4, s: "Св. седам мученика у Ефесу", f: 2 },
+                { n: 18, o: 5, s: "Свети мученик Евсигније", f: 2, note: "Претпразништво Преображења" },
+                { n: 19, o: 6, s: "Преображење Господње", f: 4, feast: true },
+                { n: 20, o: 7, s: "Свети преподобномученик Дометије", f: 2 },
+                { n: 21, o: 8, s: "Свети Емилијан Исповедник", f: 2 },
+                { n: 22, o: 9, s: "Свети апостол Матија", f: 3 },
+                { n: 23, o: 10, s: "Свети мученик и архиђакон Лаврентије", f: 3 },
+                { n: 24, o: 11, s: "Свети мученик и архиђакон Евпло", f: 2 },
+                { n: 25, o: 12, s: "Свети мученици Фотије, Аникита", f: 2 },
+                { n: 26, o: 13, s: "Свети мученик Иполит", f: 2, note: "Оданије Преображења" },
+                { n: 27, o: 14, s: "Свети пророк Михеј", f: 2, note: "Претпразништво Успенија" },
+                { n: 28, o: 15, s: "Успеније Пресвете Богородице", f: 4, note: "Велика Госпојина", feast: true },
                 { n: 29, o: 16, s: "Нерукот. Образ Господа Исуса Христа", f: 0 },
                 { n: 30, o: 17, s: "Свети мученик Мирон", f: 0 },
                 { n: 31, o: 18, s: "Свети мученик Флор", f: 0 }
             ]
-        }, {
+        },
+        {
             name: "СЕПТЕМБАР",
             firstDay: 2,
             days: [
                 { n: 1, o: 19, s: "Свети мученик Андреј Стратилат", f: 0 },
-                { n: 2, o: 20, s: "Св. пророк Самуило", f: 0 },
+                { n: 2, o: 20, s: "Св. пророк Самуило", f: 2 },
                 { n: 3, o: 21, s: "Св. ап. Тадеј", f: 0 },
-                { n: 4, o: 22, s: "Св. мученик Агатоник", f: 3 },
+                { n: 4, o: 22, s: "Св. мученик Агатоник", f: 2 },
                 { n: 5, o: 23, s: "Св.свештеномуч. Иринеј", f: 0, note: "Оданије Успенија" },
                 { n: 6, o: 24, s: "Свети свештеномученик Евтихије", f: 0 },
                 { n: 7, o: 25, s: "Пренос моштију Светог апостола", f: 0 },
                 { n: 8, o: 26, s: "Свети мученици Адријан и Наталија", f: 0 },
-                { n: 9, o: 27, s: "Преподобни Пимен Велики", f: 0 },
+                { n: 9, o: 27, s: "Преподобни Пимен Велики", f: 2 },
                 { n: 10, o: 28, s: "Преподобни Мојсеј Мурин", f: 0 },
-                { n: 11, o: 29, s: "Усековање главе Светог Јована", f: 4 },
+                { n: 11, o: 29, s: "Усековање главе Светог Јована", f: 1, feast: true },
                 { n: 12, o: 30, s: "Пренос моштију светог Александра", f: 0 },
                 { n: 13, o: 31, s: "Полагање појаса Пресвете Богородице", f: 0 },
-                { n: 14, o: 1, s: "Преподобни Симеон Столпник", f: 1, note: "Црквена Нова година" },
+                { n: 14, o: 1, s: "Преподобни Симеон Столпник", f: 0, note: "Црквена Нова година" },
                 { n: 15, o: 2, s: "Св. муч. Мамант", f: 0 },
-                { n: 16, o: 3, s: "Св. свештеномуч. Антим", f: 0 },
+                { n: 16, o: 3, s: "Св. свештеномуч. Антим", f: 3 },
                 { n: 17, o: 4, s: "Св. свештеномуч. Вавила", f: 0 },
-                { n: 18, o: 5, s: "Свети пророк Захарија", f: 3 },
+                { n: 18, o: 5, s: "Свети пророк Захарија", f: 2 },
                 { n: 19, o: 6, s: "Чудо Светог Архангела Михаила", f: 0 },
                 { n: 20, o: 7, s: "Свети мученик Созонт", f: 0, note: "Претпразништво Рођења" },
-                { n: 21, o: 8, s: "Рођење Пресвете Богородице", f: 2, feast: true, note: "Мала Госпојина" },
-                { n: 22, o: 9, s: "Свети праведни Јоаким и Ана", f: 2 },
-                { n: 23, o: 10, s: "Свете мученице Минодора, Митродора", f: 0 },
+                { n: 21, o: 8, s: "Рођење Пресвете Богородице", f: 0, note: "Мала Госпојина", feast: true },
+                { n: 22, o: 9, s: "Свети праведни Јоаким и Ана", f: 0 },
+                { n: 23, o: 10, s: "Свете мученице Минодора, Митродора", f: 2 },
                 { n: 24, o: 11, s: "Преподобна Теодора", f: 0 },
-                { n: 25, o: 12, s: "Св. свештеномученик Автоном", f: 0, note: "Оданије Рођења" },
-                { n: 26, o: 13, s: "Св. свештмуч. Корнилије", f: 2 },
-                { n: 27, o: 14, s: "Воздвижење часног Крста", f: 4, feast: true, note: "Крстовдан" },
+                { n: 25, o: 12, s: "Св. свештеномученик Автоном", f: 2, note: "Оданије Рођења" },
+                { n: 26, o: 13, s: "Св. свештмуч. Корнилије", f: 0 },
+                { n: 27, o: 14, s: "Воздвижење часног Крста", f: 3, note: "Крстовдан", feast: true },
                 { n: 28, o: 15, s: "Свети великомученик Никита", f: 0 },
                 { n: 29, o: 16, s: "Св. великомученица Јефимија", f: 0 },
-                { n: 30, o: 17, s: "Свете мученице Вера, Нада и Љубав", f: 0 }
+                { n: 30, o: 17, s: "Свете мученице Вера, Нада и Љубав", f: 2 }
             ]
-        }, {
+        },
+        {
             name: "ОКТОБАР",
             firstDay: 4,
             days: [
                 { n: 1, o: 18, s: "Свети Евменије Гортински", f: 0 },
-                { n: 2, o: 19, s: "Свети мученици Трофим, Саватије", f: 0 },
-                { n: 3, o: 20, s: "Свети великомученик Јевстатије", f: 3 },
+                { n: 2, o: 19, s: "Свети мученици Трофим, Саватије", f: 2 },
+                { n: 3, o: 20, s: "Свети великомученик Јевстатије", f: 0 },
                 { n: 4, o: 21, s: "Свети апостол Кодрат", f: 0, note: "Оданије Воздвижења" },
                 { n: 5, o: 22, s: "Св. свештеномуч. Фока", f: 0 },
                 { n: 6, o: 23, s: "Зачеће Светог Јована Претече", f: 0 },
-                { n: 7, o: 24, s: "Св. првомуч. Текла", f: 0 },
+                { n: 7, o: 24, s: "Св. првомуч. Текла", f: 3 },
                 { n: 8, o: 25, s: "Преподобна Ефросинија", f: 0 },
-                { n: 9, o: 26, s: "Свети апостол и јеванђелист Јован", f: 0 },
-                { n: 10, o: 27, s: "Свети мученик Калистрат", f: 4, note: "Задушнице" },
+                { n: 9, o: 26, s: "Свети апостол и јеванђелист Јован", f: 3 },
+                { n: 10, o: 27, s: "Свети мученик Калистрат", f: 0, note: "Задушнице" },
                 { n: 11, o: 28, s: "Преподобни Харитон Исповедник", f: 0 },
                 { n: 12, o: 29, s: "Преподобни Киријак Отшелник", f: 0, note: "Михољдан" },
                 { n: 13, o: 30, s: "Свети свештеномученик Григорије", f: 0 },
-                { n: 14, o: 1, s: "Покров Пресвете Богородице", f: 1 },
+                { n: 14, o: 1, s: "Покров Пресвете Богородице", f: 3 },
                 { n: 15, o: 2, s: "Св. свештеномуч. Кипријан", f: 0 },
-                { n: 16, o: 3, s: "Св. свештеномуч. Дионисије Ареопагит", f: 0 },
+                { n: 16, o: 3, s: "Св. свештеномуч. Дионисије Ареопагит", f: 2 },
                 { n: 17, o: 4, s: "Свети Стефан и Јелена", f: 0 },
-                { n: 18, o: 5, s: "Св. мученица Харитина", f: 3 },
+                { n: 18, o: 5, s: "Св. мученица Харитина", f: 0 },
                 { n: 19, o: 6, s: "Свети апостол Тома", f: 0, note: "Томиндан" },
                 { n: 20, o: 7, s: "Свети мученици Сергије и Вакхо", f: 0, note: "Срђевдан" },
-                { n: 21, o: 8, s: "Преп. Пелагија", f: 0 },
+                { n: 21, o: 8, s: "Преп. Пелагија", f: 2 },
                 { n: 22, o: 9, s: "Свети апостол Јаков", f: 0 },
-                { n: 23, o: 10, s: "Свети мученици Евлампије", f: 0 },
+                { n: 23, o: 10, s: "Свети мученици Евлампије", f: 2 },
                 { n: 24, o: 11, s: "Св. апостол Филип, ђакон", f: 0 },
                 { n: 25, o: 12, s: "Св. мученици Тарах, Пров и Андроник", f: 0 },
-                { n: 26, o: 13, s: "Свети мученик Карп", f: 2 },
-                { n: 27, o: 14, s: "Преподобна мати Параскева", f: 0, note: "Света Петка" },
-                { n: 28, o: 15, s: "Свети свештеномученик Лукијан", f: 0 },
+                { n: 26, o: 13, s: "Свети мученик Карп", f: 0 },
+                { n: 27, o: 14, s: "Преподобна мати Параскева", f: 0, note: "Света Петка", slava: true },
+                { n: 28, o: 15, s: "Свети свештеномученик Лукијан", f: 2 },
                 { n: 29, o: 16, s: "Свети мученик Лонгин Сотник", f: 0 },
-                { n: 30, o: 17, s: "Свети пророк Осија", f: 0 },
-                { n: 31, o: 18, s: "Свети апостол и јеванђелист Лука", f: 1 }
+                { n: 30, o: 17, s: "Свети пророк Осија", f: 2 },
+                { n: 31, o: 18, s: "Свети апостол и јеванђелист Лука", f: 0 }
             ]
-        }, {
+        },
+        {
             name: "НОВЕМБАР",
             firstDay: 0,
             days: [
-                { n: 1, o: 19, s: "Свети пророк Јоил", f: 3 },
+                { n: 1, o: 19, s: "Свети пророк Јоил", f: 0 },
                 { n: 2, o: 20, s: "Св. великомуч. Артемије", f: 0 },
                 { n: 3, o: 21, s: "Преподобни Иларион", f: 0 },
-                { n: 4, o: 22, s: "Св. равноапостолни Аверкије", f: 0 },
-                { n: 5, o: 23, s: "Свети апостол Јаков", f: 1 },
-                { n: 6, o: 24, s: "Свети великомученик Арета", f: 0 },
+                { n: 4, o: 22, s: "Св. равноапостолни Аверкије", f: 2 },
+                { n: 5, o: 23, s: "Свети апостол Јаков", f: 0 },
+                { n: 6, o: 24, s: "Свети великомученик Арета", f: 2 },
                 { n: 7, o: 25, s: "Свети мученици Маркијан и Мартирије", f: 0, note: "Задушнице" },
-                { n: 8, o: 26, s: "Свети великомученик Димитрије", f: 0, feast: true, note: "Митровдан" },
-                { n: 9, o: 27, s: "Свети мученик Нестор", f: 4 },
+                { n: 8, o: 26, s: "Свети великомученик Димитрије", f: 0, note: "Митровдан", feast: true, slava: true },
+                { n: 9, o: 27, s: "Свети мученик Нестор", f: 0 },
                 { n: 10, o: 28, s: "Св. муч. Терентије", f: 0 },
-                { n: 11, o: 29, s: "Св. Аврамије Затворник", f: 0 },
+                { n: 11, o: 29, s: "Св. Аврамије Затворник", f: 2 },
                 { n: 12, o: 30, s: "Св. краљ Милутин", f: 0 },
-                { n: 13, o: 31, s: "Св. ап. Стахије, Амплије", f: 0 },
-                { n: 14, o: 1, s: "Свети бесребреници Козма и Дамјан", f: 1, note: "Врачеви" },
+                { n: 13, o: 31, s: "Св. ап. Стахије, Амплије", f: 2 },
+                { n: 14, o: 1, s: "Свети бесребреници Козма и Дамјан", f: 0, note: "Врачеви" },
                 { n: 15, o: 2, s: "Свети мученици Акиндин, Пигасије", f: 0 },
-                { n: 16, o: 3, s: "Обновљење храма Светог Георгија", f: 1, note: "Ђурђиц" },
-                { n: 17, o: 4, s: "Преподобни Јоаникије Велики", f: 3 },
-                { n: 18, o: 5, s: "Преподобномученици Галактион", f: 0 },
+                { n: 16, o: 3, s: "Обновљење храма Светог Георгија", f: 0, note: "Ђурђиц" },
+                { n: 17, o: 4, s: "Преподобни Јоаникије Велики", f: 0 },
+                { n: 18, o: 5, s: "Преподобномученици Галактион", f: 2 },
                 { n: 19, o: 6, s: "Свети Павле Исповедник", f: 0 },
-                { n: 20, o: 7, s: "Света 33 мученика у Мелитини", f: 0 },
-                { n: 21, o: 8, s: "Сабор Св. Архангела Михаила", f: 0, feast: true, note: "Аранђеловдан" },
+                { n: 20, o: 7, s: "Света 33 мученика у Мелитини", f: 2 },
+                { n: 21, o: 8, s: "Сабор Св. Архангела Михаила", f: 0, note: "Аранђеловдан", feast: true, slava: true },
                 { n: 22, o: 9, s: "Св. муч. Онисифор и Порфирије", f: 0 },
                 { n: 23, o: 10, s: "Свети апостоли Олимп, Ераст", f: 0 },
-                { n: 24, o: 11, s: "Св. великомуч.Мина", f: 2 },
-                { n: 25, o: 12, s: "Свети Јован Милостиви", f: 1 },
-                { n: 26, o: 13, s: "Свети Јован Златоусти", f: 1 },
-                { n: 27, o: 14, s: "Свети апостол Филип", f: 0, note: "Божићне покладе" },
-                { n: 28, o: 15, s: "Свети мученици Гурије, Самон", f: 4, note: "Почетак поста" },
-                { n: 29, o: 16, s: "Свети апостол и јеванђелист Матеј", f: 0 },
-                { n: 30, o: 17, s: "Св. Григорије Чудотворац", f: 0 }
+                { n: 24, o: 11, s: "Св. великомуч.Мина", f: 0 },
+                { n: 25, o: 12, s: "Свети Јован Милостиви", f: 3 },
+                { n: 26, o: 13, s: "Свети Јован Златоусти", f: 0 },
+                { n: 27, o: 14, s: "Свети апостол Филип", f: 3, note: "Божићне покладе" },
+                { n: 28, o: 15, s: "Свети мученици Гурије, Самон", f: 4, note: "Почетак Божићног поста" },
+                { n: 29, o: 16, s: "Свети апостол и јеванђелист Матеј", f: 4 },
+                { n: 30, o: 17, s: "Св. Григорије Чудотворац", f: 2 }
             ]
-        }, {
+        },
+        {
             name: "ДЕЦЕМБАР",
             firstDay: 2,
             days: [
                 { n: 1, o: 18, s: "Свети мученик Платон", f: 3 },
-                { n: 2, o: 19, s: "Св. пророк Авдија", f: 0 },
-                { n: 3, o: 20, s: "Преп. Григорије Декаполит", f: 0, note: "Претпразништво Ваведења" },
-                { n: 4, o: 21, s: "Ваведење Пресвете Богородице", f: 2 },
-                { n: 5, o: 22, s: "Св. апостоли Филимон, Архип", f: 0 },
-                { n: 6, o: 23, s: "Св. Амфилохије Иконијски", f: 0 },
-                { n: 7, o: 24, s: "Света великомуч. Екатерина", f: 1 },
-                { n: 8, o: 25, s: "Св. свештеномуч. Климент", f: 0, note: "Оданије Ваведења" },
-                { n: 9, o: 26, s: "Преподобни Алимпије Столпник", f: 4 },
-                { n: 10, o: 27, s: "Св.муч. Јаков Персијанац", f: 0 },
-                { n: 11, o: 28, s: "Преподобномуч. Стефан", f: 0 },
-                { n: 12, o: 29, s: "Свети мученици Парамон и Филумен", f: 0 },
-                { n: 13, o: 30, s: "Свети апостол Андреј Првозвани", f: 0 },
-                { n: 14, o: 1, s: "Свети пророк Наум", f: 0 },
-                { n: 15, o: 2, s: "Св. пророк Авакум", f: 0 },
-                { n: 16, o: 3, s: "Свети пророк Софоније", f: 0 },
+                { n: 2, o: 19, s: "Св. пророк Авдија", f: 2 },
+                { n: 3, o: 20, s: "Преп. Григорије Декаполит", f: 3, note: "Претпразништво Ваведења" },
+                { n: 4, o: 21, s: "Ваведење Пресвете Богородице", f: 4, feast: true },
+                { n: 5, o: 22, s: "Св. апостоли Филимон, Архип", f: 4 },
+                { n: 6, o: 23, s: "Св. Амфилохије Иконијски", f: 4 },
+                { n: 7, o: 24, s: "Света великомуч. Екатерина", f: 3 },
+                { n: 8, o: 25, s: "Св. свештеномуч. Климент", f: 3, note: "Оданије Ваведења" },
+                { n: 9, o: 26, s: "Преподобни Алимпије Столпник", f: 2 },
+                { n: 10, o: 27, s: "Св.муч. Јаков Персијанац", f: 3 },
+                { n: 11, o: 28, s: "Преподобномуч. Стефан", f: 2 },
+                { n: 12, o: 29, s: "Свети мученици Парамон и Филумен", f: 4 },
+                { n: 13, o: 30, s: "Свети апостол Андреј Првозвани", f: 4 },
+                { n: 14, o: 1, s: "Свети пророк Наум", f: 2 },
+                { n: 15, o: 2, s: "Св. пророк Авакум", f: 3 },
+                { n: 16, o: 3, s: "Свети пророк Софоније", f: 2 },
                 { n: 17, o: 4, s: "Света великомуч. Варвара", f: 3 },
-                { n: 18, o: 5, s: "Преподобни Сава Освећени", f: 1 },
-                { n: 19, o: 6, s: "Свети Николај, Архиепископ", f: 0, feast: true, note: "Никољдан" },
-                { n: 20, o: 7, s: "Свети Амвросије", f: 0, note: "Детињци" },
-                { n: 21, o: 8, s: "Преподобни Патапије", f: 0 },
-                { n: 22, o: 9, s: "Зачеће Свете Ане", f: 0 },
-                { n: 23, o: 10, s: "Свети мученик Мина", f: 0 },
-                { n: 24, o: 11, s: "Преподобни Данило Столпник", f: 2 },
-                { n: 25, o: 12, s: "Свети Спиридон Чудотворац", f: 0 },
-                { n: 26, o: 13, s: "Свети мученик Евстратије", f: 0 },
-                { n: 27, o: 14, s: "Свети мученици Тирс, Левкије", f: 0, note: "Материце" },
-                { n: 28, o: 15, s: "Свети свештеномученик Елевтерије", f: 0 },
-                { n: 29, o: 16, s: "Свети пророк Агеј", f: 0 },
+                { n: 18, o: 5, s: "Преподобни Сава Освећени", f: 3 },
+                { n: 19, o: 6, s: "Свети Николај, Архиепископ", f: 4, note: "Никољдан", feast: true, slava: true },
+                { n: 20, o: 7, s: "Свети Амвросије", f: 4, note: "Детињци" },
+                { n: 21, o: 8, s: "Преподобни Патапије", f: 2 },
+                { n: 22, o: 9, s: "Зачеће Свете Ане", f: 3 },
+                { n: 23, o: 10, s: "Свети мученик Мина", f: 3 },
+                { n: 24, o: 11, s: "Преподобни Данило Столпник", f: 3, note: "Бадњи дан" },
+                { n: 25, o: 12, s: "Свети Спиридон Чудотворац", f: 3, note: "Божићни дан (по грегоријанском календару)" },
+                { n: 26, o: 13, s: "Свети мученик Евстратије", f: 4 },
+                { n: 27, o: 14, s: "Свети мученици Тирс, Левкије", f: 4, note: "Материце" },
+                { n: 28, o: 15, s: "Свети свештеномученик Елевтерије", f: 2 },
+                { n: 29, o: 16, s: "Свети пророк Агеј", f: 3 },
                 { n: 30, o: 17, s: "Св. пророк Данило", f: 3 },
-                { n: 31, o: 18, s: "Свети мученик Севастијан", f: 0 }
+                { n: 31, o: 18, s: "Свети мученик Севастијан", f: 3 }
             ]
-        }];
+        }
+        ];
 
         const weekDays = ["Пон", "Уто", "Сре", "Чет", "Пет", "Суб", "Нед"];
 
-        const fastClassNames = { 0: "mrsno", 1: "suho", 2: "bez", 3: "ulje", 4: "riba" };
+        const fastClassNames = { 0: "mrsno", 1: "suho", 2: "bez", 3: "ulje", 4: "riba", 5: "beli" };
+
+        const dayDetails = {
+            "01-05": {
+                desc: "Туциндан – дан строгог поста пред Богојављење. По традицији, на овај дан се не једе месо нити масна храна.",
+                folk: "У неким крајевима се на Туциндан припремају печења за Божић, али се она не једу до празника."
+            },
+            "01-06": {
+                desc: "Бадњи дан – навечерје Богојављења. Дан строгог поста и припреме за празник Крштења Господњег.",
+                folk: "Поштују се обичаји везани за воду и богојављенску водицу."
+            },
+            "01-07": {
+                desc: "Рођење Господа Исуса Христа – Божић, најрадоснији хришћански празник. Празнује се три дана.",
+                reading: "Гал 4,4–7; Мт 2,1–12",
+                folk: "Бадњак, слама, чесница, паљење бадњака и поздрав „Христос се роди!“ – „Ваистину се роди!“."
+            },
+            "01-14": {
+                desc: "Обрезање Господње и спомен Светог Василија Великог. Почетак грађанске Нове године.",
+                folk: "Новогодишњи обичаји и честитање."
+            },
+            "01-18": {
+                desc: "Крстовдан – навечерје Богојављења. По црквеном календару дан поста и припреме за празник.",
+                folk: "У народу познат и као Крстовдан; повезан са освећењем воде."
+            },
+            "01-19": {
+                desc: "Богојављење – Крштење Господње. Један од дванаест великих празника.",
+                reading: "Тит 2,11–14; 3,4–7; Мт 3,13–17",
+                folk: "Освећење богојављенске водице, литија и пливање за Часни крст."
+            },
+            "01-20": {
+                desc: "Сабор Светог Јована Крститеља – Јовањдан. Крсна слава многих српских породица.",
+                reading: "Дела 19,1–8; Јн 1,29–34",
+                folk: "Јовањдан је једна од најчешћих крсних слава; припремају се посни и мрсни колачи."
+            },
+            "01-27": {
+                desc: "Свети Сава, први архиепископ српски – Савиндан. Просветитељ и заштитник српског народа.",
+                folk: "Савиндан је школска слава и крсна слава многих породица."
+            },
+            "02-15": {
+                desc: "Сретење Господње – сусрет Господа са праведним Симеоном у храму.",
+                reading: "Јевр 7,7–17; Лк 2,22–40",
+                folk: "Сретење се поштује као граница зиме и пролећа."
+            },
+            "02-23": {
+                desc: "Почетак Великог (Васкршњег) поста – најдужег и најстрожег поста у црквеном календару.",
+                reading: "На почетку поста читају се покајни псалми и молитва Светог Јефрема Сирина."
+            },
+            "04-07": {
+                desc: "Благовести – Благовест Пресвете Богородице. Архангел Гаврило јавља Марији да ће родити Спаситеља.",
+                reading: "Јевр 2,11–18; Лк 1,24–38",
+                folk: "Благовести се сматрају даном када се не раде тешки послови, посебно не у пољу."
+            },
+            "04-10": {
+                desc: "Велики петак – распеће Господа Исуса Христа. Најстрожи дан Великог поста.",
+                reading: "1. Кор 1,18–2,2; Мт 27,1–38; Лк 23,39–43; Јн 19,31–37; Мт 27,62–66",
+                folk: "Дан тишине, молитве и строгог поста."
+            },
+            "04-11": {
+                desc: "Велика субота – дан молитве над Христовим гробом и ишчекивања Васкрсења.",
+                reading: "Рим 6,3–11; Мт 28,1–20",
+                folk: "Припрема васкршњих јаја и празничне трпезе."
+            },
+            "04-12": {
+                desc: "Васкрсење Господа Исуса Христа – Васкрс, празник над празницима.",
+                reading: "Дела 1,1–8; Јн 1,1–17",
+                folk: "Васкршња јаја, чување светла, братско поздрављање „Христос васкрсе!“ – „Ваистину васкрсе!“."
+            },
+            "05-06": {
+                desc: "Свети великомученик Георгије – Ђурђевдан. Један од највећих српских крсних слава.",
+                reading: "Дела 12,1–11; Јн 15,17–16,2",
+                folk: "Ђурђевдански уранак, венци од биља, обичаји везани за плодност и здравље стоке."
+            },
+            "05-12": {
+                desc: "Свети Василије Острошки Чудотворац – велики српски светитељ и исцелитељ.",
+                folk: "Ходочашће у манастир Острог; једна од најчешћих крсних слава."
+            },
+            "05-21": {
+                desc: "Вазнесење Господње – Спасовдан, четрдесети дан после Васкрса.",
+                reading: "Дела 1,1–12; Лк 24,36–53",
+                folk: "Спасовдански обичаји и литије."
+            },
+            "05-31": {
+                desc: "Силазак Светог Духа на апостоле – Духови, Педесетница.",
+                reading: "Дела 2,1–11; Јн 7,37–52; 8,12",
+                folk: "Духовски обичаји, кићење кућа биљем и цвећем."
+            },
+            "06-28": {
+                desc: "Свети мученик Кнез Лазар и Видовдан – спомен Косовске битке 1389. године.",
+                reading: "Јевр 11,33–12,2; Мт 10,32–33; 11,27–30",
+                folk: "Видовдан је крсна слава и дан сећања на косовске јунаке."
+            },
+            "07-07": {
+                desc: "Рођење Светог Јована Претече – Ивањдан. Празник рођења највећег пророка.",
+                reading: "Рим 13,11–14,4; Лк 1,1–25, 57–68, 76, 80",
+                folk: "Ивањдански венци, биље и обичаји везани за воду и љубав."
+            },
+            "07-12": {
+                desc: "Свети апостоли Петар и Павле – Петровдан. Завршетак Петровског поста.",
+                reading: "2. Кор 11,21–12,9; Мт 16,13–19",
+                folk: "Петровданске литије и обичаји."
+            },
+            "08-02": {
+                desc: "Свети пророк Илија – Илиндан. Један од најпоштованијих светитеља у српском народу.",
+                reading: "Јаков 5,10–20; Лк 4,22–30",
+                folk: "Илиндан је крсна слава; верује се да Илија управља громовима и кишом."
+            },
+            "08-19": {
+                desc: "Преображење Господње – Таворска светлост и објављивање Христовог божанства.",
+                reading: "2. Петр 1,10–19; Мт 17,1–9",
+                folk: "На Преображење се једе прво грожђе и воће новог рода."
+            },
+            "08-28": {
+                desc: "Успеније Пресвете Богородице – Велика Госпојина.",
+                reading: "Фил 2,5–11; Лк 10,38–42; 11,27–28",
+                folk: "Великогоспојински обичаји и саборовање."
+            },
+            "09-11": {
+                desc: "Усековање главе Светог Јована Претече – строги пост и спомен мученичке смрти Претече.",
+                reading: "Дела 13,25–33; Мк 6,14–30",
+                folk: "Дан строгог поста; у народу се избегавају свечаности."
+            },
+            "09-21": {
+                desc: "Рођење Пресвете Богородице – Мала Госпојина.",
+                reading: "Фил 2,5–11; Лк 10,38–42; 11,27–28",
+                folk: "Малогоспојински обичаји и припрема јесењих радова."
+            },
+            "09-27": {
+                desc: "Воздвижење Часног и Животворног Крста Господњег – Крстовдан.",
+                reading: "1. Кор 1,18–24; Јн 19,6–11, 13–20, 25–28, 30–35",
+                folk: "Крстовдански обичаји; дан посвећен Часном крсту."
+            },
+            "10-27": {
+                desc: "Преподобна мати Параскева – Света Петка. Велика српска светитељка и заштитница жена.",
+                folk: "Света Петка је једна од најчешћих крсних слава; ходочашће у Каленић и друге манастире."
+            },
+            "11-08": {
+                desc: "Свети великомученик Димитрије – Митровдан. Крсна слава многих српских породица.",
+                reading: "2. Тим 2,1–10; Јн 15,17–16,2",
+                folk: "Митровдански обичаји; дан посвећен светом ратнику и мученику."
+            },
+            "11-21": {
+                desc: "Сабор Светог Архангела Михаила – Аранђеловдан. Празник анђела и арханђела.",
+                reading: "Јевр 2,2–10; Лк 10,16–21",
+                folk: "Аранђеловдан је крсна слава; верује се у заштиту арханђела Михаила."
+            },
+            "11-28": {
+                desc: "Почетак Божићног (Филиповог) поста – припрема за Рођење Христово.",
+                folk: "Божићни пост траје 40 дана, до Бадњег дана."
+            },
+            "12-04": {
+                desc: "Ваведење Пресвете Богородице – улазак Марије у јерусалимски храм.",
+                reading: "Јевр 9,1–7; Лк 10,38–42; 11,27–28",
+                folk: "Ваведењски обичаји и посете храмовима."
+            },
+            "12-19": {
+                desc: "Свети Николај, архиепископ Мирликијски – Никољдан. Један од највећих хришћанских празника и крсних слава.",
+                reading: "Јевр 13,17–21; Лк 6,17–23",
+                folk: "Никољдан је најчешћа крсна слава у Србији; припремају се посна и мрсна јела."
+            }
+        };
+
+        const fastPeriods = [
+            {
+                id: "great",
+                cyr: "Велики (Васкршњи) пост",
+                lat: "Veliki (Vaskršnji) post",
+                start: new Date(2026, 1, 23),
+                end: new Date(2026, 3, 11),
+                color: "#b91c1c",
+                monthIndex: 1,
+                icon: "✝"
+            },
+            {
+                id: "apostles",
+                cyr: "Петровски (Апостолски) пост",
+                lat: "Petrovski (Apostolski) post",
+                start: new Date(2026, 5, 8),
+                end: new Date(2026, 6, 11),
+                color: "#2563eb",
+                monthIndex: 5,
+                icon: "☩"
+            },
+            {
+                id: "dormition",
+                cyr: "Госпојински (Богородичин) пост",
+                lat: "Gospojinski (Bogorodičin) post",
+                start: new Date(2026, 7, 14),
+                end: new Date(2026, 7, 27),
+                color: "#7c3aed",
+                monthIndex: 7,
+                icon: "✿"
+            },
+            {
+                id: "nativity",
+                cyr: "Божићни (Филипов) пост",
+                lat: "Božićni (Filipov) post",
+                start: new Date(2026, 10, 28),
+                end: new Date(2027, 0, 6),
+                color: "#0f766e",
+                monthIndex: 10,
+                icon: "★"
+            }
+        ];
+
+        function dateKey(monthIndex, dayNum) {
+            return `${String(monthIndex + 1).padStart(2, "0")}-${String(dayNum).padStart(2, "0")}`;
+        }
+
+        function formatFastDate(date, withYear) {
+            const monthsCyr = ["јануар", "фебруар", "март", "април", "мај", "јун", "јул", "август", "септембар", "октобар", "новембар", "децембар"];
+            const text = `${date.getDate()}. ${monthsCyr[date.getMonth()]}`;
+            return withYear ? `${text} ${date.getFullYear()}.` : text;
+        }
+
+        function dayWord(n) {
+            const abs = Math.abs(n);
+            const singular = abs % 10 === 1 && abs % 100 !== 11;
+            if (currentScript === 'lat') return singular ? "dan" : "dana";
+            return singular ? "дан" : "дана";
+        }
 
         let currentMonthIndex = 0;
         let legendCollapsed = false;
+        let hasRendered = false;
+        let isProgrammaticScroll = false;
+        let scrollSpyFrame = null;
+        let lastFocusedElement = null;
 
         const cyrillicToLatin = {
             'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'ђ': 'dj', 'е': 'e',
@@ -1654,45 +2706,88 @@
             const queryLower = query.toLowerCase().trim();
             const textLower = text.toLowerCase();
             const index = textLower.indexOf(queryLower);
-            if (index === -1) return text;
-            const before = text.substring(0, index);
-            const match = text.substring(index, index + queryLower.length);
-            const after = text.substring(index + queryLower.length);
-            return `${before}<span class="search-highlight">${match}</span>${after}`;
+            if (index !== -1) {
+                const before = text.substring(0, index);
+                const match = text.substring(index, index + queryLower.length);
+                const after = text.substring(index + queryLower.length);
+                return `${before}<span class="search-highlight">${match}</span>${after}`;
+            }
+            const qLatin = toLatin(queryLower);
+            for (let i = 0; i < text.length; i++) {
+                for (let j = i + 1; j <= text.length; j++) {
+                    if (toLatin(text.substring(i, j)) === qLatin) {
+                        return `${text.substring(0, i)}<span class="search-highlight">${text.substring(i, j)}</span>${text.substring(j)}`;
+                    }
+                }
+            }
+            return text;
         }
 
         function renderMonthNames() {
             const container = document.getElementById('monthNames');
-            const todayMonth = new Date().getMonth();
+            if (!hasRendered) {
+                const now = new Date();
+                currentMonthIndex = now.getFullYear() === 2026 ? now.getMonth() : 0;
+            }
             container.innerHTML = months.map((month, index) =>
-                `<button class="month-name-btn ${index === todayMonth ? 'active' : ''}" 
-                         onclick="scrollToMonth(${index})">${month.name}</button>`
+                `<button class="month-name-btn ${index === currentMonthIndex ? 'active' : ''}"
+                         ${index === currentMonthIndex ? 'aria-current="true"' : ''}
+                         onclick="scrollToMonth(${index})">${displayText(month.name)}</button>`
             ).join('');
-            currentMonthIndex = todayMonth;
+        }
+
+        function setActiveMonthButton(index) {
+            const buttons = document.querySelectorAll('.month-name-btn');
+            buttons.forEach((btn, i) => {
+                const isActive = i === index;
+                btn.classList.toggle('active', isActive);
+                if (isActive) {
+                    btn.setAttribute('aria-current', 'true');
+                } else {
+                    btn.removeAttribute('aria-current');
+                }
+            });
+            currentMonthIndex = index;
+
+            const container = document.querySelector('.month-nav-names');
+            const activeBtn = buttons[index];
+            if (container && activeBtn && container.scrollWidth > container.clientWidth + 1) {
+                const cr = container.getBoundingClientRect();
+                const br = activeBtn.getBoundingClientRect();
+                if (br.left < cr.left) {
+                    container.scrollLeft -= (cr.left - br.left) + 8;
+                } else if (br.right > cr.right) {
+                    container.scrollLeft += (br.right - cr.right) + 8;
+                }
+            }
         }
 
         function updateActiveMonth(index) {
-            document.querySelectorAll('.month-name-btn').forEach((btn, i) => {
-                btn.classList.toggle('active', i === index);
-            });
-            currentMonthIndex = index;
+            setActiveMonthButton(index);
         }
 
-        function scrollToMonth(index) {
+        function scrollToMonth(index, behavior = 'smooth') {
             const target = document.getElementById(`month-${index}`);
             if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                updateActiveMonth(index);
+                isProgrammaticScroll = true;
+                target.scrollIntoView({ behavior, block: 'start' });
+                setActiveMonthButton(index);
+                setTimeout(() => { isProgrammaticScroll = false; }, behavior === 'smooth' ? 900 : 120);
             }
         }
 
         function selectSearchResult(monthIndex, dayNum) {
-            updateActiveMonth(monthIndex);
+            setActiveMonthButton(monthIndex);
             document.getElementById('searchResults').classList.remove('active');
             if (dayNum) {
                 const targetDay = document.getElementById(`day-${monthIndex}-${dayNum}`);
                 if (targetDay) {
+                    isProgrammaticScroll = true;
                     targetDay.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    targetDay.classList.remove('search-highlight-day');
+                    void targetDay.offsetWidth;
+                    targetDay.classList.add('search-highlight-day');
+                    setTimeout(() => { isProgrammaticScroll = false; }, 900);
                     return;
                 }
             }
@@ -1704,18 +2799,34 @@
             scrollToMonth(newIndex);
         }
 
+        function updateActiveMonthFromScroll() {
+            const threshold = 160;
+            let active = 0;
+            for (let i = 0; i < months.length; i++) {
+                const el = document.getElementById(`month-${i}`);
+                if (!el) continue;
+                const rect = el.getBoundingClientRect();
+                if (rect.top <= threshold) active = i;
+            }
+            if (active !== currentMonthIndex) {
+                setActiveMonthButton(active);
+            }
+        }
+
         function goToToday() {
             const today = new Date();
-            const todayMonth = today.getMonth();
-            updateActiveMonth(todayMonth);
+            const todayMonth = today.getFullYear() === 2026 ? today.getMonth() : 0;
+            setActiveMonthButton(todayMonth);
 
             const todayEl = document.querySelector('.day.today');
             if (todayEl) {
+                isProgrammaticScroll = true;
                 todayEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 todayEl.classList.remove('today-pulse');
                 void todayEl.offsetWidth;
                 todayEl.classList.add('today-pulse');
                 setTimeout(() => todayEl.classList.remove('today-pulse'), 1200);
+                setTimeout(() => { isProgrammaticScroll = false; }, 900);
             } else {
                 scrollToMonth(todayMonth);
             }
@@ -1724,9 +2835,11 @@
         function toggleLegend() {
             legendCollapsed = !legendCollapsed;
             const body = document.getElementById('legendBody');
+            const header = document.querySelector('.legend-header');
             const toggle = document.getElementById('legendToggle');
             body.classList.toggle('collapsed', legendCollapsed);
             toggle.classList.toggle('rotated', legendCollapsed);
+            if (header) header.setAttribute('aria-expanded', String(!legendCollapsed));
         }
 
         function clearCalendarHighlights() {
@@ -1737,7 +2850,7 @@
 
         function searchSaints(query) {
             const resultsContainer = document.getElementById('searchResults');
-            
+
             // Clear previous calendar highlights
             clearCalendarHighlights();
 
@@ -1754,11 +2867,13 @@
             // Find matches for dropdown
             months.forEach((month, monthIndex) => {
                 month.days.forEach((day) => {
-                    const saintLower = day.s.toLowerCase();
-                    const saintLatin = toLatin(saintLower);
-                    if (saintLower.includes(qLower) || saintLatin.includes(qLatin)) {
+                    const haystack = `${day.s} ${day.note || ''} ${displayText(day.s)} ${displayText(day.note || '')}`;
+                    const haystackLower = haystack.toLowerCase();
+                    const haystackLatin = toLatin(haystackLower);
+                    if (haystackLower.includes(qLower) || haystackLatin.includes(qLatin)) {
                         results.push({
                             saint: day.s,
+                            note: day.note || '',
                             date: `${day.n}. ${month.name}`,
                             monthIndex: monthIndex,
                             day: day.n
@@ -1769,40 +2884,23 @@
 
             // Build dropdown results
             if (results.length === 0) {
+                const emptyLabel = displayText('Нема резултата');
                 resultsContainer.innerHTML =
-                    `<div class="search-result-item"><span class="result-saint">Нема резултата</span></div>`;
+                    `<div class="search-result-item"><span class="result-saint">${emptyLabel}</span></div>`;
                 resultsContainer.classList.add('active');
                 return;
             }
 
             resultsContainer.innerHTML = results.slice(0, 10).map(r => {
-                let highlightedSaint = r.saint;
-                if (r.saint.toLowerCase().includes(qLower)) {
-                    highlightedSaint = highlightMatch(r.saint, qLower);
-                } else {
-                    let matchFound = false;
-                    for (let i = 0; i < r.saint.length; i++) {
-                        for (let j = i + 1; j <= r.saint.length; j++) {
-                            const sub = r.saint.substring(i, j);
-                            if (toLatin(sub) === qLatin) {
-                                const before = r.saint.substring(0, i);
-                                const match = sub;
-                                const after = r.saint.substring(j);
-                                highlightedSaint = `${before}<span class="search-highlight">${match}</span>${after}`;
-                                matchFound = true;
-                                break;
-                            }
-                        }
-                        if (matchFound) break;
-                    }
-                    if (!matchFound) {
-                        highlightedSaint = `<span class="search-highlight">${r.saint}</span>`;
-                    }
-                }
+                const saintText = displayText(r.saint);
+                const highlightedSaint = highlightMatch(saintText, q);
+                const dateText = displayText(r.date);
                 return `
-                    <div class="search-result-item" onclick="selectSearchResult(${r.monthIndex}, ${r.day})">
+                    <div class="search-result-item" role="option" tabindex="0"
+                         onclick="selectSearchResult(${r.monthIndex}, ${r.day})"
+                         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectSearchResult(${r.monthIndex}, ${r.day});}">
                         <span class="result-saint">${highlightedSaint}</span>
-                        <span class="result-date">${r.date}</span>
+                        <span class="result-date">${dateText}</span>
                     </div>
                 `;
             }).join('');
@@ -1810,7 +2908,6 @@
             resultsContainer.classList.add('active');
 
             // ===== CALENDAR HIGHLIGHTING =====
-            // Scan all day cells and highlight those that match the search
             const allDays = document.querySelectorAll('.day:not(.empty)');
             allDays.forEach(dayEl => {
                 const saintEl = dayEl.querySelector('.day-saint');
@@ -1818,15 +2915,55 @@
                 const saintText = saintEl.textContent.trim();
                 const saintLower = saintText.toLowerCase();
                 const saintLatin = toLatin(saintLower);
-                // Check if this saint matches the search query
                 if (saintLower.includes(qLower) || saintLatin.includes(qLatin)) {
                     dayEl.classList.add('search-highlight-day');
                 }
             });
         }
 
-        function renderCalendar() {
+        function focusDay(monthIndex, dayNum) {
+            const el = document.getElementById(`day-${monthIndex}-${dayNum}`);
+            if (!el) return;
+            document.querySelectorAll('.day[tabindex="0"]').forEach(d => d.setAttribute('tabindex', '-1'));
+            el.setAttribute('tabindex', '0');
+            el.focus({ preventScroll: true });
+            isProgrammaticScroll = true;
+            el.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+            setActiveMonthButton(monthIndex);
+            setTimeout(() => { isProgrammaticScroll = false; }, 500);
+        }
+
+        function handleDayKey(event, monthIndex, dayNum) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                openDayModal(monthIndex, dayNum);
+                return;
+            }
+            const deltas = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 7, ArrowUp: -7 };
+            const delta = deltas[event.key];
+            if (!delta) return;
+            event.preventDefault();
+            let idx = 0;
+            for (let i = 0; i < monthIndex; i++) idx += months[i].days.length;
+            idx += dayNum - 1 + delta;
+            if (idx < 0 || idx >= 365) return;
+            let acc = 0;
+            for (let i = 0; i < months.length; i++) {
+                const len = months[i].days.length;
+                if (idx < acc + len) {
+                    focusDay(i, idx - acc + 1);
+                    return;
+                }
+                acc += len;
+            }
+        }
+
+        function renderCalendar(options = {}) {
             const calendar = document.getElementById('calendar');
+            const preserveScroll = hasRendered && options.preserveScroll !== false;
+            const anchorIndex = currentMonthIndex;
+            const oldAnchor = document.getElementById(`month-${anchorIndex}`);
+            const oldAnchorTop = oldAnchor ? oldAnchor.getBoundingClientRect().top : null;
             let html = '';
             const today = new Date();
             const todayStr =
@@ -1836,11 +2973,11 @@
                 html += `
                     <div class="month" id="month-${monthIndex}" data-month="${monthIndex}">
                         <div class="month-header">
-                            <h2>${month.name}</h2>
+                            <h2>${displayText(month.name)}</h2>
                         </div>
                         <div class="month-content">
                             <div class="week-header">
-                                ${weekDays.map((day, i) => `<div class="week-day">${day}</div>`).join('')}
+                                ${weekDays.map((day, i) => `<div class="week-day">${displayText(day)}</div>`).join('')}
                             </div>
                             <div class="calendar-grid">
                 `;
@@ -1858,20 +2995,32 @@
                     const isToday = dayStr === todayStr;
 
                     let fastVal = day.fast !== undefined ? day.fast : (day.f !== undefined ? day.f : 0);
-                    if (fastVal > 4) fastVal = 4;
+                    if (!fastClassNames[fastVal]) fastVal = 0;
 
                     const dayClass =
-                        `day ${day.feast ? 'feast' : ''} ${fastVal > 0 ? 'fast' : ''} ${isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}`;
+                        `day ${day.feast ? 'feast' : ''} ${day.slava ? 'slava' : ''} ${fastVal > 0 ? 'fast' : ''} ${isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}`;
 
-                    const fastIndicator = `<span class="fast-indicator ${fastClassNames[fastVal]}"></span>`;
-
-                    const note = day.note ? `<div class="special-note">${day.note}</div>` : '';
+                    const fl = fastLabels[fastVal] || fastLabels[0];
+                    const fastIndicator = `<span class="fast-indicator ${fastClassNames[fastVal]}" title="${fl.cyr}" aria-hidden="true"></span>`;
+                    const slavaMark = day.slava
+                        ? `<span class="slava-mark" title="Крсна слава" aria-hidden="true">☩</span>`
+                        : '';
+                    const note = day.note ? `<div class="special-note">${displayText(day.note)}</div>` : '';
+                    const slavaText = day.slava ? `, крсна слава${day.note ? ' ' + day.note : ''}` : '';
+                    const ariaLabel = `${day.n}. ${month.name} 2026., ${day.s}${day.note ? ', ' + day.note : ''}, ${fl.cyr}${slavaText}`
+                        .replace(/"/g, '&quot;');
+                    const focusable = isToday || (today.getFullYear() !== 2026 && monthIndex === 0 && day.n === 1);
 
                     html += `
-                        <div class="${dayClass}" id="day-${monthIndex}-${day.n}">
+                        <div class="${dayClass}" id="day-${monthIndex}-${day.n}"
+                             role="button" tabindex="${focusable ? 0 : -1}" aria-label="${ariaLabel}"
+                             aria-haspopup="dialog"
+                             onclick="openDayModal(${monthIndex}, ${day.n})"
+                             onkeydown="handleDayKey(event, ${monthIndex}, ${day.n})">
+                            ${slavaMark}
                             <div class="day-number">${day.n}</div>
                             <div class="day-old-style">${day.o}</div>
-                            <div class="day-saint">${day.s} ${fastIndicator}</div>
+                            <div class="day-saint">${displayText(day.s)} ${fastIndicator}</div>
                             ${note}
                         </div>
                     `;
@@ -1887,29 +3036,165 @@
             calendar.innerHTML = html;
             renderMonthNames();
 
-            setTimeout(() => {
-                const todayMonth = new Date().getMonth();
-                const targetMonth = document.getElementById(`month-${todayMonth}`);
-                if (targetMonth) {
-                    targetMonth.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (!calendar.querySelector('.day[role="button"][tabindex="0"]')) {
+                const firstDay = calendar.querySelector('.day[role="button"]');
+                if (firstDay) firstDay.setAttribute('tabindex', '0');
+            }
+
+            if (preserveScroll && oldAnchorTop !== null) {
+                const newAnchor = document.getElementById(`month-${anchorIndex}`);
+                if (newAnchor) {
+                    const delta = newAnchor.getBoundingClientRect().top - oldAnchorTop;
+                    window.scrollTo({ top: window.scrollY + delta, behavior: 'instant' });
                 }
-                updateActiveMonth(todayMonth);
-            }, 300);
+            }
+
+            if (!hasRendered) {
+                hasRendered = true;
+                setTimeout(() => {
+                    const now = new Date();
+                    const monthIndex = now.getFullYear() === 2026 ? now.getMonth() : 0;
+                    scrollToMonth(monthIndex, 'instant');
+                }, 100);
+            }
         }
 
         function toggleTheme() {
             const html = document.documentElement;
+            const meta = document.querySelector('meta[name="theme-color"]');
             if (html.getAttribute('data-theme') === 'dark') {
                 html.removeAttribute('data-theme');
                 localStorage.setItem('theme', 'light');
+                if (meta) meta.setAttribute('content', '#6d28d9');
             } else {
                 html.setAttribute('data-theme', 'dark');
                 localStorage.setItem('theme', 'dark');
+                if (meta) meta.setAttribute('content', '#0f0f0f');
             }
         }
 
         function printCalendar() {
             window.print();
+        }
+
+        // ===== ICS EXPORT =====
+        function icsEscape(value) {
+            return String(value == null ? '' : value)
+                .replace(/\\/g, '\\\\')
+                .replace(/;/g, '\\;')
+                .replace(/,/g, '\\,')
+                .replace(/\r?\n/g, '\\n');
+        }
+
+        // RFC 5545: fold lines at 75 octets, counting UTF-8 bytes.
+        function icsFold(line) {
+            const encoder = new TextEncoder();
+            const parts = [];
+            let current = '';
+            let currentBytes = 0;
+            for (const char of line) {
+                const charBytes = encoder.encode(char).length;
+                if (currentBytes + charBytes > 75) {
+                    parts.push(current);
+                    current = ' ' + char;
+                    currentBytes = 1 + charBytes;
+                } else {
+                    current += char;
+                    currentBytes += charBytes;
+                }
+            }
+            parts.push(current);
+            return parts.join('\r\n');
+        }
+
+        function icsPad(value) {
+            return String(value).padStart(2, '0');
+        }
+
+        function icsDate(year, monthIndex, day) {
+            return `${year}${icsPad(monthIndex + 1)}${icsPad(day)}`;
+        }
+
+        function oldStyleFullDate(monthIndex, day) {
+            return new Date(Date.UTC(2026, monthIndex, day) - 13 * 24 * 60 * 60 * 1000);
+        }
+
+        function exportICS() {
+            const isLat = currentScript === 'lat';
+            const monthName = idx => displayText(months[idx].name.charAt(0) + months[idx].name.slice(1).toLowerCase());
+            const labels = {
+                newCalendar: isLat ? 'Novi kalendar' : 'Нови календар',
+                oldCalendar: isLat ? 'Stari kalendar' : 'Стари календар',
+                fast: isLat ? 'Post' : 'Пост',
+                feast: isLat ? 'Praznik' : 'Празник',
+                slava: isLat ? 'Krsna slava' : 'Крсна слава',
+                note: isLat ? 'Napomena' : 'Напомена',
+                reading: isLat ? 'Čitanja' : 'Читања',
+                calendarName: isLat ? 'Pravoslavni kalendar 2026' : 'Православни календар 2026',
+                calendarDesc: isLat
+                    ? 'Pravoslavni kalendar 2026 – kalendar Srpske pravoslavne crkve'
+                    : 'Православни календар 2026 – календар Српске православне цркве'
+            };
+            const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+            const lines = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//Orthodox Calendar 2026//SR//EN',
+                'CALSCALE:GREGORIAN',
+                'METHOD:PUBLISH',
+                `X-WR-CALNAME:${icsEscape(labels.calendarName)}`,
+                `X-WR-CALDESC:${icsEscape(labels.calendarDesc)}`,
+                'X-WR-TIMEZONE:Europe/Belgrade'
+            ];
+
+            months.forEach((month, monthIndex) => {
+                month.days.forEach(day => {
+                    const nextDay = new Date(Date.UTC(2026, monthIndex, day.n + 1));
+                    const oldDate = oldStyleFullDate(monthIndex, day.n);
+                    const detail = dayDetails[dateKey(monthIndex, day.n)] || {};
+                    const description = [
+                        `${labels.newCalendar}: ${day.n}. ${monthName(monthIndex)} 2026.`,
+                        `${labels.oldCalendar}: ${oldDate.getUTCDate()}. ${monthName(oldDate.getUTCMonth())} ${oldDate.getUTCFullYear()}.`,
+                        `${labels.fast}: ${fastLabelFor(getFastValue(day))}`
+                    ];
+                    const categories = [];
+                    if (day.feast) {
+                        description.push(labels.feast);
+                        categories.push(labels.feast);
+                    }
+                    if (day.slava) {
+                        description.push(labels.slava);
+                        categories.push(labels.slava);
+                    }
+                    if (day.note) description.push(`${labels.note}: ${displayText(day.note)}`);
+                    if (detail.reading) description.push(`${labels.reading}: ${displayText(detail.reading)}`);
+
+                    lines.push('BEGIN:VEVENT');
+                    lines.push(`UID:${icsDate(2026, monthIndex, day.n)}-${icsPad(day.n)}@orthodox-calendar-2026`);
+                    lines.push(`DTSTAMP:${stamp}`);
+                    lines.push(`DTSTART;VALUE=DATE:${icsDate(2026, monthIndex, day.n)}`);
+                    lines.push(`DTEND;VALUE=DATE:${icsDate(nextDay.getUTCFullYear(), nextDay.getUTCMonth(), nextDay.getUTCDate())}`);
+                    lines.push(`SUMMARY:${icsEscape(displayText(day.s))}`);
+                    lines.push(`DESCRIPTION:${icsEscape(description.join('\n'))}`);
+                    if (categories.length) {
+                        lines.push(`CATEGORIES:${categories.map(icsEscape).join(',')}`);
+                    }
+                    lines.push('TRANSP:TRANSPARENT');
+                    lines.push('END:VEVENT');
+                });
+            });
+            lines.push('END:VCALENDAR');
+
+            const content = lines.map(icsFold).join('\r\n') + '\r\n';
+            const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'pravoslavni-kalendar-2026.ics';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 2000);
         }
 
         function scrollToTop() {
@@ -1935,8 +3220,12 @@
                 case 'd':
                     goToToday();
                     break;
+                case 'e':
+                    exportICS();
+                    break;
                 case 'escape':
                     document.getElementById('searchResults').classList.remove('active');
+                    closeModal();
                     clearCalendarHighlights();
                     break;
             }
@@ -1953,27 +3242,477 @@
 
         const scrollTopBtn = document.getElementById('scrollTopBtn');
         window.addEventListener('scroll', () => {
-            if (window.pageYOffset > 300) {
-                scrollTopBtn.classList.add('visible');
-            } else {
-                scrollTopBtn.classList.remove('visible');
-            }
-        });
-
-        const keyboardHint = document.getElementById('keyboardHint');
-        setTimeout(() => {
-            keyboardHint.classList.add('visible');
-            setTimeout(() => {
-                keyboardHint.classList.remove('visible');
-            }, 6000);
-        }, 2000);
+            if (scrollSpyFrame) return;
+            scrollSpyFrame = requestAnimationFrame(() => {
+                scrollSpyFrame = null;
+                if (window.pageYOffset > 300) {
+                    scrollTopBtn.classList.add('visible');
+                } else {
+                    scrollTopBtn.classList.remove('visible');
+                }
+                if (!isProgrammaticScroll && hasRendered) {
+                    updateActiveMonthFromScroll();
+                }
+            });
+        }, { passive: true });
 
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
         }
 
+        // ===== SCRIPT SWITCHER =====
+        let currentScript = 'cyr';
+
+        const cyrToLat = {
+            'а':'a','б':'b','в':'v','г':'g','д':'d','ђ':'đ','е':'e','ж':'ž','з':'z',
+            'и':'i','ј':'j','к':'k','л':'l','љ':'lj','м':'m','н':'n','њ':'nj','о':'o',
+            'п':'p','р':'r','с':'s','т':'t','ћ':'ć','у':'u','ф':'f','х':'h','ц':'c',
+            'ч':'č','џ':'dž','ш':'š',
+            'А':'A','Б':'B','В':'V','Г':'G','Д':'D','Ђ':'Đ','Е':'E','Ж':'Ž','З':'Z',
+            'И':'I','Ј':'J','К':'K','Л':'L','Љ':'Lj','М':'M','Н':'N','Њ':'Nj','О':'O',
+            'П':'P','Р':'R','С':'S','Т':'T','Ћ':'Ć','У':'U','Ф':'F','Х':'H','Ц':'C',
+            'Ч':'Č','Џ':'Dž','Ш':'Š'
+        };
+
+        function scriptCyrToLat(text) {
+            if (!text) return '';
+            let result = '';
+            for (let i = 0; i < text.length; i++) {
+                result += cyrToLat[text[i]] || text[i];
+            }
+            return result;
+        }
+
+        function displayText(cyr) {
+            return currentScript === 'lat' ? scriptCyrToLat(cyr) : cyr;
+        }
+
+        function updateStaticUI() {
+            const h1 = document.querySelector('header h1');
+            if (h1) h1.textContent = currentScript === 'lat' ? 'Pravoslavni kalendar 2026' : 'Православни календар 2026';
+            document.title = currentScript === 'lat' ? 'Pravoslavni kalendar 2026' : 'Православни календар 2026';
+
+            const sfh = document.querySelector('.slave-filter-header span');
+            if (sfh) sfh.textContent = currentScript === 'lat' ? 'Krsne slave' : 'Крсне славе';
+
+            const searchInp = document.getElementById('searchInput');
+            if (searchInp) {
+                searchInp.placeholder = currentScript === 'lat' ? 'Traži svetitelja ili praznik...' : 'Тражи светитеља или празник...';
+                searchInp.setAttribute('aria-label', currentScript === 'lat' ? 'Pretraga svetitelja ili praznika' : 'Претрага светитеља или празника');
+            }
+
+            const searchBtn = document.querySelector('.search-input-wrapper button');
+            if (searchBtn) searchBtn.textContent = currentScript === 'lat' ? 'Traži' : 'Тражи';
+
+            const legH3 = document.querySelector('.legend-header h3');
+            if (legH3) legH3.textContent = currentScript === 'lat' ? 'Legenda posta' : 'Легенда поста';
+
+            const legItems = document.querySelectorAll('.legend-item');
+            const legTexts = [
+                { strong: { cyr: 'Сухоједење', lat: 'Suhojađenje' }, small: { cyr: 'сирово воће, поврће, ораси, мед', lat: 'sirovo voće, povrće, orasi, med' } },
+                { strong: { cyr: 'Без уља', lat: 'Bez ulja' }, small: { cyr: 'кувана храна без уља', lat: 'kuvana hrana bez ulja' } },
+                { strong: { cyr: 'Уље', lat: 'Ulje' }, small: { cyr: 'биљно уље и вино', lat: 'biljno ulje i vino' } },
+                { strong: { cyr: 'Риба', lat: 'Riba' }, small: { cyr: 'риба, уље и вино', lat: 'riba, ulje i vino' } },
+                { strong: { cyr: 'Бели мрс', lat: 'Beli mrs' }, small: { cyr: 'млеко, јаја и сир – без меса', lat: 'mleko, jaja i sir – bez mesa' } },
+                { strong: { cyr: 'Мрсно', lat: 'Mrsno' }, small: { cyr: 'без поста – све дозвољено', lat: 'bez posta – sve dozvoljeno' } }
+            ];
+            legItems.forEach((item, idx) => {
+                if (legTexts[idx]) {
+                    const st = item.querySelector('strong');
+                    const sm = item.querySelector('small');
+                    if (st) st.textContent = currentScript === 'lat' ? legTexts[idx].strong.lat : legTexts[idx].strong.cyr;
+                    if (sm) sm.textContent = currentScript === 'lat' ? legTexts[idx].small.lat : legTexts[idx].small.cyr;
+                }
+            });
+
+            const trackerTitle = document.getElementById('fastTrackerTitle');
+            if (trackerTitle) trackerTitle.textContent = currentScript === 'lat' ? 'Veliki postovi 2026.' : 'Велики постови 2026.';
+            const trackerSub = document.getElementById('fastTrackerSub');
+            if (trackerSub) trackerSub.textContent = currentScript === 'lat'
+                ? '192 posna dana · 90 na vodi · 76 na ulju · 26 sa ribom'
+                : '192 посна дана · 90 на води · 76 на уљу · 26 са рибом';
+
+            const ctrlBtns = document.querySelectorAll('.controls .btn');
+            if (ctrlBtns.length >= 4) {
+                const s0 = ctrlBtns[0].querySelector('span:first-child');
+                if (s0) s0.textContent = currentScript === 'lat' ? 'Promeni temu' : 'Промени тему';
+                const s1 = ctrlBtns[1].querySelector('span:first-child');
+                if (s1) s1.textContent = currentScript === 'lat' ? 'Štampaj' : 'Штампај';
+                const s2 = ctrlBtns[2].querySelector('span:first-child');
+                if (s2) s2.textContent = currentScript === 'lat' ? 'Danas' : 'Данас';
+                const s3 = ctrlBtns[3].querySelector('span:first-child');
+                if (s3) s3.textContent = currentScript === 'lat' ? 'Izvezi .ics' : 'Извези .ics';
+                ctrlBtns[3].title = currentScript === 'lat' ? 'Izvezi kalendar kao .ics datoteku' : 'Извези календар као .ics датотеку';
+            }
+
+            const kbHint = document.getElementById('keyboardHint');
+            if (kbHint) {
+                kbHint.innerHTML = currentScript === 'lat' ?
+                    '<kbd>T</kbd> tema &nbsp;·&nbsp; <kbd>P</kbd> štampa &nbsp;·&nbsp; <kbd>D</kbd> danas &nbsp;·&nbsp; <kbd>E</kbd> .ics &nbsp;·&nbsp; <kbd>Esc</kbd> zatvori' :
+                    '<kbd>T</kbd> тема &nbsp;·&nbsp; <kbd>P</kbd> штампа &nbsp;·&nbsp; <kbd>D</kbd> данас &nbsp;·&nbsp; <kbd>E</kbd> .ics &nbsp;·&nbsp; <kbd>Esc</kbd> затвори';
+            }
+
+            const footerP = document.querySelectorAll('footer p');
+            if (footerP.length >= 3) {
+                footerP[0].textContent = currentScript === 'lat' ? 'Pravoslavni kalendar 2026. godine' : 'Православни календар 2026. године';
+                footerP[1].textContent = currentScript === 'lat' ? 'Prema kalendaru Srpske pravoslavne crkve' : 'Према календару Српске православне цркве';
+                const copyLink = footerP[2].querySelector('a');
+                if (copyLink) copyLink.textContent = currentScript === 'lat' ? '© 2026. Sva prava zadržana.' : '© 2026. Сва права задржана.';
+            }
+
+            const navBtns = document.querySelectorAll('.month-nav-btn');
+            if (navBtns.length >= 2) {
+                navBtns[0].title = currentScript === 'lat' ? 'Prethodni mesec' : 'Претходни месец';
+                navBtns[0].setAttribute('aria-label', navBtns[0].title);
+                navBtns[1].title = currentScript === 'lat' ? 'Sledeći mesec' : 'Следећи месец';
+                navBtns[1].setAttribute('aria-label', navBtns[1].title);
+            }
+
+            // Keep the Electron tray menu in the same script as the app.
+            if (window.calendarDesktop && typeof window.calendarDesktop.setScript === 'function') {
+                window.calendarDesktop.setScript(currentScript);
+            }
+        }
+
+        function setScript(script) {
+            currentScript = script;
+            document.getElementById('btnCyr').classList.toggle('active', script === 'cyr');
+            document.getElementById('btnLat').classList.toggle('active', script === 'lat');
+            document.getElementById('btnCyr').setAttribute('aria-pressed', script === 'cyr');
+            document.getElementById('btnLat').setAttribute('aria-pressed', script === 'lat');
+            localStorage.setItem('script', script);
+            renderCalendar({ preserveScroll: true });
+            renderSaintOfDay();
+            renderFastTracker();
+            renderSlaveFilter();
+            updateStaticUI();
+        }
+
+        // ===== SAINT OF THE DAY =====
+        const fastLabels = {
+            0: { cyr: 'Мрсно (без поста)', lat: 'Mrsno (bez posta)' },
+            1: { cyr: 'Сухоједење', lat: 'Suhojađenje' },
+            2: { cyr: 'Пост на води (без уља)', lat: 'Post na vodi (bez ulja)' },
+            3: { cyr: 'Пост на уљу и вину', lat: 'Post na ulju i vinu' },
+            4: { cyr: 'Пост са рибом, уљем и вином', lat: 'Post sa ribom, uljem i vinom' },
+            5: { cyr: 'Бели мрс (млеко, јаја, сир)', lat: 'Beli mrs (mleko, jaja, sir)' }
+        };
+        const fastDescriptions = {
+            0: { cyr: 'Дозвољена је сва храна, укључујући месо, млеко и јаја.', lat: 'Dozvoljena je sva hrana, uključujući meso, mleko i jaja.' },
+            1: { cyr: 'Најстрожи пост: хлеб, вода, сирово воће и поврће, ораси и мед. Без уља, вина и куване хране.', lat: 'Najstroži post: hleb, voda, sirovo voće i povrće, orasi i med. Bez ulja, vina i kuvane hrane.' },
+            2: { cyr: 'Кувана храна без биљног уља и вина; дозвољени су воће, поврће, житарице и махунарке.', lat: 'Kuvana hrana bez biljnog ulja i vina; dozvoljeni su voće, povrće, žitarice i mahunarke.' },
+            3: { cyr: 'Дозвољено је биљно уље и вино; без меса, рибе, млека и јаја.', lat: 'Dozvoljeno je biljno ulje i vino; bez mesa, ribe, mleka i jaja.' },
+            4: { cyr: 'Дозвољени су риба, биљно уље и вино; без меса, млека и јаја.', lat: 'Dozvoljeni su riba, biljno ulje i vino; bez mesa, mleka i jaja.' },
+            5: { cyr: 'Дозвољени су млеко, јаја и сир, али не месо и риба.', lat: 'Dozvoljeni su mleko, jaja i sir, ali ne meso i riba.' }
+        };
+        const fastColors = { 0: '#9ca3af', 1: '#b91c1c', 2: '#ea580c', 3: '#eab308', 4: '#2563eb', 5: '#a855f7' };
+
+        function getFastValue(day) {
+            return day.fast !== undefined ? day.fast : (day.f !== undefined ? day.f : 0);
+        }
+
+        function fastLabelFor(value) {
+            const item = fastLabels[value] || fastLabels[0];
+            return currentScript === 'lat' ? item.lat : item.cyr;
+        }
+
+        function fastDescriptionFor(value) {
+            const item = fastDescriptions[value] || fastDescriptions[0];
+            return currentScript === 'lat' ? item.lat : item.cyr;
+        }
+
+        function renderFastTracker() {
+            const grid = document.getElementById('fastTrackerGrid');
+            if (!grid) return;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const dayMs = 24 * 60 * 60 * 1000;
+
+            grid.innerHTML = fastPeriods.map(period => {
+                const total = Math.round((period.end - period.start) / dayMs) + 1;
+                let statusClass = 'is-upcoming';
+                let statusText = '';
+                let progress = 0;
+
+                if (today > period.end) {
+                    statusClass = 'is-past';
+                    statusText = currentScript === 'lat' ? 'Završen' : 'Завршен';
+                    progress = 100;
+                } else if (today < period.start) {
+                    const remaining = Math.ceil((period.start - today) / dayMs);
+                    statusText = currentScript === 'lat'
+                        ? `Počinje za ${remaining} ${dayWord(remaining)}`
+                        : `Почиње за ${remaining} ${dayWord(remaining)}`;
+                } else {
+                    statusClass = 'is-active';
+                    const remaining = Math.floor((period.end - today) / dayMs) + 1;
+                    statusText = currentScript === 'lat'
+                        ? `U toku · još ${remaining} ${dayWord(remaining)}`
+                        : `У току · још ${remaining} ${dayWord(remaining)}`;
+                    progress = Math.min(100, Math.max(3, ((today - period.start) / dayMs + 1) / total * 100));
+                }
+
+                const startYear = period.start.getFullYear();
+                const endYear = period.end.getFullYear();
+                const startText = formatFastDate(period.start, startYear !== endYear);
+                const endText = formatFastDate(period.end, true);
+                const rangeText = `${startText} – ${endText}`;
+                const name = currentScript === 'lat' ? period.lat : period.cyr;
+                const totalText = currentScript === 'lat'
+                    ? `Ukupno ${total} ${dayWord(total)}`
+                    : `Укупно ${total} ${dayWord(total)}`;
+                const percentText = `${Math.round(progress)}%`;
+                const aria = `${name}, ${displayText(rangeText)}, ${statusText}`;
+
+                return `
+                    <button type="button" class="fast-card ${statusClass}" style="--fast-color:${period.color}"
+                            onclick="scrollToMonth(${period.monthIndex})"
+                            aria-label="${aria.replace(/"/g, '&quot;')}">
+                        <span class="fast-card-top">
+                            <span>
+                                <span class="fast-card-title">${name}</span>
+                                <span class="fast-card-range">${displayText(rangeText)}</span>
+                            </span>
+                            <span class="fast-card-icon" aria-hidden="true">${period.icon}</span>
+                        </span>
+                        <span class="fast-card-status">${statusText}</span>
+                        <span class="fast-progress" aria-hidden="true"><span style="width:${progress}%"></span></span>
+                        <span class="fast-card-meta"><span>${totalText}</span><span>${percentText}</span></span>
+                    </button>`;
+            }).join('');
+        }
+
+        function renderSaintOfDay() {
+            const today = new Date();
+            const mi = today.getFullYear() === 2026 ? today.getMonth() : -1;
+            const dn = today.getDate();
+            const month = mi >= 0 ? months[mi] : null;
+            const day = month ? month.days.find(d => d.n === dn) : null;
+            const el = document.getElementById('saintOfDay');
+            if (!el) return;
+            if (!day) {
+                el.style.display = 'none';
+                return;
+            }
+            const fv = getFastValue(day);
+            const fLabel = fastLabelFor(fv);
+            const detail = dayDetails[dateKey(mi, dn)] || {};
+            const monthName = displayText(month.name.charAt(0) + month.name.slice(1).toLowerCase());
+            const saintName = displayText(day.s);
+            const noteHtml = day.note
+                ? `<span class="saint-of-day-note">${displayText(day.note)}</span>`
+                : '';
+            const slava = slaveList.find(sl => sl.mi === mi && sl.dn === dn);
+            const slavaHtml = slava
+                ? `<span class="saint-of-day-slava">☩ ${currentScript === 'lat' ? 'Krsna slava' : 'Крсна слава'}</span>`
+                : '';
+            const feastHtml = day.feast
+                ? `<span class="modal-feast-badge">${currentScript === 'lat' ? 'Praznik' : 'Празник'}</span>`
+                : '';
+            const readingHtml = detail.reading
+                ? `<span class="saint-of-day-reading"><strong>${currentScript === 'lat' ? 'Čitanja' : 'Читања'}:</strong> ${displayText(detail.reading)}</span>`
+                : '';
+            const labelStr = currentScript === 'lat' ? 'Svetitelj dana' : 'Светитељ дана';
+            const oldStyleStr = currentScript === 'lat' ? 'st.' : 'ст.';
+            const detailsBtn = currentScript === 'lat' ? 'Detalji dana' : 'Детаљи дана';
+            el.style.display = 'flex';
+            el.innerHTML = `
+                <div class="saint-of-day-icon" aria-hidden="true">☩</div>
+                <div class="saint-of-day-body">
+                    <div class="saint-of-day-line">
+                        <span class="saint-of-day-label">${labelStr}:</span>
+                        ${slavaHtml}${feastHtml}
+                        <span class="saint-of-day-name">${saintName},</span>
+                        <span class="saint-of-day-date">${dn}. ${monthName} 2026. (${oldStyleStr} ${day.o}.),</span>
+                        <span class="saint-of-day-fast">
+                            <span style="width:9px;height:9px;border-radius:50%;background:${fastColors[fv]};display:inline-block;" aria-hidden="true"></span>${fLabel}
+                        </span>
+                        ${readingHtml}
+                        ${noteHtml}
+                        <button class="saint-of-day-btn" onclick="openDayModal(${mi}, ${dn})">${detailsBtn}</button>
+                    </div>
+                </div>`;
+        }
+
+        // ===== KRSNE SLAVE FILTER =====
+        const slaveList = [
+            { cyr: 'Никољдан', lat: 'Nikoljdan', mi: 11, dn: 19 },
+            { cyr: 'Ђурђевдан', lat: 'Đurđevdan', mi: 4, dn: 6 },
+            { cyr: 'Аранђеловдан', lat: 'Aranđelovdan', mi: 10, dn: 21 },
+            { cyr: 'Јовањдан', lat: 'Jovanjdan', mi: 0, dn: 20 },
+            { cyr: 'Митровдан', lat: 'Mitrovdan', mi: 10, dn: 8 },
+            { cyr: 'Видовдан', lat: 'Vidovdan', mi: 5, dn: 28 },
+            { cyr: 'Св. Петка', lat: 'Sv. Petka', mi: 9, dn: 27 },
+            { cyr: 'Св. Василије', lat: 'Sv. Vasilije', mi: 4, dn: 12 },
+            { cyr: 'Савиндан', lat: 'Savindan', mi: 0, dn: 27 },
+            { cyr: 'Илиндан', lat: 'Ilindan', mi: 7, dn: 2 },
+        ];
+        let activeSlava = null;
+
+        function renderSlaveFilter() {
+            const container = document.getElementById('slaveBtns');
+            if (!container) return;
+            const clearLabel = currentScript === 'lat' ? 'Poništi' : 'Поништи';
+            container.innerHTML = slaveList.map((sl, i) => {
+                const monthName = displayText(months[sl.mi].name.charAt(0) + months[sl.mi].name.slice(1).toLowerCase());
+                const label = currentScript === 'lat' ? sl.lat : sl.cyr;
+                const title = `${label} – ${sl.dn}. ${monthName}`;
+                return `<button class="slave-btn${activeSlava === i ? ' active' : ''}"
+                                aria-pressed="${activeSlava === i}"
+                                title="${title}"
+                                onclick="filterSlava(${i})">${label}</button>`;
+            }).join('') + `<button class="slave-btn clear-btn" onclick="clearSlava()">${clearLabel}</button>`;
+        }
+
+        function filterSlava(i) {
+            clearSlavaHighlights();
+            if (activeSlava === i) {
+                activeSlava = null;
+                renderSlaveFilter();
+                return;
+            }
+            activeSlava = i;
+            renderSlaveFilter();
+            const sl = slaveList[i];
+            const dayEl = document.getElementById(`day-${sl.mi}-${sl.dn}`);
+            if (dayEl) {
+                isProgrammaticScroll = true;
+                dayEl.classList.add('slava-highlight');
+                dayEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setActiveMonthButton(sl.mi);
+                setTimeout(() => { isProgrammaticScroll = false; }, 900);
+            }
+        }
+
+        function clearSlava() {
+            activeSlava = null;
+            clearSlavaHighlights();
+            renderSlaveFilter();
+        }
+
+        function clearSlavaHighlights() {
+            document.querySelectorAll('.slava-highlight').forEach(el => el.classList.remove('slava-highlight'));
+        }
+
+        // ===== DAY DETAIL MODAL =====
+        function openDayModal(monthIndex, dayNum) {
+            const month = months[monthIndex];
+            const day = month.days.find(d => d.n === dayNum);
+            if (!day) return;
+            lastFocusedElement = document.activeElement;
+            const fv = getFastValue(day);
+            const fLabel = fastLabelFor(fv);
+            const detail = dayDetails[dateKey(monthIndex, dayNum)] || {};
+            const slava = slaveList.find(sl => sl.mi === monthIndex && sl.dn === dayNum);
+            const monthName = displayText(month.name.charAt(0) + month.name.slice(1).toLowerCase());
+            const saintName = displayText(day.s);
+            const oldStyleStr = currentScript === 'lat' ? 'Stari kalendar' : 'Стари календар';
+            const saintsLabel = currentScript === 'lat' ? 'Svetitelji' : 'Светитељи';
+            const fastLabel = currentScript === 'lat' ? 'Pravilo posta' : 'Правило поста';
+            const feastLabel = currentScript === 'lat' ? 'Praznik' : 'Празник';
+            const slavaLabel = currentScript === 'lat' ? 'Krsna slava' : 'Крсна слава';
+            const aboutLabel = currentScript === 'lat' ? 'O prazniku' : 'О празнику';
+            const readingLabel = currentScript === 'lat' ? 'Čitanja' : 'Читања';
+            const folkLabel = currentScript === 'lat' ? 'Narodni običaji' : 'Народни обичаји';
+            const noteLabel = currentScript === 'lat' ? 'Napomena' : 'Напомена';
+            const footerNote = currentScript === 'lat'
+                ? 'Pravila posta su opšta. Za lični post i pojedinosti obratite se svom svešteniku.'
+                : 'Правила поста су општа. За лични пост и појединости обратите се свом свештенику.';
+
+            document.getElementById('modalNS').textContent = `${dayNum}.`;
+            document.getElementById('modalMonth').textContent = `${monthName} 2026.`;
+            document.getElementById('modalOS').textContent = `${oldStyleStr}: ${day.o}.`;
+
+            let bodyHtml = '';
+            const badges = [];
+            if (day.feast) badges.push(`<span class="modal-feast-badge">${feastLabel}</span>`);
+            if (slava) badges.push(`<span class="modal-badge-slava">☩ ${slavaLabel}</span>`);
+            if (badges.length) {
+                bodyHtml += `<div class="modal-section"><div class="modal-badges">${badges.join('')}</div></div>`;
+            }
+            bodyHtml += `
+                <div class="modal-section">
+                    <div class="modal-section-label">${saintsLabel}</div>
+                    <div class="modal-saint-name">${saintName}</div>
+                </div>
+                <div class="modal-section">
+                    <div class="modal-section-label">${fastLabel}</div>
+                    <div class="modal-fast-row">
+                        <span class="modal-fast-dot" style="background:${fastColors[fv]};" aria-hidden="true"></span>
+                        ${fLabel}
+                    </div>
+                    <div class="modal-fast-desc">${fastDescriptionFor(fv)}</div>
+                </div>`;
+            if (detail.reading) {
+                bodyHtml += `<div class="modal-section"><div class="modal-section-label">${readingLabel}</div><div class="modal-detail-text">${displayText(detail.reading)}</div></div>`;
+            }
+            if (detail.desc) {
+                bodyHtml += `<div class="modal-section"><div class="modal-section-label">${aboutLabel}</div><div class="modal-detail-text">${displayText(detail.desc)}</div></div>`;
+            }
+            if (detail.folk) {
+                bodyHtml += `<div class="modal-section"><div class="modal-section-label">${folkLabel}</div><div class="modal-detail-text">${displayText(detail.folk)}</div></div>`;
+            }
+            if (day.note) {
+                bodyHtml += `<div class="modal-section"><div class="modal-section-label">${noteLabel}</div><div class="modal-note">${displayText(day.note)}</div></div>`;
+            }
+            bodyHtml += `<div class="modal-footer-note">${footerNote}</div>`;
+            document.getElementById('modalBody').innerHTML = bodyHtml;
+            const modal = document.getElementById('dayModal');
+            modal.classList.add('open');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('modal-open');
+            const main = document.getElementById('mainContent');
+            if (main) main.setAttribute('inert', '');
+            setTimeout(() => document.getElementById('modalClose').focus(), 30);
+        }
+
+        function closeModal(e) {
+            const modal = document.getElementById('dayModal');
+            if (e && e.target !== modal) return;
+            if (!modal.classList.contains('open')) return;
+            modal.classList.remove('open');
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('modal-open');
+            const main = document.getElementById('mainContent');
+            if (main) main.removeAttribute('inert');
+            if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+                lastFocusedElement.focus();
+            }
+        }
+
+        document.getElementById('dayModal').addEventListener('keydown', e => {
+            const modal = e.currentTarget;
+            if (e.key !== 'Tab' || !modal.classList.contains('open')) return;
+            const focusable = Array.from(
+                modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')
+            ).filter(el => el.offsetParent !== null);
+            if (!focusable.length) return;
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        });
+
+        const savedScript = localStorage.getItem('script');
+        if (savedScript === 'lat') {
+            currentScript = 'lat';
+            document.getElementById('btnCyr').classList.remove('active');
+            document.getElementById('btnLat').classList.add('active');
+        }
+        document.getElementById('btnCyr').setAttribute('aria-pressed', currentScript === 'cyr');
+        document.getElementById('btnLat').setAttribute('aria-pressed', currentScript === 'lat');
+
         renderCalendar();
+        renderSaintOfDay();
+        renderFastTracker();
+        renderSlaveFilter();
+        updateStaticUI();
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
