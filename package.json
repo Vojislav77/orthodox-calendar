@@ -1,0 +1,14 @@
+{
+  "name": "orthodox-calendar",
+  "productName": "Православни календар 2026",
+  "version": "2.0.0",
+  "description": "Православни календар 2026 према календару Српске православне цркве",
+  "main": "main.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^43.3.0"
+  }
+}
