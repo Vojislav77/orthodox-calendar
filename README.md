@@ -95,6 +95,23 @@ Special notes
 
 [Click here to try it live](https://vojislav77.github.io/orthodox-calendar/)
 
+## Desktop Application (AppImage)
+
+The desktop edition can be run natively on Linux using the standalone AppImage:
+```bash
+chmod +x OrthodoxCalendar-2026-v2-x86_64.AppImage
+./OrthodoxCalendar-2026-v2-x86_64.AppImage
+```
+
+## Changelog & Recent Bug Fixes (v2.0)
+
+- **Fasting Rule Property Fix**: Resolved property conflict where both `f: 0` and `fast: 4` co-existed on Krstovdan (Jan 18) and other dates, which previously caused fasting days to render incorrectly as non-fasting (`mrsno`). Normalized property precedence across the calendar.
+- **Enhanced Search with Serbian Latin Diacritics**: Added normalization for Serbian Latin diacritics (`č`, `ć`, `ž`, `š`, `đ` ↔ `dj`). Users typing on Serbian Latin keyboards or standard keyboards now reliably match Cyrillic feast and saint entries. Clicking a search result now scrolls directly to that specific day.
+- **Accurate "Today" (`D`) Navigation & Visual Pulse**: The "Today" button and keyboard shortcut (`D`) smoothly center directly onto the exact day cell with an animated visual pulse to orient the user.
+- **Initial Launch Month Visibility**: On initial launch, the entire current month is automatically centered and fully visible in the application window.
+- **Adaptive Monochrome KDE Plasma Tray Icon**: Designed and integrated a dynamic monochrome cross icon (22x22 and 44x44 @2x HiDPI) that automatically adapts to KDE Plasma themes — rendering black on light panels and white on dark panels, with live theme detection.
+- **Service Worker & PWA Cache Update**: Upgraded cache version to v4 to ensure instant client-side updates.
+
 ## Usage
 
 **Basic Navigation**
